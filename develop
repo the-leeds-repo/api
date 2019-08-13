@@ -4,8 +4,8 @@
 export APP_PORT=${APP_PORT:-80}
 export DB_PORT=${DB_PORT:-3306}
 export DB_ROOT_PASS=${DB_ROOT_PASS:-secret}
-export DB_NAME=${DB_NAME:-connected_kingston}
-export DB_USER=${DB_USER:-connected_kingston}
+export DB_NAME=${DB_NAME:-the_leeds_repo}
+export DB_USER=${DB_USER:-the_leeds_repo}
 export DB_PASS=${DB_PASS:-secret}
 export ELASTICSEARCH_PORT=${ELASTICSEARCH_PORT:-9200}
 
@@ -34,17 +34,6 @@ if [[ $# -gt 0  ]]; then
             docker-compose run --rm ${TTY} \
                 app \
                 composer "$@"
-            ;;
-
-        phpunit )
-            shift 1
-            docker-compose run --rm ${TTY} \
-                -e DB_HOST=mysql-testing \
-                -e REDIS_CLUSTER=redis \
-                -e REDIS_HOST=redis-testing \
-                -e REDIS_PORT=7000 \
-                app \
-                php vendor/bin/phpunit "$@"
             ;;
 
         npm )
