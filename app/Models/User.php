@@ -64,7 +64,7 @@ class User extends Authenticatable implements Notifiable
     {
         parent::__construct($attributes);
 
-        $this->perPage = config('ck.pagination_results');
+        $this->perPage = config('tlr.pagination_results');
     }
 
     /**

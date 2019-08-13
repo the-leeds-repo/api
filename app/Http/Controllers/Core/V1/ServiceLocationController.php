@@ -110,7 +110,7 @@ class ServiceLocationController extends Controller
                 $file = File::findOrFail($request->image_file_id)->assigned();
 
                 // Create resized version for common dimensions.
-                foreach (config('ck.cached_image_dimensions') as $maxDimension) {
+                foreach (config('tlr.cached_image_dimensions') as $maxDimension) {
                     $file->resizedVersion($maxDimension);
                 }
             }
@@ -202,7 +202,7 @@ class ServiceLocationController extends Controller
                 $file = File::findOrFail($request->image_file_id)->assigned();
 
                 // Create resized version for common dimensions.
-                foreach (config('ck.cached_image_dimensions') as $maxDimension) {
+                foreach (config('tlr.cached_image_dimensions') as $maxDimension) {
                     $file->resizedVersion($maxDimension);
                 }
             }

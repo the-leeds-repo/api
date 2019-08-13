@@ -257,9 +257,9 @@ if (!function_exists('per_page')) {
      */
     function per_page(int $perPage = null): int
     {
-        $perPage = $perPage ?? config('ck.pagination_results');
+        $perPage = $perPage ?? config('tlr.pagination_results');
 
-        $perPage = min(config('ck.max_pagination_results'), $perPage);
+        $perPage = min(config('tlr.max_pagination_results'), $perPage);
         $perPage = max(1, $perPage);
 
         return $perPage;
@@ -288,7 +288,7 @@ if (!function_exists('backend_uri')) {
      */
     function backend_uri(string $path = ''): string
     {
-        return config('ck.backend_uri') . $path;
+        return config('tlr.backend_uri') . $path;
     }
 }
 

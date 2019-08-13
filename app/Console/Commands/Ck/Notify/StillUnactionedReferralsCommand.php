@@ -83,7 +83,7 @@ class StillUnactionedReferralsCommand extends Command
                 });
 
             Notification::sendEmail(
-                new NotifyGlobalAdminEmail(config('ck.global_admin.email'), [
+                new NotifyGlobalAdminEmail(config('tlr.global_admin.email'), [
                     'REFERRAL_SERVICE_NAME' => $referral->service->name,
                     'REFERRAL_CREATED_AT' => $referral->created_at->format('j/n/Y'),
                     'REFERRAL_TYPE' => $referral->isSelfReferral() ? 'Self referral' : 'Champion referral',

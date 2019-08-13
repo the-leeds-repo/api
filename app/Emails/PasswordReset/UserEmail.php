@@ -11,7 +11,7 @@ class UserEmail extends Email
      */
     protected function getTemplateId(): string
     {
-        return config('ck.notifications_template_ids.password_reset.email');
+        return config('tlr.notifications_template_ids.password_reset.email');
     }
 
     /**

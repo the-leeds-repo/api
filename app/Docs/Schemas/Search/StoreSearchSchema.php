@@ -21,7 +21,7 @@ class StoreSearchSchema extends Schema
             ->properties(
                 Schema::integer('page'),
                 Schema::integer('per_page')
-                    ->default(config('ck.pagination_results')),
+                    ->default(config('tlr.pagination_results')),
                 Schema::string('query'),
                 Schema::string('category'),
                 Schema::string('persona'),
@@ -46,7 +46,7 @@ class StoreSearchSchema extends Schema
                             ->type(Schema::FORMAT_FLOAT)
                     ),
                 Schema::integer('distance')
-                    ->default(config('ck.search_distance'))
+                    ->default(config('tlr.search_distance'))
             );
     }
 }

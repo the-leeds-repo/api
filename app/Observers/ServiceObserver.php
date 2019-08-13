@@ -76,7 +76,7 @@ class ServiceObserver
             ) {
                 Notification::sendEmail(
                     new NotifyGlobalAdminEmail(
-                        config('ck.global_admin.email'),
+                        config('tlr.global_admin.email'),
                         ['SERVICE_NAME' => $service->name]
                     )
                 );

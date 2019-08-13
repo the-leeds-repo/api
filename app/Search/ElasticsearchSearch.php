@@ -39,7 +39,7 @@ class ElasticsearchSearch implements Search
     {
         $this->query = [
             'from' => 0,
-            'size' => config('ck.pagination_results'),
+            'size' => config('tlr.pagination_results'),
             'query' => [
                 'bool' => [
                     'filter' => [
@@ -370,7 +370,7 @@ class ElasticsearchSearch implements Search
             $services = new LengthAwarePaginator(
                 $services,
                 $response['hits']['total'],
-                config('ck.pagination_results'),
+                config('tlr.pagination_results'),
                 $page,
                 ['path' => Paginator::resolveCurrentPath()]
             );

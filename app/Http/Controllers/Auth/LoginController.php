@@ -52,7 +52,7 @@ class LoginController extends Controller
     protected function authenticated(Request $request, User $user)
     {
         // If OTP is disabled then skip this method.
-        if (!config('ck.otp_enabled')) {
+        if (!config('tlr.otp_enabled')) {
             return;
         }
 
@@ -82,7 +82,7 @@ class LoginController extends Controller
         $user = User::findOrFail($userId);
         $phoneLastFour = mb_substr($user->phone, -4);
 
-        $email = config('ck.global_admin.email');
+        $email = config('tlr.global_admin.email');
         $appName = config('app.name');
         $subject = "{$user->full_name} - New Phone Number";
         $subject = rawurlencode($subject);
