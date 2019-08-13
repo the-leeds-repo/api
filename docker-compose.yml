@@ -2,7 +2,7 @@ version: "3"
 
 services:
   app:
-    image: royalboroughkingston/ck-api/app
+    image: the-leeds-repo/ck-api/app
     build:
       context: ./docker/app
       dockerfile: Dockerfile
@@ -16,7 +16,7 @@ services:
       - "${APP_PORT}:80"
 
   queue-worker:
-    image: royalboroughkingston/ck-api/app
+    image: the-leeds-repo/ck-api/app
     volumes:
       - .:/var/www/html
     networks:
@@ -24,7 +24,7 @@ services:
     command: php artisan queue:work --tries=1
 
   scheduler:
-    image: royalboroughkingston/ck-api/app
+    image: the-leeds-repo/ck-api/app
     volumes:
       - .:/var/www/html
     networks:
@@ -32,7 +32,7 @@ services:
     command: php artisan ck:run-scheduler
 
   node:
-    image: royalboroughkingston/ck-api/node
+    image: the-leeds-repo/ck-api/node
     build:
       context: ./docker/node
       dockerfile: Dockerfile

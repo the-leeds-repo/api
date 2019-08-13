@@ -113,7 +113,7 @@ class CreateScheduledReportsCommand extends Command
             );
 
             // Send a notification.
-            $this->dispatch(new NotifyGlobalAdminEmail(config('ck.global_admin.email'), [
+            $this->dispatch(new NotifyGlobalAdminEmail(config('tlr.global_admin.email'), [
                 'REPORT_FREQUENCY' => 'weekly',
                 'REPORT_TYPE' => $report->reportType->name,
             ]));
@@ -154,7 +154,7 @@ class CreateScheduledReportsCommand extends Command
             );
 
             // Send a notification.
-            $this->dispatch(new NotifyGlobalAdminEmail(config('ck.global_admin.email'), [
+            $this->dispatch(new NotifyGlobalAdminEmail(config('tlr.global_admin.email'), [
                 'REPORT_FREQUENCY' => 'monthly',
                 'REPORT_TYPE' => $report->reportType->name,
             ]));

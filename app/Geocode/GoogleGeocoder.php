@@ -24,7 +24,7 @@ class GoogleGeocoder extends Geocoder
     public function __construct()
     {
         $this->client = new Client(['base_uri' => 'https://maps.googleapis.com/']);
-        $this->apiKey = config('ck.google_api_key');
+        $this->apiKey = config('tlr.google_api_key');
     }
 
     /**

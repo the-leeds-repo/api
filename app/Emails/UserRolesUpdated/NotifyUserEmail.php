@@ -11,7 +11,7 @@ class NotifyUserEmail extends Email
      */
     protected function getTemplateId(): string
     {
-        return config('ck.notifications_template_ids.user_roles_updated.notify_user.email');
+        return config('tlr.notifications_template_ids.user_roles_updated.notify_user.email');
     }
 
     /**

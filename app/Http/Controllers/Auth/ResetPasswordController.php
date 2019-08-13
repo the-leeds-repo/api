@@ -62,7 +62,7 @@ class ResetPasswordController extends Controller
     protected function sendResetResponse(Request $request, $response)
     {
         // If OTP is disabled then skip this method.
-        if (!config('ck.otp_enabled')) {
+        if (!config('tlr.otp_enabled')) {
             return redirect($this->redirectPath())
                 ->with('status', trans($response));
         }

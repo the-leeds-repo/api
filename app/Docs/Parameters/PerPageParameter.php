@@ -21,8 +21,8 @@ class PerPageParameter extends Parameter
             ->schema(
                 Schema::integer()
                     ->minimum(1)
-                    ->maximum((int)config('ck.max_pagination_results'))
-                    ->default((int)config('ck.pagination_results'))
+                    ->maximum((int)config('tlr.max_pagination_results'))
+                    ->default((int)config('tlr.pagination_results'))
             );
     }
 }

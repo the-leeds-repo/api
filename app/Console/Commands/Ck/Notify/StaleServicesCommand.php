@@ -125,7 +125,7 @@ class StaleServicesCommand extends Command
 
         try {
             Notification::sendEmail(
-                new NotifyGlobalAdminEmail(config('ck.global_admin.email'), [
+                new NotifyGlobalAdminEmail(config('tlr.global_admin.email'), [
                     'SERVICE_NAME' => $service->name,
                     'SERVICE_URL' => backend_uri("/services/{$service->id}"),
                     'SERVICE_ADMIN_NAMES' => $service->users->implode(', ', 'full_name'),

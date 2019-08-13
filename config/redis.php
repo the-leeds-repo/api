@@ -7,7 +7,7 @@ $redis = [
     // For single node setup.
     'default' => [
         'scheme' => env('REDIS_SCHEME', 'tcp'),
-        'host' => env('REDIS_HOST', '127.0.0.1'),
+        'host' => env('REDIS_HOST', 'redis'),
         'password' => env('REDIS_PASSWORD', null),
         'port' => env('REDIS_PORT', 6379),
     ],
@@ -17,7 +17,7 @@ $redis = [
         'default' => [
             'parameters' => [
                 'scheme' => env('REDIS_SCHEME', 'tcp'),
-                'host' => env('REDIS_HOST', '127.0.0.1'),
+                'host' => env('REDIS_HOST', 'redis'),
                 'password' => env('REDIS_PASSWORD', null),
                 'port' => env('REDIS_PORT', 6379),
             ],

@@ -14,7 +14,7 @@ class ExternalDocs extends BaseExternalDocs
     public static function create(string $objectId = null): BaseObject
     {
         return parent::create($objectId)
-            ->description('GitHub Wiki')
-            ->url('https://github.com/RoyalBoroughKingston/cwk-api/wiki');
+            ->description('GitHub Repo')
+            ->url('https://github.com/the-leeds-repo/api');
     }
 }

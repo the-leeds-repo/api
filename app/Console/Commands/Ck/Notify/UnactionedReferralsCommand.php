@@ -76,18 +76,18 @@ class UnactionedReferralsCommand extends Command
                 'REFERRAL_DAYS_AGO' => $referral->created_at->diffInWeekdays(Date::now()),
                 'REFERRAL_TYPE' => $referral->isSelfReferral() ? 'self referral' : 'champion referral',
                 'REFERRAL_CONTACT_METHOD' => $contactMethod,
-                'REFERRAL_DAYS_LEFT' => Date::now()->diffInWeekdays($referral->created_at->copy()->addWeekdays(config('ck.working_days_for_service_to_respond'))),
+                'REFERRAL_DAYS_LEFT' => Date::now()->diffInWeekdays($referral->created_at->copy()->addWeekdays(config('tlr.working_days_for_service_to_respond'))),
             ]));
 
             // Send a copy of the email to the global admin team.
-            $referral->service->sendEmailToContact(new NotifyServiceEmail(config('ck.global_admin.email'), [
+            $referral->service->sendEmailToContact(new NotifyServiceEmail(config('tlr.global_admin.email'), [
                 'REFERRAL_SERVICE_NAME' => $referral->service->name,
                 'REFERRAL_INITIALS' => $referral->initials(),
                 'REFERRAL_ID' => $referral->reference,
                 'REFERRAL_DAYS_AGO' => $referral->created_at->diffInWeekdays(Date::now()),
                 'REFERRAL_TYPE' => $referral->isSelfReferral() ? 'self referral' : 'champion referral',
                 'REFERRAL_CONTACT_METHOD' => $contactMethod,
-                'REFERRAL_DAYS_LEFT' => Date::now()->diffInWeekdays($referral->created_at->copy()->addWeekdays(config('ck.working_days_for_service_to_respond'))),
+                'REFERRAL_DAYS_LEFT' => Date::now()->diffInWeekdays($referral->created_at->copy()->addWeekdays(config('tlr.working_days_for_service_to_respond'))),
             ]));
 
             // Output a success message.

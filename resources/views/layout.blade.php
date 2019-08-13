@@ -23,7 +23,7 @@
             <div class="govuk-header__logo">
                 <a href="{{ route('home') }}" class="govuk-header__link govuk-header__link--homepage">
                     <span class="govuk-header__logotype">
-                      <img src="{{ asset('/img/logo-white.png') }}" class="govuk-header__logotype-crown" alt="Connected Kingston logo" title="Connected Kingston">
+                      <img src="{{ asset('/img/logo-white.png') }}" class="govuk-header__logotype-crown" alt="{{ config('app.name') }} logo" title="{{ config('app.name') }}">
                     </span>
                 </a>
             </div>
