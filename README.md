@@ -1,7 +1,7 @@
-# Connected Kingston
+# The Leeds Repo
 
-A scheme run by RBK to help residents take control of their own health 
-by connecting them with services and events in their local area. This 
+A scheme run by Leeds City Council to help residents take control of their own 
+health by connecting them with services and events in their local area. This 
 system forms the online aspect of this scheme, by providing an API as 
 well a frontend and backend web app.
 
@@ -83,7 +83,7 @@ To run the code style tests:
 ## Deployment
 
 Deployment is fully automated by pushing a commit to `develop` or 
-`master`. More information on this process can be [found in the wiki](https://github.com/RoyalBoroughKingston/ck-api/wiki/Branching-and-Release-Strategy#continuous-delivery).
+`master`.
 
 ## Built with
 
@@ -99,13 +99,13 @@ of conduct, and the process for submitting pull requests to us.
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions 
-available, see the [tags on this repository](https://github.com/RoyalBoroughKingston/ck-api/tags). 
+available, see the [tags on this repository](https://github.com/the-leeds-repo/api/tags). 
 
 ## Authors
 
 * [Ayup Digital](https://ayup.agency/)
 
-See also the list of [contributors](https://github.com/RoyalBoroughKingston/ck-api/contributors) 
+See also the list of [contributors](https://github.com/the-leeds-repo/api/contributors) 
 who participated in this project.
 
 ## License
