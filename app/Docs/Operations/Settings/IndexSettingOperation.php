@@ -32,6 +32,7 @@ class IndexSettingOperation extends Operation
 Settings are all returned at once instead of being paginated.
 EOT
             )
+            ->noSecurity()
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
