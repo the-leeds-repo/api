@@ -53,13 +53,14 @@ script:
 ./develop artisan passport:keys
 
 # Create the first Global Admin user (take a note of the password outputted).
-./develop artisan ck:create-user <first-name> <last-name> <email> <phone-number>
+./develop artisan tlr:create-user <first-name> <last-name> <email> <phone-number>
 
 # Create the OAuth client for the admin app (and any other clients).
-./develop artisan ck:create-oauth-client <name> <redirect-uri> [--first-party]
+./develop artisan tlr:create-oauth-client <name> <redirect-uri> [--first-party]
 
 # Create/update the Elasticsearch index.
-./develop artisan ck:reindex-elasticsearch
+./develop artisan tlr:reindex-elasticsearch
+./develop artisan tlr:reindex-elasticsearch
 ```
 
 ## Running the tests
