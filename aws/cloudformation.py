@@ -1,7 +1,7 @@
 # ==================================================
 # This stack creates the API infrastructure.
 # ==================================================
-from troposphere import Template, Parameter, Ref, GetAtt, Join, Base64, Output, Split, Select
+from troposphere import Template, Parameter, Ref, GetAtt, Join, Base64, Output, Split, Select, Sub
 import troposphere.ec2 as ec2
 import troposphere.rds as rds
 import troposphere.elasticache as elasticache
@@ -13,6 +13,7 @@ import troposphere.ecr as ecr
 import troposphere.logs as logs
 import troposphere.elasticloadbalancingv2 as elb
 import troposphere.autoscaling as autoscaling
+import troposphere.elasticsearch as elasticsearch
 import uuid
 
 # ==================================================
@@ -201,6 +202,21 @@ queue_worker_task_count_parameter = template.add_parameter(
   )
 )
 
+elasticsearch_instance_class_parameter = template.add_parameter(
+  Parameter(
+    'ElasticsearchInstanceClass',
+    Description='The Elasticseach instance class.',
+    Type='String',
+    Default='t2.small.elasticsearch',
+    AllowedValues=[
+      't2.micro.elasticsearch',
+      't2.small.elasticsearch',
+      't2.medium.elasticsearch'
+    ],
+    ConstraintDescription='Must select a valid Elasticsearch instance type.'
+  )
+)
+
 # ==================================================
 # Variables.
 # ==================================================
@@ -219,6 +235,7 @@ api_user_name_variable = Join('-', ['api', Ref(environment_parameter), Ref(uuid_
 ci_user_name_variable = Join('-', ['ci', Ref(environment_parameter), Ref(uuid_parameter)])
 database_name_variable = 'the_leeds_repo'
 database_username_variable = 'the_leeds_repo'
+elasticsearch_domain_name_variable=Join('-', ['search', Ref(environment_parameter), Ref(uuid_parameter)])
 
 # ==================================================
 # Resources.
@@ -832,6 +849,31 @@ ci_user_resource = template.add_resource(
   )
 )
 
+elasticsearch_resource = template.add_resource(
+  elasticsearch.Domain(
+    'Elasticsearch',
+    AccessPolicies={
+      'Version': '2012-10-17',
+      'Statement': [
+        {
+          'Effect': 'Allow',
+          'Principal': {
+            'AWS': GetAtt(api_user_resource, 'Arn')
+          },
+          'Action': 'es:*',
+          'Resource': Sub('arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${DomainName}/*', DomainName=elasticsearch_domain_name_variable)
+        }
+      ]
+    },
+    DomainName=elasticsearch_domain_name_variable,
+    ElasticsearchClusterConfig=elasticsearch.ElasticsearchClusterConfig(
+      InstanceCount=1,
+      InstanceType=Ref(elasticsearch_instance_class_parameter)
+    ),
+    ElasticsearchVersion='6.3'
+  )
+)
+
 # ==================================================
 # Outputs.
 # ==================================================
@@ -901,9 +943,17 @@ template.add_output(
 
 template.add_output(
   Output(
-    'LoadBalancerDNS',
-    Description='The DNS name of the load balancer',
+    'LoadBalancerDomain',
+    Description='The domain name of the load balancer',
     Value=GetAtt(load_balancer_resource, 'DNSName')
+  )
+)
+
+template.add_output(
+  Output(
+    'ElasticsearchHost',
+    Description='The host of the Elasticsearch instance',
+    Value=GetAtt(elasticsearch_resource, 'DomainEndpoint')
   )
 )
 
