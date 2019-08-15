@@ -234,19 +234,19 @@ elasticsearch_instance_count_parameter = template.add_parameter(
 default_queue_name_variable = Join('-', ['default', Ref(environment_parameter), Ref(uuid_parameter)])
 notifications_queue_name_variable = Join('-', ['notifications', Ref(environment_parameter), Ref(uuid_parameter)])
 uploads_bucket_name_variable = Join('-', ['uploads', Ref(environment_parameter), Ref(uuid_parameter)])
-api_launch_template_name_variable = Join('-', ['api-launch-template', Ref(environment_parameter), Ref(uuid_parameter)])
+api_launch_template_name_variable = Join('-', ['api-launch-template', Ref(environment_parameter)])
 docker_repository_name_variable = Join('-', ['api', Ref(environment_parameter), Ref(uuid_parameter)])
-api_log_group_name_variable = Join('-', ['api', Ref(environment_parameter), Ref(uuid_parameter)])
-queue_worker_log_group_name_variable = Join('-', ['queue-worker', Ref(environment_parameter), Ref(uuid_parameter)])
-scheduler_log_group_name_variable = Join('-', ['scheduler', Ref(environment_parameter), Ref(uuid_parameter)])
-api_task_definition_family_variable = Join('-', ['api', Ref(environment_parameter), Ref(uuid_parameter)])
-queue_worker_task_definition_family_variable = Join('-', ['queue-worker', Ref(environment_parameter), Ref(uuid_parameter)])
-scheduler_task_definition_family_variable = Join('-', ['scheduler', Ref(environment_parameter), Ref(uuid_parameter)])
-api_user_name_variable = Join('-', ['api', Ref(environment_parameter), Ref(uuid_parameter)])
-ci_user_name_variable = Join('-', ['ci', Ref(environment_parameter), Ref(uuid_parameter)])
+api_log_group_name_variable = Join('-', ['api', Ref(environment_parameter)])
+queue_worker_log_group_name_variable = Join('-', ['queue-worker', Ref(environment_parameter)])
+scheduler_log_group_name_variable = Join('-', ['scheduler', Ref(environment_parameter)])
+api_task_definition_family_variable = Join('-', ['api', Ref(environment_parameter)])
+queue_worker_task_definition_family_variable = Join('-', ['queue-worker', Ref(environment_parameter)])
+scheduler_task_definition_family_variable = Join('-', ['scheduler', Ref(environment_parameter)])
+api_user_name_variable = Join('-', ['api', Ref(environment_parameter)])
+ci_user_name_variable = Join('-', ['ci', Ref(environment_parameter)])
 database_name_variable = 'the_leeds_repo'
 database_username_variable = 'the_leeds_repo'
-elasticsearch_domain_name_variable=Join('-', ['search', Ref(environment_parameter), Ref(uuid_parameter)])
+elasticsearch_domain_name_variable=Join('-', ['search', Ref(environment_parameter)])
 
 # ==================================================
 # Resources.
