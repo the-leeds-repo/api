@@ -1,7 +1,7 @@
 # ==================================================
 # This stack creates the API infrastructure.
 # ==================================================
-from troposphere import Template, Parameter, Ref, GetAtt, Join, Base64, Output, Split, Select, Sub
+from troposphere import Template, Parameter, Ref, GetAtt, Join, Base64, Output, Sub
 import troposphere.ec2 as ec2
 import troposphere.rds as rds
 import troposphere.elasticache as elasticache
@@ -831,7 +831,7 @@ api_user_resource = template.add_resource(
 ci_user_resource = template.add_resource(
   iam.User(
     'CiUser',
-    UserName=Ref(ci_user_name_variable),
+    UserName=ci_user_name_variable,
     Policies=[
       iam.Policy(
         PolicyName='CiUserPolicy',
@@ -940,7 +940,7 @@ template.add_output(
   Output(
     'DefaultQueue',
     Description='The name of the default queue',
-    Value=Select(4, Split('/', Ref(default_queue_name_variable)))
+    Value=default_queue_name_variable
   )
 )
 
@@ -948,7 +948,7 @@ template.add_output(
   Output(
     'NotificationsQueue',
     Description='The name of the notifications queue',
-    Value=Select(4, Split('/', Ref(notifications_queue_name_variable)))
+    Value=notifications_queue_name_variable
   )
 )
 
