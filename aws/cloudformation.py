@@ -973,6 +973,22 @@ template.add_output(
   )
 )
 
+template.add_output(
+  Output(
+    'DockerRepositoryUri',
+    Description='The URI of the Docker repository',
+    Value=Sub('${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${RepositoryName}', RepositoryName=Ref(docker_repository_resource))
+  )
+)
+
+template.add_output(
+  Output(
+    'DockerClusterName',
+    Description='The name of the Docker cluster',
+    Value=Ref(ecs_cluster_resource)
+  )
+)
+
 # ==================================================
 # Print the generated template in JSON.
 # ==================================================
