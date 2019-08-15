@@ -12,6 +12,11 @@ sudo: required
 services:
   - docker
 
+before_install:
+  - curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+  - unzip awscli-bundle.zip
+  - sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+
 install:
   - pip install pyyaml
 
@@ -30,3 +35,12 @@ script:
 
 after_failure:
   - cat storage/logs/testing.log
+
+deploy:
+  - provider: script
+    script: ./.travis/deploy
+    skip_cleanup: true
+    on:
+      branch:
+        - master
+        - develop
