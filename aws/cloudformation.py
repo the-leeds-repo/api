@@ -217,6 +217,17 @@ elasticsearch_instance_class_parameter = template.add_parameter(
   )
 )
 
+elasticsearch_instance_count_parameter = template.add_parameter(
+  Parameter(
+    'ElasticsearchInstanceCount',
+    Description='The number of Elasticsearch nodes to run.',
+    Type='Number',
+    Default='1',
+    MinValue='1',
+    ConstraintDescription='Must be 1 or more.'
+  )
+)
+
 # ==================================================
 # Variables.
 # ==================================================
@@ -867,7 +878,7 @@ elasticsearch_resource = template.add_resource(
     },
     DomainName=elasticsearch_domain_name_variable,
     ElasticsearchClusterConfig=elasticsearch.ElasticsearchClusterConfig(
-      InstanceCount=1,
+      InstanceCount=Ref(elasticsearch_instance_count_parameter),
       InstanceType=Ref(elasticsearch_instance_class_parameter)
     ),
     ElasticsearchVersion='6.3'
