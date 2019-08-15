@@ -41,6 +41,10 @@ COPY etc/supervisor/conf.d/supervisord.conf /etc/supervisor/conf.d/supervisord.c
 COPY usr/local/bin/start-container /usr/local/bin/start-container
 RUN chmod +x /usr/local/bin/start-container
 
+# Copy the packaged app (only used when deploying).
+COPY packaged /var/www/html
+RUN chown -R www-data: /var/www/html
+
 # Expose port 80 for HTTP access.
 EXPOSE 80
 
