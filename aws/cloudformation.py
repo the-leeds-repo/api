@@ -877,6 +877,11 @@ elasticsearch_resource = template.add_resource(
       ]
     },
     DomainName=elasticsearch_domain_name_variable,
+    EBSOptions=elasticsearch.EBSOptions(
+        EBSEnabled=True,
+        VolumeSize=10,
+        VolumeType='gp2'
+    ),
     ElasticsearchClusterConfig=elasticsearch.ElasticsearchClusterConfig(
       InstanceCount=Ref(elasticsearch_instance_count_parameter),
       InstanceType=Ref(elasticsearch_instance_class_parameter)
