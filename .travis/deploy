@@ -2,8 +2,6 @@
 
 # Requires the following environment variables:
 # $TRAVIS_BRANCH = The name of the git branch that the build is running on.
-# AWS_ACCESS_KEY = The AWS access key.
-# AWS_SECRET_ACCESS_KEY = The AWS secret access key.
 # REPO_URI = The URI of the ECR repo to push to.
 # CLUSTER = The name of the ECS cluster to deploy to.
 
