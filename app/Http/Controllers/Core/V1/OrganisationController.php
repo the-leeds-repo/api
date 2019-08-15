@@ -80,7 +80,7 @@ class OrganisationController extends Controller
                 $file = File::findOrFail($request->logo_file_id)->assigned();
 
                 // Create resized version for common dimensions.
-                foreach (config('ck.cached_image_dimensions') as $maxDimension) {
+                foreach (config('tlr.cached_image_dimensions') as $maxDimension) {
                     $file->resizedVersion($maxDimension);
                 }
             }
@@ -142,7 +142,7 @@ class OrganisationController extends Controller
                 $file = File::findOrFail($request->logo_file_id)->assigned();
 
                 // Create resized version for common dimensions.
-                foreach (config('ck.cached_image_dimensions') as $maxDimension) {
+                foreach (config('tlr.cached_image_dimensions') as $maxDimension) {
                     $file->resizedVersion($maxDimension);
                 }
             }

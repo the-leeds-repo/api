@@ -30,6 +30,10 @@
         <server name="GEOCODE_DRIVER" value="stub"/>
         <server name="EMAIL_DRIVER" value='"null"'/>
         <server name="SMS_DRIVER" value='"null"'/>
+        <server name="DB_HOST" value="mysql-testing"/>
+        <server name="REDIS_CLUSTER" value="redis"/>
+        <server name="REDIS_HOST" value="redis-testing"/>
+        <server name="REDIS_PORT" value="7000"/>
         <server name="FILESYSTEM_CLOUD" value="testing_cloud"/>
     </php>
 </phpunit>

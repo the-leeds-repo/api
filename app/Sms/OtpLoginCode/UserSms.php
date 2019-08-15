@@ -11,7 +11,7 @@ class UserSms extends Sms
      */
     protected function getTemplateId(): string
     {
-        return config('ck.notifications_template_ids.otp_login_code.sms');
+        return config('tlr.notifications_template_ids.otp_login_code.sms');
     }
 
     /**

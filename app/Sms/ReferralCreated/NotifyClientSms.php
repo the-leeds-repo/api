@@ -11,7 +11,7 @@ class NotifyClientSms extends Sms
      */
     protected function getTemplateId(): string
     {
-        return config('ck.notifications_template_ids.referral_created.notify_client.sms');
+        return config('tlr.notifications_template_ids.referral_created.notify_client.sms');
     }
 
     /**

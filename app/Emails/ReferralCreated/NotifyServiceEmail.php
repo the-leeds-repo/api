@@ -11,7 +11,7 @@ class NotifyServiceEmail extends Email
      */
     protected function getTemplateId(): string
     {
-        return config('ck.notifications_template_ids.referral_created.notify_service.email');
+        return config('tlr.notifications_template_ids.referral_created.notify_service.email');
     }
 
     /**

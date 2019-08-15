@@ -3,7 +3,7 @@
 @section('content')
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl">Connected Kingston API</h1>
+        <h1 class="govuk-heading-xl">{{ config('app.name') }} API</h1>
 
         <p class="govuk-body">Click here to go to the <a class="govuk-link govuk-link--no-visited-state" href="{{ backend_uri() }}">Admin Portal</a>.</p>
 

@@ -1,6 +1,6 @@
 <?php
 
-use App\Console\Commands\Ck\ReindexElasticsearchCommand;
+use App\Console\Commands\Tlr\ReindexElasticsearchCommand;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;

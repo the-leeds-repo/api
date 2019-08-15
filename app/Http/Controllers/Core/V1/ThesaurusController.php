@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Core\V1;
 
-use App\Console\Commands\Ck\ReindexElasticsearchCommand;
+use App\Console\Commands\Tlr\ReindexElasticsearchCommand;
 use App\Events\EndpointHit;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Thesaurus\IndexRequest;

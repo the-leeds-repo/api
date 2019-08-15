@@ -4,7 +4,6 @@ namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Config;
 use Laravel\Passport\Passport;
 use Tests\TestCase;
 
@@ -12,7 +11,7 @@ class LogoutTest extends TestCase
 {
     public function test_logged_in_user_can_logout()
     {
-        Config::set('ck.otp_enabled', false);
+        config()->set('tlr.otp_enabled', false);
 
         $user = factory(User::class)->create(['password' => bcrypt('secret')]);
 
