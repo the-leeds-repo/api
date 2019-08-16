@@ -603,7 +603,7 @@ scheduler_task_definition_resource = template.add_resource(
       Command=[
         'php',
         'artisan',
-        'schedule:loop'
+        'tlr:run-scheduler'
       ],
       WorkingDirectory='/var/www/html',
       HealthCheck=ecs.HealthCheck(
