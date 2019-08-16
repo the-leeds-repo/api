@@ -178,6 +178,7 @@ return [
         App\Providers\ModelServiceProvider::class,
         App\Providers\QueueServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\ScoutElasticServiceProvider::class,
         App\Providers\TestingServiceProvider::class,
 
     ],
