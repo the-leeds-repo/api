@@ -425,7 +425,7 @@ launch_template_resource = template.add_resource(
     'LaunchTemplate',
     LaunchTemplateName=api_launch_template_name_variable,
     LaunchTemplateData=ec2.LaunchTemplateData(
-      ImageId='ami-066826c6a40879d75',
+      ImageId='ami-0ae254c8a2d3346a7',
       InstanceType=Ref(api_instance_class_parameter),
       IamInstanceProfile=ec2.IamInstanceProfile(
         Arn=GetAtt(ec2_instance_profile_resource, 'Arn')
