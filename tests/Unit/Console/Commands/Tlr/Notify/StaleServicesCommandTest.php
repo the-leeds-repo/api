@@ -71,6 +71,7 @@ class StaleServicesCommandTest extends TestCase
     public function test_6_to_12_months_emails_sent_after_12_months()
     {
         Queue::fake();
+        Date::setTestNow(Date::today());
 
         $service = factory(Service::class)->create([
             'last_modified_at' => Date::now()->subMonths(12),
