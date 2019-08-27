@@ -148,13 +148,13 @@ class UpdateServiceSchema extends Schema
                     ->items(
                         Schema::object()->properties(
                             Schema::string('file_id')
-                                ->type(Schema::FORMAT_UUID)
+                                ->format(Schema::FORMAT_UUID)
                         )
                     ),
                 Schema::array('category_taxonomies')
                     ->items(
                         Schema::string()
-                            ->type(Schema::FORMAT_UUID)
+                            ->format(Schema::FORMAT_UUID)
                     )
             );
     }

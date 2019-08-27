@@ -16,7 +16,7 @@ class ReportScheduleSchema extends Schema
     public static function create(string $objectId = null): BaseObject
     {
         return parent::create($objectId)
-            ->type(static::FORMAT_UUID)
+            ->type(static::TYPE_OBJECT)
             ->properties(
                 Schema::string('id')
                     ->format(Schema::FORMAT_UUID),

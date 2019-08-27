@@ -17,7 +17,7 @@ class UpdateReportScheduleSchema extends Schema
     public static function create(string $objectId = null): BaseObject
     {
         return parent::create($objectId)
-            ->type(static::FORMAT_UUID)
+            ->type(static::TYPE_OBJECT)
             ->required('report_type', 'repeat_type')
             ->properties(
                 Schema::string('report_type')
