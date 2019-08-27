@@ -75,6 +75,14 @@ EOT
                         )
                     )
                     ->style(FilterParameter::STYLE_SIMPLE),
+                FilterParameter::create(null, 'resource_id')
+                    ->description('Comma separated list of resource IDs to filter by')
+                    ->schema(
+                        Schema::array()->items(
+                            Schema::string()->format(Schema::FORMAT_UUID)
+                        )
+                    )
+                    ->style(FilterParameter::STYLE_SIMPLE),
                 FilterParameter::create(null, 'entry')
                     ->description(
                         <<<'EOT'
@@ -83,6 +91,7 @@ Entry to filter by:
 * Location: `address_line_1`
 * Service location: `name` or `address_line_1` for associated location
 * Organisation: `name`
+* Resource: `name`
 EOT
                     )
                     ->schema(Schema::string()),
