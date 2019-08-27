@@ -2,7 +2,7 @@
 
 namespace App\Docs\Operations\Settings;
 
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Schemas\Setting\SettingSchema;
 use App\Docs\Tags\SettingsTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
@@ -36,7 +36,7 @@ EOT
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, SettingSchema::create())
+                        SingleResourceSchema::create(null, SettingSchema::create())
                     )
                 )
             );

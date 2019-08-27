@@ -3,7 +3,7 @@
 namespace App\Docs\Operations\Reports;
 
 use App\Docs\Schemas\Report\ReportSchema;
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Tags\ReportsTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\MediaType;
@@ -27,7 +27,7 @@ class ShowReportOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, ReportSchema::create())
+                        SingleResourceSchema::create(null, ReportSchema::create())
                     )
                 )
             );

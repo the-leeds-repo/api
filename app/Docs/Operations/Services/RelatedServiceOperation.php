@@ -3,7 +3,7 @@
 namespace App\Docs\Operations\Services;
 
 use App\Docs\Parameters\IncludeParameter;
-use App\Docs\Schemas\PaginationSchema;
+use App\Docs\Schemas\PaginatedResourceSchema;
 use App\Docs\Schemas\Service\ServiceSchema;
 use App\Docs\Tags\ServicesTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
@@ -48,7 +48,7 @@ class RelatedServiceOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        PaginationSchema::create(null, ServiceSchema::create())
+                        PaginatedResourceSchema::create(null, ServiceSchema::create())
                     )
                 )
             );

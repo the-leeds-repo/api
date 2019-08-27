@@ -2,7 +2,7 @@
 
 namespace App\Docs\Operations\Users;
 
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Schemas\User\UpdateUserSchema;
 use App\Docs\Schemas\User\UserSchema;
 use App\Docs\Tags\UsersTag;
@@ -48,7 +48,7 @@ EOT
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, UserSchema::create())
+                        SingleResourceSchema::create(null, UserSchema::create())
                     )
                 )
             );

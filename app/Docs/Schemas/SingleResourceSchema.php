@@ -5,7 +5,7 @@ namespace App\Docs\Schemas;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\Schema;
 
-class ResourceSchema extends Schema
+class SingleResourceSchema extends Schema
 {
     /**
      * @param string|null $objectId

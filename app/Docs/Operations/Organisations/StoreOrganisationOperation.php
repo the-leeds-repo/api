@@ -4,7 +4,7 @@ namespace App\Docs\Operations\Organisations;
 
 use App\Docs\Schemas\Organisation\OrganisationSchema;
 use App\Docs\Schemas\Organisation\StoreOrganisationSchema;
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Tags\OrganisationsTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\MediaType;
@@ -34,7 +34,7 @@ class StoreOrganisationOperation extends Operation
             ->responses(
                 Response::created()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, OrganisationSchema::create())
+                        SingleResourceSchema::create(null, OrganisationSchema::create())
                     )
                 )
             );

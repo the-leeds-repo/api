@@ -4,7 +4,7 @@ namespace App\Docs\Operations\Taxonomies\Organisations;
 
 use App\Docs\Parameters\PageParameter;
 use App\Docs\Parameters\PerPageParameter;
-use App\Docs\Schemas\PaginationSchema;
+use App\Docs\Schemas\PaginatedResourceSchema;
 use App\Docs\Schemas\Taxonomy\Organisation\TaxonomyOrganisationSchema;
 use App\Docs\Tags\TaxonomyOrganisationsTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
@@ -42,7 +42,7 @@ EOT
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        PaginationSchema::create(null, TaxonomyOrganisationSchema::create())
+                        PaginatedResourceSchema::create(null, TaxonomyOrganisationSchema::create())
                     )
                 )
             );

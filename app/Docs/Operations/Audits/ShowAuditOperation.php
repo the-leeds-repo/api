@@ -4,7 +4,7 @@ namespace App\Docs\Operations\Audits;
 
 use App\Docs\Parameters\IncludeParameter;
 use App\Docs\Schemas\Audit\AuditSchema;
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Tags\AuditsTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\MediaType;
@@ -31,7 +31,7 @@ class ShowAuditOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, AuditSchema::create())
+                        SingleResourceSchema::create(null, AuditSchema::create())
                     )
                 )
             );

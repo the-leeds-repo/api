@@ -2,7 +2,7 @@
 
 namespace App\Docs\Operations\Services;
 
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Schemas\Service\RefreshServiceSchema;
 use App\Docs\Schemas\Service\ServiceSchema;
 use App\Docs\Tags\ServicesTag;
@@ -35,7 +35,7 @@ class RefreshServiceOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, ServiceSchema::create())
+                        SingleResourceSchema::create(null, ServiceSchema::create())
                     )
                 )
             );

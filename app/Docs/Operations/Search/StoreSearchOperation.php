@@ -5,7 +5,7 @@ namespace App\Docs\Operations\Search;
 use App\Docs\Parameters\PageParameter;
 use App\Docs\Parameters\PerPageParameter;
 use App\Docs\Schemas\Location\LocationSchema;
-use App\Docs\Schemas\PaginationSchema;
+use App\Docs\Schemas\PaginatedResourceSchema;
 use App\Docs\Schemas\Search\StoreSearchSchema;
 use App\Docs\Schemas\Service\ServiceSchema;
 use App\Docs\Schemas\ServiceLocation\ServiceLocationSchema;
@@ -56,7 +56,7 @@ class StoreSearchOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        PaginationSchema::create(null, $serviceSchema)
+                        PaginatedResourceSchema::create(null, $serviceSchema)
                     )
                 )
             );

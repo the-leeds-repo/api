@@ -3,7 +3,7 @@
 namespace App\Docs\Operations\Notifications;
 
 use App\Docs\Schemas\Notification\NotificationSchema;
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Tags\NotificationsTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\MediaType;
@@ -27,7 +27,7 @@ class ShowNotificationOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, NotificationSchema::create())
+                        SingleResourceSchema::create(null, NotificationSchema::create())
                     )
                 )
             );

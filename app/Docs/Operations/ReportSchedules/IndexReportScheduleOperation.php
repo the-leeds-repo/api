@@ -5,7 +5,7 @@ namespace App\Docs\Operations\ReportSchedules;
 use App\Docs\Parameters\FilterIdParameter;
 use App\Docs\Parameters\PageParameter;
 use App\Docs\Parameters\PerPageParameter;
-use App\Docs\Schemas\PaginationSchema;
+use App\Docs\Schemas\PaginatedResourceSchema;
 use App\Docs\Schemas\ReportSchedule\ReportScheduleSchema;
 use App\Docs\Tags\ReportSchedulesTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
@@ -43,7 +43,7 @@ EOT
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        PaginationSchema::create(null, ReportScheduleSchema::create())
+                        PaginatedResourceSchema::create(null, ReportScheduleSchema::create())
                     )
                 )
             );

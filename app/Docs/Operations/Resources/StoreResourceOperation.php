@@ -2,8 +2,9 @@
 
 namespace App\Docs\Operations\Resources;
 
+use App\Docs\Schemas\Resource\ResourceSchema;
 use App\Docs\Schemas\Resource\StoreResourceSchema;
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Tags\ResourcesTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\MediaType;
@@ -35,7 +36,7 @@ class StoreResourceOperation extends Operation
             ->responses(
                 Response::created()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, \App\Docs\Schemas\Resource\ResourceSchema::create())
+                        SingleResourceSchema::create(null, ResourceSchema::create())
                     )
                 )
             );

@@ -8,7 +8,7 @@ use App\Docs\Parameters\IncludeParameter;
 use App\Docs\Parameters\PageParameter;
 use App\Docs\Parameters\PerPageParameter;
 use App\Docs\Parameters\SortParameter;
-use App\Docs\Schemas\PaginationSchema;
+use App\Docs\Schemas\PaginatedResourceSchema;
 use App\Docs\Schemas\UpdateRequest\UpdateRequestSchema;
 use App\Docs\Tags\UpdateRequestsTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
@@ -101,7 +101,7 @@ EOT
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        PaginationSchema::create(null, UpdateRequestSchema::create())
+                        PaginatedResourceSchema::create(null, UpdateRequestSchema::create())
                     )
                 )
             );

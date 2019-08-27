@@ -6,7 +6,7 @@ use App\Docs\Parameters\FilterIdParameter;
 use App\Docs\Parameters\PageParameter;
 use App\Docs\Parameters\PerPageParameter;
 use App\Docs\Schemas\Collection\Category\CollectionCategorySchema;
-use App\Docs\Schemas\PaginationSchema;
+use App\Docs\Schemas\PaginatedResourceSchema;
 use App\Docs\Tags\CollectionCategoriesTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\MediaType;
@@ -44,7 +44,7 @@ EOT
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        PaginationSchema::create(null, CollectionCategorySchema::create())
+                        PaginatedResourceSchema::create(null, CollectionCategorySchema::create())
                     )
                 )
             );

@@ -2,7 +2,7 @@
 
 namespace App\Docs\Operations\Taxonomies\Categories;
 
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Schemas\Taxonomy\Category\TaxonomyCategorySchema;
 use App\Docs\Tags\TaxonomyCategoriesTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
@@ -28,7 +28,7 @@ class ShowTaxonomyCategoryOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, TaxonomyCategorySchema::create())
+                        SingleResourceSchema::create(null, TaxonomyCategorySchema::create())
                     )
                 )
             );

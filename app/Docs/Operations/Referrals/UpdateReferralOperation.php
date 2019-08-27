@@ -4,7 +4,7 @@ namespace App\Docs\Operations\Referrals;
 
 use App\Docs\Schemas\Referral\ReferralSchema;
 use App\Docs\Schemas\Referral\UpdateReferralSchema;
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Tags\ReferralsTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\MediaType;
@@ -36,7 +36,7 @@ class UpdateReferralOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, ReferralSchema::create())
+                        SingleResourceSchema::create(null, ReferralSchema::create())
                     )
                 )
             );

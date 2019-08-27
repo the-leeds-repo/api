@@ -4,7 +4,7 @@ namespace App\Docs\Operations\Collections\Personas;
 
 use App\Docs\Schemas\Collection\Persona\CollectionPersonaSchema;
 use App\Docs\Schemas\Collection\Persona\UpdateCollectionPersonaSchema;
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Tags\CollectionPersonasTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\MediaType;
@@ -38,7 +38,7 @@ class UpdateCollectionPersonaOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, CollectionPersonaSchema::create())
+                        SingleResourceSchema::create(null, CollectionPersonaSchema::create())
                     )
                 )
             );

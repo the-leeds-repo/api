@@ -2,7 +2,7 @@
 
 namespace App\Docs\Operations\Services;
 
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Schemas\Service\ServiceSchema;
 use App\Docs\Schemas\Service\StoreServiceSchema;
 use App\Docs\Tags\ServicesTag;
@@ -36,7 +36,7 @@ class StoreServiceOperation extends Operation
             ->responses(
                 Response::created()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, ServiceSchema::create())
+                        SingleResourceSchema::create(null, ServiceSchema::create())
                     )
                 )
             );

@@ -8,7 +8,7 @@ use App\Docs\Parameters\IncludeParameter;
 use App\Docs\Parameters\PageParameter;
 use App\Docs\Parameters\PerPageParameter;
 use App\Docs\Parameters\SortParameter;
-use App\Docs\Schemas\PaginationSchema;
+use App\Docs\Schemas\PaginatedResourceSchema;
 use App\Docs\Schemas\Referral\ReferralSchema;
 use App\Docs\Tags\ReferralsTag;
 use App\Models\Referral;
@@ -75,7 +75,7 @@ class IndexReferralOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        PaginationSchema::create(null, ReferralSchema::create())
+                        PaginatedResourceSchema::create(null, ReferralSchema::create())
                     )
                 )
             );
