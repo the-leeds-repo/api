@@ -2,9 +2,9 @@
 
 namespace App\Docs\Operations\Services;
 
-use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Schemas\Service\RefreshServiceSchema;
 use App\Docs\Schemas\Service\ServiceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Tags\ServicesTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\MediaType;

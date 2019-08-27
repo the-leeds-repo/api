@@ -2,9 +2,9 @@
 
 namespace App\Docs\Operations\Settings;
 
-use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Schemas\Setting\SettingSchema;
 use App\Docs\Schemas\Setting\UpdateSettingSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Tags\SettingsTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\MediaType;

@@ -2,9 +2,9 @@
 
 namespace App\Docs\Operations\ServiceLocations;
 
-use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Schemas\ServiceLocation\ServiceLocationSchema;
 use App\Docs\Schemas\ServiceLocation\StoreServiceLocationSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Tags\ServiceLocationsTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\MediaType;
