@@ -7,6 +7,7 @@ use App\Models\Relationships\ResourceRelationships;
 use App\Models\Scopes\ResourceScopes;
 use App\UpdateRequest\AppliesUpdateRequests;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Support\Facades\Validator as ValidatorFacade;
 
 class Resource extends Model implements AppliesUpdateRequests
 {
