@@ -9,6 +9,7 @@ use App\Models\Location;
 use App\Models\Organisation;
 use App\Models\Referral;
 use App\Models\Report;
+use App\Models\Resource;
 use App\Models\Service;
 use App\Models\ServiceLocation;
 use App\Models\ServiceTaxonomy;
@@ -57,6 +58,7 @@ class ModelServiceProvider extends ServiceProvider
             'service_locations' => ServiceLocation::class,
             'organisations' => Organisation::class,
             'users' => User::class,
+            'resources' => Resource::class,
         ]);
     }
 
