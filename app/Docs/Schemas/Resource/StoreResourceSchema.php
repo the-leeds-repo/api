@@ -3,7 +3,6 @@
 namespace App\Docs\Schemas\Resource;
 
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
-use GoldSpecDigital\ObjectOrientedOAS\Objects\Schema;
 
 class StoreResourceSchema extends UpdateResourceSchema
 {
