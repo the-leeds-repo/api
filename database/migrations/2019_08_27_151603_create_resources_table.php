@@ -25,7 +25,7 @@ class CreateResourcesTable extends Migration
             $table->string('license')->nullable();
             $table->string('author')->nullable();
             $table->date('published_at')->nullable();
-            $table->date('last_updated_at')->nullable();
+            $table->date('last_modified_at')->nullable();
             $table->timestamps();
         });
     }

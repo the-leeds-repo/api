@@ -35,5 +35,6 @@
         <server name="REDIS_HOST" value="redis-testing"/>
         <server name="REDIS_PORT" value="7000"/>
         <server name="FILESYSTEM_CLOUD" value="testing_cloud"/>
+        <server name="LOG_CHANNEL" value="testing"/>
     </php>
 </phpunit>

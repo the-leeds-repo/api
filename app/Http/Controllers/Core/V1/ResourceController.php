@@ -6,10 +6,12 @@ use App\Events\EndpointHit;
 use App\Http\Controllers\Controller;
 use App\Http\Filters\Resource\OrganisationNameFilter;
 use App\Http\Requests\Resource\IndexRequest;
+use App\Http\Requests\Resource\StoreRequest;
 use App\Http\Resources\ResourceResource;
 use App\Http\Sorts\Resource\OrganisationNameSort;
 use App\Models\Resource;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\Taxonomy;
+use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\Filter;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\Sort;
@@ -53,5 +55,46 @@ class ResourceController extends Controller
         event(EndpointHit::onRead($request, 'Viewed all resources'));
 
         return ResourceResource::collection($services);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param \App\Http\Requests\Resource\StoreRequest $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(StoreRequest $request)
+    {
+        return DB::transaction(function () use ($request) {
+            // Create the resource record.
+            /** @var \App\Models\Resource $resource */
+            $resource = Resource::create([
+                'organisation_id' => $request->organisation_id,
+                'name' => $request->name,
+                'slug' => $request->slug,
+                'description' => $request->description,
+                'url' => $request->url,
+                'license' => $request->license,
+                'author' => $request->author,
+                'published_at' => $request->published_at,
+                'last_modified_at' => $request->last_modified_at,
+            ]);
+
+            // Create the category taxonomy records.
+            $taxonomies = Taxonomy::whereIn('id', $request->category_taxonomies)->get();
+            $resource->syncResourceTaxonomies($taxonomies);
+
+            event(
+                EndpointHit::onCreate(
+                    $request,
+                    "Created resource [{$resource->id}]",
+                    $resource
+                )
+            );
+
+            $resource->load('taxonomies');
+
+            return new ResourceResource($resource);
+        });
     }
 }

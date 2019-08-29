@@ -6,10 +6,13 @@ use App\Events\EndpointHit;
 use App\Models\Audit;
 use App\Models\Organisation;
 use App\Models\Resource;
+use App\Models\Service;
 use App\Models\Taxonomy;
+use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Event;
+use Laravel\Passport\Passport;
 use Tests\TestCase;
 
 class ResourcesTest extends TestCase
@@ -46,7 +49,7 @@ class ResourcesTest extends TestCase
                     'name',
                     'created_at',
                     'updated_at',
-                ]
+                ],
             ],
             'published_at',
             'last_modified_at',
@@ -69,7 +72,7 @@ class ResourcesTest extends TestCase
                     'name' => $taxonomy->name,
                     'created_at' => $taxonomy->created_at->format(CarbonImmutable::ISO8601),
                     'updated_at' => $taxonomy->updated_at->format(CarbonImmutable::ISO8601),
-                ]
+                ],
             ],
             'published_at' => optional($resource->published_at)->toDateString(),
             'last_modified_at' => optional($resource->last_modified_at)->toDateString(),
@@ -215,6 +218,192 @@ class ResourcesTest extends TestCase
     /*
      * Create a resource.
      */
+
+    public function test_guest_cannot_create_one()
+    {
+        $response = $this->json('POST', '/core/v1/resources');
+
+        $response->assertStatus(Response::HTTP_UNAUTHORIZED);
+    }
+
+    public function test_service_worker_cannot_create_one()
+    {
+        $service = factory(Service::class)->create();
+        $user = factory(User::class)->create()->makeServiceWorker($service);
+
+        Passport::actingAs($user);
+        $response = $this->json('POST', '/core/v1/resources');
+
+        $response->assertStatus(Response::HTTP_FORBIDDEN);
+    }
+
+    public function test_service_admin_cannot_create_one()
+    {
+        $service = factory(Service::class)->create();
+        $user = factory(User::class)->create()->makeServiceWorker($service);
+
+        Passport::actingAs($user);
+        $response = $this->json('POST', '/core/v1/resources');
+
+        $response->assertStatus(Response::HTTP_FORBIDDEN);
+    }
+
+    public function test_organisation_admin_cannot_create_one_under_different_organisation()
+    {
+        $organisation = factory(Organisation::class)->create();
+        $user = factory(User::class)->create()->makeOrganisationAdmin($organisation);
+
+        Passport::actingAs($user);
+        $response = $this->json('POST', '/core/v1/resources', [
+            'organisation_id' => factory(Organisation::class)->create()->id,
+            'name' => 'Resource Name',
+            'slug' => 'resource-name',
+            'description' => 'Lorem ipsum',
+            'url' => 'https://example.com',
+            'license' => null,
+            'author' => null,
+            'category_taxonomies' => [],
+            'published_at' => null,
+            'last_modified_at' => null,
+        ]);
+
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $response->assertJsonValidationErrors('organisation_id');
+    }
+
+    public function test_organisation_admin_can_create_one_under_own_organisation()
+    {
+        $organisation = factory(Organisation::class)->create();
+        $user = factory(User::class)->create()->makeOrganisationAdmin($organisation);
+
+        Passport::actingAs($user);
+        $response = $this->json('POST', '/core/v1/resources', [
+            'organisation_id' => $organisation->id,
+            'name' => 'Resource Name',
+            'slug' => 'resource-name',
+            'description' => 'Lorem ipsum',
+            'url' => 'https://example.com',
+            'license' => null,
+            'author' => null,
+            'category_taxonomies' => [],
+            'published_at' => null,
+            'last_modified_at' => null,
+        ]);
+
+        $response->assertStatus(Response::HTTP_CREATED);
+        $response->assertJsonFragment([
+            'organisation_id' => $organisation->id,
+            'name' => 'Resource Name',
+            'slug' => 'resource-name',
+            'description' => 'Lorem ipsum',
+            'url' => 'https://example.com',
+            'license' => null,
+            'author' => null,
+            'category_taxonomies' => [],
+            'published_at' => null,
+            'last_modified_at' => null,
+        ]);
+    }
+
+    public function test_global_admin_can_create_one()
+    {
+        $organisation = factory(Organisation::class)->create();
+        $user = factory(User::class)->create()->makeGlobalAdmin();
+
+        Passport::actingAs($user);
+        $response = $this->json('POST', '/core/v1/resources', [
+            'organisation_id' => $organisation->id,
+            'name' => 'Resource Name',
+            'slug' => 'resource-name',
+            'description' => 'Lorem ipsum',
+            'url' => 'https://example.com',
+            'license' => null,
+            'author' => null,
+            'category_taxonomies' => [],
+            'published_at' => null,
+            'last_modified_at' => null,
+        ]);
+
+        $response->assertStatus(Response::HTTP_CREATED);
+        $response->assertJsonFragment([
+            'organisation_id' => $organisation->id,
+            'name' => 'Resource Name',
+            'slug' => 'resource-name',
+            'description' => 'Lorem ipsum',
+            'url' => 'https://example.com',
+            'license' => null,
+            'author' => null,
+            'category_taxonomies' => [],
+            'published_at' => null,
+            'last_modified_at' => null,
+        ]);
+    }
+
+    public function test_super_admin_can_create_one()
+    {
+        $organisation = factory(Organisation::class)->create();
+        $user = factory(User::class)->create()->makeSuperAdmin();
+
+        Passport::actingAs($user);
+        $response = $this->json('POST', '/core/v1/resources', [
+            'organisation_id' => $organisation->id,
+            'name' => 'Resource Name',
+            'slug' => 'resource-name',
+            'description' => 'Lorem ipsum',
+            'url' => 'https://example.com',
+            'license' => null,
+            'author' => null,
+            'category_taxonomies' => [],
+            'published_at' => null,
+            'last_modified_at' => null,
+        ]);
+
+        $response->assertStatus(Response::HTTP_CREATED);
+        $response->assertJsonFragment([
+            'organisation_id' => $organisation->id,
+            'name' => 'Resource Name',
+            'slug' => 'resource-name',
+            'description' => 'Lorem ipsum',
+            'url' => 'https://example.com',
+            'license' => null,
+            'author' => null,
+            'category_taxonomies' => [],
+            'published_at' => null,
+            'last_modified_at' => null,
+        ]);
+    }
+
+    public function test_audit_created_when_created()
+    {
+        $this->fakeEvents();
+
+        $organisation = factory(Organisation::class)->create();
+        $user = factory(User::class)->create()->makeSuperAdmin();
+
+        Passport::actingAs($user);
+        $response = $this->json('POST', '/core/v1/resources', [
+            'organisation_id' => $organisation->id,
+            'name' => 'Resource Name',
+            'slug' => 'resource-name',
+            'description' => 'Lorem ipsum',
+            'url' => 'https://example.com',
+            'license' => null,
+            'author' => null,
+            'category_taxonomies' => [],
+            'published_at' => null,
+            'last_modified_at' => null,
+        ]);
+
+        $response->assertStatus(Response::HTTP_CREATED);
+        Event::assertDispatched(
+            EndpointHit::class,
+            function (EndpointHit $event) use ($user, $response) {
+                return ($event->getAction() === Audit::ACTION_CREATE) &&
+                    ($event->getUser()->id === $user->id) &&
+                    ($event->getModel()->id === $this->getResponseContent($response)['data']['id']);
+            }
+        );
+    }
 
     /*
      * Show a resource.
