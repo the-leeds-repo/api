@@ -37,6 +37,7 @@ class IsOrganisationAdmin implements Rule
             return false;
         }
 
+        /** @var \App\Models\Organisation|null $organisation */
         $organisation = Organisation::query()->find($value);
 
         return $organisation ? $this->user->isOrganisationAdmin($organisation) : false;

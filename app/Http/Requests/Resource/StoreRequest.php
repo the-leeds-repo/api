@@ -18,7 +18,7 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->isOrganisationAdmin();
+        return $this->user('api')->isOrganisationAdmin();
     }
 
     /**
@@ -32,7 +32,7 @@ class StoreRequest extends FormRequest
             'organisation_id' => [
                 'required',
                 'exists:organisations,id',
-                new IsOrganisationAdmin($this->user()),
+                new IsOrganisationAdmin($this->user('api')),
             ],
             'slug' => [
                 'required',

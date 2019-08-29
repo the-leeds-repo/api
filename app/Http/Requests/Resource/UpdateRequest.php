@@ -35,7 +35,7 @@ class UpdateRequest extends FormRequest
         return [
             'organisation_id' => [
                 'exists:organisations,id',
-                new IsOrganisationAdmin($this->user()),
+                new IsOrganisationAdmin($this->user('api')),
             ],
             'slug' => [
                 'string',

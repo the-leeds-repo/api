@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Requests\Resource\UpdateRequest as UpdateResourceRequest;
 use App\Models\Mutators\ResourceMutators;
 use App\Models\Relationships\ResourceRelationships;
 use App\Models\Scopes\ResourceScopes;
@@ -38,7 +39,15 @@ class Resource extends Model implements AppliesUpdateRequests
      */
     public function validateUpdateRequest(UpdateRequest $updateRequest): Validator
     {
-        // TODO: Implement validateUpdateRequest() method.
+        $rules = (new UpdateResourceRequest())
+            ->setUserResolver(function () use ($updateRequest) {
+                return $updateRequest->user;
+            })
+            ->merge(['resource' => $this])
+            ->merge($updateRequest->data)
+            ->rules();
+
+        return ValidatorFacade::make($updateRequest->data, $rules);
     }
 
     /**
@@ -49,7 +58,28 @@ class Resource extends Model implements AppliesUpdateRequests
      */
     public function applyUpdateRequest(UpdateRequest $updateRequest): UpdateRequest
     {
-        // TODO: Implement applyUpdateRequest() method.
+        $data = $updateRequest->data;
+
+        // Update the service record.
+        $this->update([
+            'organisation_id' => $data['organisation_id'] ?? $this->organisation_id,
+            'name' => $data['name'] ?? $this->name,
+            'slug' => $data['slug'] ?? $this->slug,
+            'description' => sanitize_markdown($data['description'] ?? $this->description),
+            'url' => $data['url'] ?? $this->url,
+            'license' => $data['license'] ?? $this->license,
+            'author' => $data['author'] ?? $this->author,
+            'published_at' => $data['published_at'] ?? $this->published_at,
+            'last_modified_at' => $data['last_modified_at'] ?? $this->last_modified_at,
+        ]);
+
+        // Update the category taxonomy records.
+        if (array_key_exists('category_taxonomies', $data)) {
+            $taxonomies = Taxonomy::whereIn('id', $data['category_taxonomies'])->get();
+            $this->syncResourceTaxonomies($taxonomies);
+        }
+
+        return $updateRequest;
     }
 
     /**
