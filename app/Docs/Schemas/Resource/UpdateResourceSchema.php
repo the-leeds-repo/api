@@ -28,6 +28,8 @@ class UpdateResourceSchema extends Schema
                 'last_modified_at'
             )
             ->properties(
+                Schema::string('organisation_id')
+                    ->format(Schema::FORMAT_UUID),
                 Schema::string('name'),
                 Schema::string('slug'),
                 Schema::string('description'),

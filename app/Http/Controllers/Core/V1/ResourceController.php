@@ -8,10 +8,13 @@ use App\Http\Filters\Resource\OrganisationNameFilter;
 use App\Http\Requests\Resource\IndexRequest;
 use App\Http\Requests\Resource\ShowRequest;
 use App\Http\Requests\Resource\StoreRequest;
+use App\Http\Requests\Resource\UpdateRequest;
 use App\Http\Resources\ResourceResource;
+use App\Http\Responses\UpdateRequestReceived;
 use App\Http\Sorts\Resource\OrganisationNameSort;
 use App\Models\Resource;
 use App\Models\Taxonomy;
+use App\Models\UpdateRequest as UpdateRequestModel;
 use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\Filter;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -121,5 +124,53 @@ class ResourceController extends Controller
         );
 
         return new ResourceResource($resource);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param \App\Http\Requests\Resource\UpdateRequest $request
+     * @param \App\Models\Resource $resource
+     * @return \Illuminate\Http\Response
+     */
+    public function update(UpdateRequest $request, Resource $resource)
+    {
+        return DB::transaction(function () use ($request, $resource) {
+            // Initialise the data array.
+            $data = array_filter_missing([
+                'organisation_id' => $request->missing('organisation_id'),
+                'slug' => $request->missing('slug'),
+                'name' => $request->missing('name'),
+                'description' => $request->missing('description'),
+                'url' => $request->missing('url'),
+                'license' => $request->missing('license'),
+                'author' => $request->missing('author'),
+                'category_taxonomies' => $request->missing('category_taxonomies'),
+                'published_at' => $request->missing('published_at'),
+                'last_modified_at' => $request->missing('last_modified_at'),
+            ]);
+
+            $updateRequest = new UpdateRequestModel([
+                'updateable_type' => 'resources',
+                'updateable_id' => $resource->id,
+                'user_id' => $request->user()->id,
+                'data' => $data,
+            ]);
+
+            // Only persist to the database if the user did not request a preview.
+            if (!$request->isPreview()) {
+                $updateRequest->save();
+
+                event(
+                    EndpointHit::onUpdate(
+                        $request,
+                        "Updated resource [{$resource->id}]",
+                        $resource
+                    )
+                );
+            }
+
+            return new UpdateRequestReceived($updateRequest);
+        });
     }
 }

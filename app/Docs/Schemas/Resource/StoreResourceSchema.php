@@ -16,13 +16,7 @@ class StoreResourceSchema extends UpdateResourceSchema
     {
         $instance = parent::create($objectId);
 
-        $instance = $instance
-            ->required('organisation_id', ...$instance->required)
-            ->properties(
-                Schema::string('organisation_id')
-                    ->format(Schema::FORMAT_UUID),
-                ...$instance->properties
-            );
+        $instance = $instance->required('organisation_id', ...$instance->required);
 
         return $instance;
     }

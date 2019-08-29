@@ -47,6 +47,8 @@ class UpdateServiceSchema extends Schema
                 'category_taxonomies'
             )
             ->properties(
+                Schema::string('organisation_id')
+                    ->format(Schema::FORMAT_UUID),
                 Schema::string('name'),
                 Schema::string('slug'),
                 Schema::string('type')
