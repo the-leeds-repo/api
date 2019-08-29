@@ -6,6 +6,7 @@ use App\Models\Mutators\ResourceMutators;
 use App\Models\Relationships\ResourceRelationships;
 use App\Models\Scopes\ResourceScopes;
 use App\UpdateRequest\AppliesUpdateRequests;
+use App\UpdateRequest\UpdateRequests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\Validator as ValidatorFacade;
@@ -15,6 +16,7 @@ class Resource extends Model implements AppliesUpdateRequests
     use ResourceMutators;
     use ResourceRelationships;
     use ResourceScopes;
+    use UpdateRequests;
 
     /**
      * The attributes that should be cast to native types.

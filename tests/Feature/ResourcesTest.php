@@ -661,4 +661,117 @@ class ResourcesTest extends TestCase
     /*
      * Delete a resource.
      */
+
+    public function test_guest_cannot_delete_one()
+    {
+        $resource = factory(Resource::class)->create();
+
+        $response = $this->json('DELETE', "/core/v1/resources/{$resource->id}");
+
+        $response->assertStatus(Response::HTTP_UNAUTHORIZED);
+    }
+
+    public function test_service_worker_cannot_delete_one()
+    {
+        $resource = factory(Resource::class)->create();
+        $service = factory(Service::class)->create([
+            'organisation_id' => $resource->organisation->id,
+        ]);
+        $user = factory(User::class)->create()->makeServiceWorker($service);
+
+        Passport::actingAs($user);
+
+        $response = $this->json('DELETE', "/core/v1/resources/{$resource->id}");
+
+        $response->assertStatus(Response::HTTP_FORBIDDEN);
+    }
+
+    public function test_service_admin_cannot_delete_one()
+    {
+        $resource = factory(Resource::class)->create();
+        $service = factory(Service::class)->create([
+            'organisation_id' => $resource->organisation->id,
+        ]);
+        $user = factory(User::class)->create()->makeServiceAdmin($service);
+
+        Passport::actingAs($user);
+
+        $response = $this->json('DELETE', "/core/v1/resources/{$resource->id}");
+
+        $response->assertStatus(Response::HTTP_FORBIDDEN);
+    }
+
+    public function test_organisation_admin_cannot_delete_one_under_different_organisation()
+    {
+        $resource = factory(Resource::class)->create();
+        $user = factory(User::class)->create()->makeOrganisationAdmin(
+            factory(Organisation::class)->create()
+        );
+
+        Passport::actingAs($user);
+
+        $response = $this->json('DELETE', "/core/v1/resources/{$resource->id}");
+
+        $response->assertStatus(Response::HTTP_FORBIDDEN);
+    }
+
+    public function test_organisation_admin_can_delete_one_under_own_organisation()
+    {
+        $resource = factory(Resource::class)->create();
+        $user = factory(User::class)->create()->makeOrganisationAdmin($resource->organisation);
+
+        Passport::actingAs($user);
+
+        $response = $this->json('DELETE', "/core/v1/resources/{$resource->id}");
+
+        $response->assertStatus(Response::HTTP_OK);
+        $this->assertDatabaseMissing((new Resource())->getTable(), ['id' => $resource->id]);
+    }
+
+    public function test_global_admin_can_delete_one()
+    {
+        $resource = factory(Resource::class)->create();
+        $user = factory(User::class)->create()->makeGlobalAdmin();
+
+        Passport::actingAs($user);
+
+        $response = $this->json('DELETE', "/core/v1/resources/{$resource->id}");
+
+        $response->assertStatus(Response::HTTP_OK);
+        $this->assertDatabaseMissing((new Resource())->getTable(), ['id' => $resource->id]);
+    }
+
+    public function test_super_admin_can_delete_one()
+    {
+        $resource = factory(Resource::class)->create();
+        $user = factory(User::class)->create()->makeSuperAdmin();
+
+        Passport::actingAs($user);
+
+        $response = $this->json('DELETE', "/core/v1/resources/{$resource->id}");
+
+        $response->assertStatus(Response::HTTP_OK);
+        $this->assertDatabaseMissing((new Resource())->getTable(), ['id' => $resource->id]);
+    }
+
+    public function test_audit_created_when_deleted()
+    {
+        $this->fakeEvents();
+
+        $resource = factory(Resource::class)->create();
+        $user = factory(User::class)->create()->makeSuperAdmin();
+
+        Passport::actingAs($user);
+
+        $this->json('DELETE', "/core/v1/resources/{$resource->id}");
+
+        Event::assertDispatched(
+            EndpointHit::class,
+            function (EndpointHit $event) use ($user, $resource) {
+                return ($event->getAction() === Audit::ACTION_DELETE) &&
+                    ($event->getUser()->id === $user->id) &&
+                    ($event->getModel()->is($resource));
+            }
+        );
+    }
 }

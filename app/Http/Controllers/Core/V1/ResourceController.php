@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Core\V1;
 use App\Events\EndpointHit;
 use App\Http\Controllers\Controller;
 use App\Http\Filters\Resource\OrganisationNameFilter;
+use App\Http\Requests\Resource\DestroyRequest;
 use App\Http\Requests\Resource\IndexRequest;
 use App\Http\Requests\Resource\ShowRequest;
 use App\Http\Requests\Resource\StoreRequest;
 use App\Http\Requests\Resource\UpdateRequest;
 use App\Http\Resources\ResourceResource;
+use App\Http\Responses\ResourceDeleted;
 use App\Http\Responses\UpdateRequestReceived;
 use App\Http\Sorts\Resource\OrganisationNameSort;
 use App\Models\Resource;
@@ -171,6 +173,30 @@ class ResourceController extends Controller
             }
 
             return new UpdateRequestReceived($updateRequest);
+        });
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param \App\Http\Requests\Resource\DestroyRequest $request
+     * @param \App\Models\Resource $resource
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(DestroyRequest $request, Resource $resource)
+    {
+        return DB::transaction(function () use ($request, $resource) {
+            event(
+                EndpointHit::onDelete(
+                    $request,
+                    "Deleted resource [{$resource->id}]",
+                    $resource
+                )
+            );
+
+            $resource->delete();
+
+            return new ResourceDeleted('resource');
         });
     }
 }
