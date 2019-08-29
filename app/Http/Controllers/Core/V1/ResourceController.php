@@ -6,6 +6,7 @@ use App\Events\EndpointHit;
 use App\Http\Controllers\Controller;
 use App\Http\Filters\Resource\OrganisationNameFilter;
 use App\Http\Requests\Resource\IndexRequest;
+use App\Http\Requests\Resource\ShowRequest;
 use App\Http\Requests\Resource\StoreRequest;
 use App\Http\Resources\ResourceResource;
 use App\Http\Sorts\Resource\OrganisationNameSort;
@@ -96,5 +97,29 @@ class ResourceController extends Controller
 
             return new ResourceResource($resource);
         });
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param \App\Http\Requests\Resource\ShowRequest $request
+     * @param \App\Models\Resource $resource
+     * @return \App\Http\Resources\ResourceResource
+     */
+    public function show(ShowRequest $request, Resource $resource)
+    {
+        $baseQuery = Resource::query()
+            ->with('taxonomies')
+            ->where('id', $resource->id);
+
+        $resource = QueryBuilder::for($baseQuery)
+            ->allowedIncludes(['organisation'])
+            ->firstOrFail();
+
+        event(
+            EndpointHit::onRead($request, "Viewed resource [{$resource->id}]", $resource)
+        );
+
+        return new ResourceResource($resource);
     }
 }

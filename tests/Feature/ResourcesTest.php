@@ -409,6 +409,118 @@ class ResourcesTest extends TestCase
      * Show a resource.
      */
 
+    public function test_guest_can_show_one()
+    {
+        /** @var \App\Models\Resource $resource */
+        $resource = factory(Resource::class)->create();
+        $taxonomy = Taxonomy::category()->children()->first();
+        $resource->resourceTaxonomies()->create([
+            'taxonomy_id' => $taxonomy->id,
+        ]);
+
+        $response = $this->json('GET', "/core/v1/resources/{$resource->id}");
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonResource([
+            'id',
+            'organisation_id',
+            'name',
+            'slug',
+            'description',
+            'url',
+            'license',
+            'author',
+            'category_taxonomies' => [
+                [
+                    'id',
+                    'parent_id',
+                    'name',
+                    'created_at',
+                    'updated_at',
+                ],
+            ],
+            'published_at',
+            'last_modified_at',
+            'created_at',
+            'updated_at',
+        ]);
+        $response->assertJsonFragment([
+            'id' => $resource->id,
+            'organisation_id' => $resource->organisation_id,
+            'name' => $resource->name,
+            'slug' => $resource->slug,
+            'description' => $resource->description,
+            'url' => $resource->url,
+            'license' => $resource->license,
+            'author' => $resource->author,
+            'category_taxonomies' => [
+                [
+                    'id' => $taxonomy->id,
+                    'parent_id' => $taxonomy->parent_id,
+                    'name' => $taxonomy->name,
+                    'created_at' => $taxonomy->created_at->format(CarbonImmutable::ISO8601),
+                    'updated_at' => $taxonomy->updated_at->format(CarbonImmutable::ISO8601),
+                ],
+            ],
+            'published_at' => optional($resource->published_at)->toDateString(),
+            'last_modified_at' => optional($resource->last_modified_at)->toDateString(),
+            'created_at' => $resource->created_at->format(CarbonImmutable::ISO8601),
+            'updated_at' => $resource->updated_at->format(CarbonImmutable::ISO8601),
+        ]);
+    }
+
+    public function test_guest_can_view_one_by_slug()
+    {
+        /** @var \App\Models\Resource $resource */
+        $resource = factory(Resource::class)->create();
+        $taxonomy = Taxonomy::category()->children()->first();
+        $resource->resourceTaxonomies()->create([
+            'taxonomy_id' => $taxonomy->id,
+        ]);
+
+        $response = $this->json('GET', "/core/v1/resources/{$resource->slug}");
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonFragment([
+            'id' => $resource->id,
+            'organisation_id' => $resource->organisation_id,
+            'name' => $resource->name,
+            'slug' => $resource->slug,
+            'description' => $resource->description,
+            'url' => $resource->url,
+            'license' => $resource->license,
+            'author' => $resource->author,
+            'category_taxonomies' => [
+                [
+                    'id' => $taxonomy->id,
+                    'parent_id' => $taxonomy->parent_id,
+                    'name' => $taxonomy->name,
+                    'created_at' => $taxonomy->created_at->format(CarbonImmutable::ISO8601),
+                    'updated_at' => $taxonomy->updated_at->format(CarbonImmutable::ISO8601),
+                ],
+            ],
+            'published_at' => optional($resource->published_at)->toDateString(),
+            'last_modified_at' => optional($resource->last_modified_at)->toDateString(),
+            'created_at' => $resource->created_at->format(CarbonImmutable::ISO8601),
+            'updated_at' => $resource->updated_at->format(CarbonImmutable::ISO8601),
+        ]);
+    }
+
+    public function test_audit_created_when_shown()
+    {
+        $this->fakeEvents();
+
+        /** @var \App\Models\Resource $resource */
+        $resource = factory(Resource::class)->create();
+
+        $this->json('GET', "/core/v1/resources/{$resource->id}");
+
+        Event::assertDispatched(EndpointHit::class, function (EndpointHit $event) use ($resource) {
+            return ($event->getAction() === Audit::ACTION_READ)
+                && $event->getModel()->is($resource);
+        });
+    }
+
     /*
      * Update a resource.
      */
