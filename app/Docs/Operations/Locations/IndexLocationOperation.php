@@ -8,7 +8,7 @@ use App\Docs\Parameters\PageParameter;
 use App\Docs\Parameters\PerPageParameter;
 use App\Docs\Parameters\SortParameter;
 use App\Docs\Schemas\Location\LocationSchema;
-use App\Docs\Schemas\PaginationSchema;
+use App\Docs\Schemas\PaginatedResourceSchema;
 use App\Docs\Tags\LocationsTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\MediaType;
@@ -69,7 +69,7 @@ class IndexLocationOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        PaginationSchema::create(null, LocationSchema::create())
+                        PaginatedResourceSchema::create(null, LocationSchema::create())
                     )
                 )
             );

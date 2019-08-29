@@ -3,7 +3,6 @@
 namespace App\Docs\Schemas\Service;
 
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
-use GoldSpecDigital\ObjectOrientedOAS\Objects\Schema;
 
 class StoreServiceSchema extends UpdateServiceSchema
 {
@@ -16,13 +15,7 @@ class StoreServiceSchema extends UpdateServiceSchema
     {
         $instance = parent::create($objectId);
 
-        $instance = $instance
-            ->required('organisation_id', ...$instance->required)
-            ->properties(
-                Schema::string('organisation_id')
-                    ->format(Schema::FORMAT_UUID),
-                ...$instance->properties
-            );
+        $instance = $instance->required('organisation_id', ...$instance->required);
 
         return $instance;
     }

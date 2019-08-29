@@ -4,7 +4,7 @@ namespace App\Docs\Operations\ReportSchedules;
 
 use App\Docs\Schemas\ReportSchedule\ReportScheduleSchema;
 use App\Docs\Schemas\ReportSchedule\StoreReportScheduleSchema;
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Tags\ReportSchedulesTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\MediaType;
@@ -36,7 +36,7 @@ class StoreReportScheduleOperation extends Operation
             ->responses(
                 Response::created()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, ReportScheduleSchema::create())
+                        SingleResourceSchema::create(null, ReportScheduleSchema::create())
                     )
                 )
             );

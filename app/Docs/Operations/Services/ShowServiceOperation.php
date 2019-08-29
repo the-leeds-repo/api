@@ -3,8 +3,8 @@
 namespace App\Docs\Operations\Services;
 
 use App\Docs\Parameters\IncludeParameter;
-use App\Docs\Schemas\ResourceSchema;
 use App\Docs\Schemas\Service\ServiceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Tags\ServicesTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\MediaType;
@@ -32,7 +32,7 @@ class ShowServiceOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, ServiceSchema::create())
+                        SingleResourceSchema::create(null, ServiceSchema::create())
                     )
                 )
             );

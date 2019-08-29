@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Organisation;
+use App\Models\Resource;
 use App\Models\Service;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Response;
@@ -37,6 +38,13 @@ class RouteServiceProvider extends ServiceProvider
         Route::bind('service', function ($value) {
             return Service::query()->find($value)
                 ?? Service::query()->where('slug', $value)->first()
+                ?? abort(Response::HTTP_NOT_FOUND);
+        });
+
+        // Resolve by ID first, then resort to slug.
+        Route::bind('resource', function ($value) {
+            return Resource::query()->find($value)
+                ?? Resource::query()->where('slug', $value)->first()
                 ?? abort(Response::HTTP_NOT_FOUND);
         });
     }

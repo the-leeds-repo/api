@@ -2,7 +2,7 @@
 
 namespace App\Docs\Operations\Taxonomies\Categories;
 
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Schemas\Taxonomy\Category\TaxonomyCategorySchema;
 use App\Docs\Schemas\Taxonomy\Category\UpdateTaxonomyCategorySchema;
 use App\Docs\Tags\TaxonomyCategoriesTag;
@@ -36,7 +36,7 @@ class UpdateTaxonomyCategoryOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, TaxonomyCategorySchema::create())
+                        SingleResourceSchema::create(null, TaxonomyCategorySchema::create())
                     )
                 )
             );

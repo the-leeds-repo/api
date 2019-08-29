@@ -3,7 +3,7 @@
 namespace App\Docs\Operations\Locations;
 
 use App\Docs\Schemas\Location\LocationSchema;
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Tags\LocationsTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\MediaType;
@@ -28,7 +28,7 @@ class ShowLocationOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, LocationSchema::create())
+                        SingleResourceSchema::create(null, LocationSchema::create())
                     )
                 )
             );

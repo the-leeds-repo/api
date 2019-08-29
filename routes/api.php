@@ -79,6 +79,10 @@ Route::prefix('core/v1')->namespace('Core\\V1')->name('core.v1.')->group(functio
     Route::apiResource('/reports', 'ReportController')->only('index', 'store', 'show', 'destroy');
     Route::get('/reports/{report}/download', 'Report\\DownloadController@show')->name('reports.download');
 
+    // Resources.
+    Route::match(['GET', 'POST'], '/resources/index', 'ResourceController@index');
+    Route::apiResource('/resources', 'ResourceController');
+
     // Search.
     Route::post('/search', 'SearchController')->name('search');
 

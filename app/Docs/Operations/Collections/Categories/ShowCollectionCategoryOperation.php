@@ -3,7 +3,7 @@
 namespace App\Docs\Operations\Collections\Categories;
 
 use App\Docs\Schemas\Collection\Category\CollectionCategorySchema;
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Tags\CollectionCategoriesTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\MediaType;
@@ -28,7 +28,7 @@ class ShowCollectionCategoryOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, CollectionCategorySchema::create())
+                        SingleResourceSchema::create(null, CollectionCategorySchema::create())
                     )
                 )
             );

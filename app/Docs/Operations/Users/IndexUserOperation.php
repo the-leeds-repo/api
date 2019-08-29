@@ -8,7 +8,7 @@ use App\Docs\Parameters\IncludeParameter;
 use App\Docs\Parameters\PageParameter;
 use App\Docs\Parameters\PerPageParameter;
 use App\Docs\Parameters\SortParameter;
-use App\Docs\Schemas\PaginationSchema;
+use App\Docs\Schemas\PaginatedResourceSchema;
 use App\Docs\Schemas\User\UserSchema;
 use App\Docs\Tags\UsersTag;
 use App\Models\Role;
@@ -81,7 +81,7 @@ class IndexUserOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        PaginationSchema::create(null, UserSchema::create())
+                        PaginatedResourceSchema::create(null, UserSchema::create())
                     )
                 )
             );

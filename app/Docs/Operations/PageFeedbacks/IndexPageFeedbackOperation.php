@@ -8,7 +8,7 @@ use App\Docs\Parameters\PageParameter;
 use App\Docs\Parameters\PerPageParameter;
 use App\Docs\Parameters\SortParameter;
 use App\Docs\Schemas\PageFeedback\PageFeedbackSchema;
-use App\Docs\Schemas\PaginationSchema;
+use App\Docs\Schemas\PaginatedResourceSchema;
 use App\Docs\Tags\PageFeedbacksTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\MediaType;
@@ -42,7 +42,7 @@ class IndexPageFeedbackOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        PaginationSchema::create(null, PageFeedbackSchema::create())
+                        PaginatedResourceSchema::create(null, PageFeedbackSchema::create())
                     )
                 )
             );

@@ -9,6 +9,7 @@ use App\Models\Location;
 use App\Models\Organisation;
 use App\Models\Referral;
 use App\Models\Report;
+use App\Models\Resource;
 use App\Models\Service;
 use App\Models\ServiceLocation;
 use App\Models\ServiceTaxonomy;
@@ -22,6 +23,7 @@ use App\Observers\LocationObserver;
 use App\Observers\OrganisationObserver;
 use App\Observers\ReferralObserver;
 use App\Observers\ReportObserver;
+use App\Observers\ResourceObserver;
 use App\Observers\ServiceLocationObserver;
 use App\Observers\ServiceObserver;
 use App\Observers\ServiceTaxonomyObserver;
@@ -44,6 +46,7 @@ class ModelServiceProvider extends ServiceProvider
         Organisation::observe(OrganisationObserver::class);
         Referral::observe(ReferralObserver::class);
         Report::observe(ReportObserver::class);
+        Resource::observe(ResourceObserver::class);
         ServiceLocation::observe(ServiceLocationObserver::class);
         Service::observe(ServiceObserver::class);
         ServiceTaxonomy::observe(ServiceTaxonomyObserver::class);
@@ -57,6 +60,7 @@ class ModelServiceProvider extends ServiceProvider
             'service_locations' => ServiceLocation::class,
             'organisations' => Organisation::class,
             'users' => User::class,
+            'resources' => Resource::class,
         ]);
     }
 

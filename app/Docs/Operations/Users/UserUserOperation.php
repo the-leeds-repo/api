@@ -3,7 +3,7 @@
 namespace App\Docs\Operations\Users;
 
 use App\Docs\Parameters\IncludeParameter;
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Schemas\User\UserSchema;
 use App\Docs\Tags\UsersTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
@@ -35,7 +35,7 @@ class UserUserOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, UserSchema::create())
+                        SingleResourceSchema::create(null, UserSchema::create())
                     )
                 )
             );

@@ -9,7 +9,7 @@ use App\Docs\Parameters\PageParameter;
 use App\Docs\Parameters\PerPageParameter;
 use App\Docs\Parameters\SortParameter;
 use App\Docs\Schemas\Audit\AuditSchema;
-use App\Docs\Schemas\PaginationSchema;
+use App\Docs\Schemas\PaginatedResourceSchema;
 use App\Docs\Tags\AuditsTag;
 use App\Models\Audit;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
@@ -76,7 +76,7 @@ class IndexAuditOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        PaginationSchema::create(null, AuditSchema::create())
+                        PaginatedResourceSchema::create(null, AuditSchema::create())
                     )
                 )
             );

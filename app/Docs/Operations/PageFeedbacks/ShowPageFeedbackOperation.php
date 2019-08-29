@@ -3,7 +3,7 @@
 namespace App\Docs\Operations\PageFeedbacks;
 
 use App\Docs\Schemas\PageFeedback\PageFeedbackSchema;
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Tags\PageFeedbacksTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\MediaType;
@@ -27,7 +27,7 @@ class ShowPageFeedbackOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, PageFeedbackSchema::create())
+                        SingleResourceSchema::create(null, PageFeedbackSchema::create())
                     )
                 )
             );

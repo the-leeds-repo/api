@@ -24,6 +24,11 @@ abstract class TestCase extends BaseTestCase
     /**
      * @var bool
      */
+    protected static $testLogCleared = false;
+
+    /**
+     * @var bool
+     */
     protected static $elasticsearchInitialised = false;
 
     /**
@@ -40,15 +45,13 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        // Set the log path.
-        config()->set('logging.channels.single.path', storage_path('logs/testing.log'));
-
         // Clear the cache.
         $this->artisan('cache:clear');
 
         // Disable the API throttle middleware.
         $this->withoutMiddleware('throttle');
 
+        $this->clearLog();
         $this->setUpElasticsearch();
 
         $this->now = Date::now();
@@ -106,6 +109,17 @@ abstract class TestCase extends BaseTestCase
     protected function truncateTaxonomies()
     {
         Taxonomy::category()->children->each->delete();
+    }
+
+    /**
+     * Clears the testing log file.
+     */
+    protected function clearLog()
+    {
+        if (!static::$testLogCleared) {
+            file_put_contents(config('logging.channels.testing.path'), '');
+            static::$testLogCleared = true;
+        }
     }
 
     /**

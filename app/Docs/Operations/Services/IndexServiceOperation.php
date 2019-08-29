@@ -8,7 +8,7 @@ use App\Docs\Parameters\IncludeParameter;
 use App\Docs\Parameters\PageParameter;
 use App\Docs\Parameters\PerPageParameter;
 use App\Docs\Parameters\SortParameter;
-use App\Docs\Schemas\PaginationSchema;
+use App\Docs\Schemas\PaginatedResourceSchema;
 use App\Docs\Schemas\Service\ServiceSchema;
 use App\Docs\Tags\ServicesTag;
 use App\Models\Service;
@@ -92,7 +92,7 @@ EOT
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        PaginationSchema::create(null, ServiceSchema::create())
+                        PaginatedResourceSchema::create(null, ServiceSchema::create())
                     )
                 )
             );

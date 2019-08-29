@@ -2,7 +2,7 @@
 
 namespace App\Docs\Operations\UpdateRequests;
 
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Schemas\UpdateRequest\UpdateRequestSchema;
 use App\Docs\Tags\UpdateRequestsTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
@@ -27,7 +27,7 @@ class ApproveUpdateRequestOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, UpdateRequestSchema::create())
+                        SingleResourceSchema::create(null, UpdateRequestSchema::create())
                     )
                 )
             );

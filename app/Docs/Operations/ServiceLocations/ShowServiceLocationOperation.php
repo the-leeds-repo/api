@@ -3,8 +3,8 @@
 namespace App\Docs\Operations\ServiceLocations;
 
 use App\Docs\Parameters\IncludeParameter;
-use App\Docs\Schemas\ResourceSchema;
 use App\Docs\Schemas\ServiceLocation\ServiceLocationSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Tags\ServiceLocationsTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\MediaType;
@@ -32,7 +32,7 @@ class ShowServiceLocationOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, ServiceLocationSchema::create())
+                        SingleResourceSchema::create(null, ServiceLocationSchema::create())
                     )
                 )
             );

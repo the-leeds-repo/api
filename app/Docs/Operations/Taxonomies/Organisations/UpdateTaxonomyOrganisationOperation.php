@@ -2,7 +2,7 @@
 
 namespace App\Docs\Operations\Taxonomies\Organisations;
 
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Schemas\Taxonomy\Organisation\TaxonomyOrganisationSchema;
 use App\Docs\Schemas\Taxonomy\Organisation\UpdateTaxonomyOrganisationSchema;
 use App\Docs\Tags\TaxonomyOrganisationsTag;
@@ -36,7 +36,7 @@ class UpdateTaxonomyOrganisationOperation extends Operation
             ->responses(
                 Response::ok()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, TaxonomyOrganisationSchema::create())
+                        SingleResourceSchema::create(null, TaxonomyOrganisationSchema::create())
                     )
                 )
             );

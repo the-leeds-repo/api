@@ -4,7 +4,7 @@ namespace App\Docs\Operations\Files;
 
 use App\Docs\Schemas\File\FileSchema;
 use App\Docs\Schemas\File\StoreFileSchema;
-use App\Docs\Schemas\ResourceSchema;
+use App\Docs\Schemas\SingleResourceSchema;
 use App\Docs\Tags\FilesTag;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\BaseObject;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\MediaType;
@@ -36,7 +36,7 @@ class StoreFileOperation extends Operation
             ->responses(
                 Response::created()->content(
                     MediaType::json()->schema(
-                        ResourceSchema::create(null, FileSchema::create())
+                        SingleResourceSchema::create(null, FileSchema::create())
                     )
                 )
             );

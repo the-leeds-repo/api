@@ -41,9 +41,9 @@ class StoreSearchSchema extends Schema
                     ->required('lat', 'lon')
                     ->properties(
                         Schema::number('lat')
-                            ->type(Schema::FORMAT_FLOAT),
+                            ->format(Schema::FORMAT_FLOAT),
                         Schema::number('lon')
-                            ->type(Schema::FORMAT_FLOAT)
+                            ->format(Schema::FORMAT_FLOAT)
                     ),
                 Schema::integer('distance')
                     ->default(config('tlr.search_distance'))

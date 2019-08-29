@@ -22,7 +22,6 @@ class TaxonomyCategorySchema extends Schema
                     ->format(Schema::FORMAT_UUID)
                     ->nullable(),
                 Schema::string('name'),
-                Schema::integer('order'),
                 Schema::string('created_at')
                     ->format(Schema::FORMAT_DATE_TIME)
                     ->nullable(),

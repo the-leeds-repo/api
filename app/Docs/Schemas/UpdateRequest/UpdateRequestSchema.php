@@ -27,7 +27,8 @@ class UpdateRequestSchema extends Schema
                         'services',
                         'service_locations',
                         'organisations',
-                        'users'
+                        'users',
+                        'resources'
                     ),
                 Schema::string('updateable_id')
                     ->format(Schema::FORMAT_UUID),
