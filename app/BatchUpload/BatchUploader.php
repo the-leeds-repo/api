@@ -3,8 +3,11 @@
 namespace App\BatchUpload;
 
 use App\Models\Collection;
+use App\Models\Location;
 use App\Models\Organisation;
+use App\Models\RegularOpeningHour;
 use App\Models\Service;
+use App\Models\ServiceLocation;
 use App\Models\Taxonomy;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
@@ -341,8 +344,122 @@ class BatchUploader
                         $service['_topic_ids']
                     )->get()
                 );
+
+                if (
+                    (string)$service['address_line_1'] !== ''
+                    && (string)$service['city'] !== ''
+                    && (string)$service['county'] !== ''
+                    && (string)$service['postcode'] !== ''
+                    && (string)$service['country'] !== ''
+                ) {
+                    $location = new Location([
+                        'address_line_1' => $service['address_line_1'],
+                        'address_line_2' => null,
+                        'address_line_3' => null,
+                        'city' => $service['city'],
+                        'county' => $service['county'],
+                        'postcode' => $service['postcode'],
+                        'country' => $service['country'],
+                        'accessibility_info' => null,
+                        'has_wheelchair_access' => false,
+                        'has_induction_loop' => false,
+                        'image_file_id' => null,
+                    ]);
+                    $location->updateCoordinate()->save();
+
+                    $serviceLocation = ServiceLocation::create([
+                        'service_id' => $service['_model']->id,
+                        'location_id' => $location->id,
+                        'name' => null,
+                        'image_file_id' => null,
+                    ]);
+
+                    if ($service['open_monday'] === 'yes') {
+                        $serviceLocation->regularOpeningHours()->create([
+                            'frequency' => RegularOpeningHour::FREQUENCY_WEEKLY,
+                            'weekday' => RegularOpeningHour::WEEKDAY_MONDAY,
+                            'day_of_month' => null,
+                            'occurrence_of_month' => null,
+                            'starts_at' => null,
+                            'opens_at' => '00:00:00',
+                            'closes_at' => '23:59:59',
+                        ]);
+                    }
+
+                    if ($service['open_tuesday'] === 'yes') {
+                        $serviceLocation->regularOpeningHours()->create([
+                            'frequency' => RegularOpeningHour::FREQUENCY_WEEKLY,
+                            'weekday' => RegularOpeningHour::WEEKDAY_TUESDAY,
+                            'day_of_month' => null,
+                            'occurrence_of_month' => null,
+                            'starts_at' => null,
+                            'opens_at' => '00:00:00',
+                            'closes_at' => '23:59:59',
+                        ]);
+                    }
+
+                    if ($service['open_wednesday'] === 'yes') {
+                        $serviceLocation->regularOpeningHours()->create([
+                            'frequency' => RegularOpeningHour::FREQUENCY_WEEKLY,
+                            'weekday' => RegularOpeningHour::WEEKDAY_WEDNESDAY,
+                            'day_of_month' => null,
+                            'occurrence_of_month' => null,
+                            'starts_at' => null,
+                            'opens_at' => '00:00:00',
+                            'closes_at' => '23:59:59',
+                        ]);
+                    }
+
+                    if ($service['open_thursday'] === 'yes') {
+                        $serviceLocation->regularOpeningHours()->create([
+                            'frequency' => RegularOpeningHour::FREQUENCY_WEEKLY,
+                            'weekday' => RegularOpeningHour::WEEKDAY_THURSDAY,
+                            'day_of_month' => null,
+                            'occurrence_of_month' => null,
+                            'starts_at' => null,
+                            'opens_at' => '00:00:00',
+                            'closes_at' => '23:59:59',
+                        ]);
+                    }
+
+                    if ($service['open_friday'] === 'yes') {
+                        $serviceLocation->regularOpeningHours()->create([
+                            'frequency' => RegularOpeningHour::FREQUENCY_WEEKLY,
+                            'weekday' => RegularOpeningHour::WEEKDAY_FRIDAY,
+                            'day_of_month' => null,
+                            'occurrence_of_month' => null,
+                            'starts_at' => null,
+                            'opens_at' => '00:00:00',
+                            'closes_at' => '23:59:59',
+                        ]);
+                    }
+
+                    if ($service['open_saturday'] === 'yes') {
+                        $serviceLocation->regularOpeningHours()->create([
+                            'frequency' => RegularOpeningHour::FREQUENCY_WEEKLY,
+                            'weekday' => RegularOpeningHour::WEEKDAY_SATURDAY,
+                            'day_of_month' => null,
+                            'occurrence_of_month' => null,
+                            'starts_at' => null,
+                            'opens_at' => '00:00:00',
+                            'closes_at' => '23:59:59',
+                        ]);
+                    }
+
+                    if ($service['open_sunday'] === 'yes') {
+                        $serviceLocation->regularOpeningHours()->create([
+                            'frequency' => RegularOpeningHour::FREQUENCY_WEEKLY,
+                            'weekday' => RegularOpeningHour::WEEKDAY_SUNDAY,
+                            'day_of_month' => null,
+                            'occurrence_of_month' => null,
+                            'starts_at' => null,
+                            'opens_at' => '00:00:00',
+                            'closes_at' => '23:59:59',
+                        ]);
+                    }
+                }
             } catch (\Exception $exception) {
-                echo "Failed for service [{$service['name']}].";
+                logger()->error($exception);
             }
         }
     }
