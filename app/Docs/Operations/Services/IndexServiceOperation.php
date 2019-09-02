@@ -81,6 +81,25 @@ EOT
                 FilterParameter::create(null, 'has_permission')
                     ->description('Filter services to only ones they have permissions for')
                     ->schema(Schema::boolean()),
+                FilterParameter::create(null, 'taxonomy_id')
+                    ->description('Taxonomy ID to filter by')
+                    ->schema(
+                        Schema::array()->items(
+                            Schema::string()->format(Schema::FORMAT_UUID)
+                        )
+                    )
+                    ->style(FilterParameter::STYLE_SIMPLE),
+                FilterParameter::create(null, 'taxonomy_name')
+                    ->description('Taxonomy name to filter by (partial matching)')
+                    ->schema(Schema::string()),
+                FilterParameter::create(null, 'snomed_code')
+                    ->description('SNOMED code to filter by')
+                    ->schema(
+                        Schema::array()->items(
+                            Schema::string()
+                        )
+                    )
+                    ->style(FilterParameter::STYLE_SIMPLE),
                 IncludeParameter::create(null, ['organisation']),
                 SortParameter::create(null, [
                     'name',
