@@ -70,7 +70,8 @@ class BatchUploader
                 // Process SNOMED codes.
                 $this->processSnomedCodes($topics, $snomedCodes);
 
-                // TODO: Process organisations.
+                // Process organisations.
+                $this->processOrganisations($organisations);
 
                 // TODO: Process services.
 
@@ -86,19 +87,24 @@ class BatchUploader
     protected function toArray(Worksheet $sheet): array
     {
         $array = $sheet->toArray();
-        $headings = array_shift($array);
+        $headings = $array[0];
+        $contents = [];
 
-        foreach ($array as $rowIndex => &$rowValue) {
+        foreach ($array as $rowIndex => $rowValue) {
+            if ($rowIndex === 0) {
+                continue;
+            }
+
             $resource = [];
 
             foreach ($headings as $column => $heading) {
                 $resource[$heading] = $rowValue[$column];
             }
 
-            $rowValue = $resource;
+            $contents[] = $resource;
         }
 
-        return $array;
+        return $contents;
     }
 
     /**
@@ -155,11 +161,7 @@ class BatchUploader
         }
 
         // Persist the topics.
-        foreach ($topics as $topic) {
-            if (Taxonomy::find($topic['_id'])) {
-                continue;
-            }
-
+        foreach ($topics as &$topic) {
             Taxonomy::create([
                 'id' => $topic['_id'],
                 'parent_id' => $topic['_parent_id'],
@@ -205,13 +207,42 @@ class BatchUploader
         }
 
         // Persist the SNOMED topic links.
-        foreach ($snomedCodes as $snomedCode) {
+        foreach ($snomedCodes as &$snomedCode) {
             $snomedCode['_model']->syncCollectionTaxonomies(
                 Taxonomy::query()->whereIn(
                     'id',
                     $snomedCode['_topic_ids']
                 )->get()
             );
+        }
+    }
+
+    /**
+     * @param array $organisations
+     */
+    protected function processOrganisations(array &$organisations)
+    {
+        // Give each organisation a UUID.
+        foreach ($organisations as &$organisation) {
+            $organisation['_id'] = Str::uuid()->toString();
+        }
+
+        // Persist the organisations.
+        foreach ($organisations as &$organisation) {
+            Organisation::create([
+                'id' => $organisation['_id'],
+                'slug' => Str::slug(
+                    implode(' ', preg_split(
+                        '/(?=[A-Z])/',
+                        $organisation['slug']
+                    ))
+                ),
+                'name' => $organisation['name'],
+                'description' => $organisation['description'] ?: 'No description.',
+                'url' => $organisation['url'] ?: 'http://example.com/no-url-provided',
+                'email' => $organisation['email'] ?: 'no-url-provided@example.com',
+                'phone' => $organisation['phone'] ?: '00000000000',
+            ]);
         }
     }
 }
