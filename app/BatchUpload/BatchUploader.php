@@ -3,16 +3,14 @@
 namespace App\BatchUpload;
 
 use App\Models\Collection;
-use App\Models\CollectionTaxonomy;
 use App\Models\Location;
 use App\Models\Organisation;
+use App\Models\RegularOpeningHour;
 use App\Models\Service;
-use App\Models\ServiceCriterion;
 use App\Models\ServiceLocation;
-use App\Models\SocialMedia;
 use App\Models\Taxonomy;
-use Exception;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -48,41 +46,45 @@ class BatchUploader
         $spreadsheet = $this->reader->load($filePath);
 
         // Load each worksheet.
-        $organisationsSheet = $spreadsheet->getSheetByName('Organisation');
-        $servicesSheet = $spreadsheet->getSheetByName('Service');
-        $locationsSheet = $spreadsheet->getSheetByName('Location');
-        $serviceLocationsSheet = $spreadsheet->getSheetByName('Service Location');
-        $collectionCategoriesSheet = $spreadsheet->getSheetByName('Collection - Category');
-        $taxonomyServicesSheet = $spreadsheet->getSheetByName('Taxonomies - Service');
-        $taxonomyCategoriesSheet = $spreadsheet->getSheetByName('Taxonomies - Category');
+        $organisationsSheet = $spreadsheet->getSheetByName('Organisations');
+        $servicesSheet = $spreadsheet->getSheetByName('Services');
+        $topicsSheet = $spreadsheet->getSheetByName('Topics');
+        $snomedSheet = $spreadsheet->getSheetByName('SNOMED');
 
         // Convert the worksheets to associative arrays.
         $organisations = $this->toArray($organisationsSheet);
         $services = $this->toArray($servicesSheet);
-        $locations = $this->toArray($locationsSheet);
-        $serviceLocations = $this->toArray($serviceLocationsSheet);
-        $collections = $this->toArray($collectionCategoriesSheet); // Categories only - not persona.
-        $serviceTaxonomies = $this->toArray($taxonomyServicesSheet);
-        $collectionTaxonomies = $this->toArray($taxonomyCategoriesSheet);
+        $topics = $this->toArray($topicsSheet);
+        $snomedCodes = $this->toArray($snomedSheet);
 
         // Process.
-        try {
-            DB::beginTransaction();
+        DB::transaction(
+            function () use (
+                &$organisations,
+                &$services,
+                &$topics,
+                &$snomedCodes
+            ) {
+                Service::disableSearchSyncing();
 
-            $collections = $this->processCollections($collections);
-            $this->processCollectionTaxonomies($collectionTaxonomies, $collections);
-            $locations = $this->processLocations($locations);
-            $organisations = $this->processOrganisations($organisations);
-            $services = $this->processServices($services, $organisations);
-            $this->processServiceLocations($serviceLocations, $services, $locations);
-            $this->processServiceTaxonomies($serviceTaxonomies, $services);
+                $this->truncateTables();
 
-            DB::commit();
-        } catch (Exception $exception) {
-            DB::rollBack();
+                // Process topics.
+                $this->processTopics($topics);
 
-            throw $exception;
-        }
+                // Process SNOMED codes.
+                $this->processSnomedCodes($topics, $snomedCodes);
+
+                // Process organisations.
+                $this->processOrganisations($organisations);
+
+                // Process services.
+                $this->processServices($organisations, $topics, $services);
+
+                Service::enableSearchSyncing();
+                Artisan::call('tlr:reindex-elasticsearch');
+            }
+        );
     }
 
     /**
@@ -92,380 +94,373 @@ class BatchUploader
     protected function toArray(Worksheet $sheet): array
     {
         $array = $sheet->toArray();
-        $headings = array_shift($array);
+        $headings = $array[0];
+        $contents = [];
 
-        $array = array_map(function ($row) use ($headings) {
+        foreach ($array as $rowIndex => $rowValue) {
+            if ($rowIndex === 0) {
+                continue;
+            }
+
             $resource = [];
 
             foreach ($headings as $column => $heading) {
-                $resource[$heading] = $row[$column];
+                $resource[$heading] = $rowValue[$column];
             }
 
-            return $resource;
-        }, $array);
+            $contents[] = $resource;
+        }
 
-        return $array;
+        return $contents;
     }
 
     /**
-     * @param array $collections
-     * @return \Illuminate\Database\Eloquent\Collection
+     * Truncate tables.
      */
-    protected function processCollections(array $collections): EloquentCollection
+    protected function truncateTables()
     {
-        $order = Collection::categories()->orderByDesc('order')->first()->order;
+        // Delete topic taxonomies.
+        Taxonomy::category()->children()->each(
+            function (Taxonomy $topic) {
+                $topic->delete();
+            }
+        );
 
-        $collections = new EloquentCollection($collections);
-        $collections = $collections->map(function (array $collectionArray) use (&$order): Collection {
-            // Increment order.
-            $order++;
+        // Delete SNOMED collections.
+        Collection::query()->snomed()->get()->each(
+            function (Collection $snomedCode) {
+                $snomedCode->delete();
+            }
+        );
 
-            // Create a collection instance.
-            $collection = Collection::create([
-                'type' => Collection::TYPE_CATEGORY,
-                'name' => $collectionArray['Category Name'],
+        // Delete organisations.
+        Organisation::all()->each(function (Organisation $organisation) {
+            $organisation->delete();
+        });
+    }
+
+    /**
+     * @param array $topics
+     */
+    protected function processTopics(array &$topics)
+    {
+        $topLevelTaxonomy = Taxonomy::category();
+
+        // Give each topic a UUID.
+        foreach ($topics as &$topic) {
+            $topic['_id'] = Str::uuid()->toString();
+        }
+
+        // Map each topic's parent_id to a UUID.
+        foreach ($topics as &$topic) {
+            // Set parent ID of top level topics to Category taxonomy.
+            if ($topic['parent_id'] === null) {
+                $topic['_parent_id'] = $topLevelTaxonomy->id;
+                continue;
+            }
+
+            $topic['_parent_id'] = Arr::first(
+                $topics,
+                function (array $parentTopic) use ($topic) {
+                    return $topic['parent_id'] === $parentTopic['id'];
+                }
+            )['_id'];
+        }
+
+        // Persist the topics.
+        foreach ($topics as &$topic) {
+            Taxonomy::create([
+                'id' => $topic['_id'],
+                'parent_id' => $topic['_parent_id'],
+                'name' => $topic['name'],
+                'order' => 1,
+            ]);
+        }
+    }
+
+    /**
+     * @param array $topics
+     * @param array $snomedCodes
+     */
+    protected function processSnomedCodes(array &$topics, array &$snomedCodes)
+    {
+        // Map each SNOMED code's topic IDs to their UUID.
+        foreach ($snomedCodes as $row => &$snomedCode) {
+            $topicIds = explode(';', $snomedCode['topic_ids']);
+
+            $linkedTopics = array_filter(
+                $topics,
+                function (array $topic) use ($topicIds): bool {
+                    return in_array((string)$topic['id'], $topicIds);
+                }
+            );
+
+            $snomedCode['_topic_ids'] = Arr::pluck(
+                $linkedTopics,
+                '_id'
+            );
+        }
+
+        // Persist the SNOMED codes.
+        foreach ($snomedCodes as &$snomedCode) {
+            $snomedCode['_model'] = Collection::create([
+                'type' => Collection::TYPE_SNOMED,
+                'name' => $snomedCode['code'],
                 'meta' => [
-                    'icon' => 'coffee',
-                    'intro' => 'Lorem ipsum',
+                    'name' => $snomedCode['name'] ?: null,
                 ],
-                'order' => $order,
+                'order' => 1,
             ]);
+        }
 
-            // Assign the ID provided by the spreadsheet.
-            $collection->_id = $collectionArray['Category ID'];
-
-            return $collection;
-        });
-
-        return $collections;
-    }
-
-    /**
-     * @param array $collectionTaxonomies
-     * @param \Illuminate\Database\Eloquent\Collection $collections
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    protected function processCollectionTaxonomies(
-        array $collectionTaxonomies,
-        EloquentCollection $collections
-    ): EloquentCollection {
-        $collectionTaxonomies = new EloquentCollection($collectionTaxonomies);
-        $collectionTaxonomies = $collectionTaxonomies->map(function (array $collectionTaxonomyArray) use ($collections
-        ): CollectionTaxonomy {
-            // Get the collection ID.
-            $collectionId = $collections->first(function (Collection $collection) use ($collectionTaxonomyArray): bool {
-                return $collection->_id == $collectionTaxonomyArray['Collection ID'];
-            })->id;
-
-            // Create a collection taxonomy instance.
-            return CollectionTaxonomy::create([
-                'collection_id' => $collectionId,
-                'taxonomy_id' => $collectionTaxonomyArray['Taxonomy ID'],
-            ]);
-        });
-
-        return $collectionTaxonomies;
-    }
-
-    /**
-     * @param array $locations
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    protected function processLocations(array $locations): EloquentCollection
-    {
-        $locations = new EloquentCollection($locations);
-        $locations = $locations->map(function (array $locationArray): Location {
-            $location = new Location(array_filter([
-                'address_line_1' => $locationArray['Address Line 1*'],
-                'address_line_2' => $locationArray['Address Line 2'],
-                'address_line_3' => $locationArray['Address Line 3'],
-                'city' => $locationArray['City*'],
-                'county' => $locationArray['County*'],
-                'postcode' => $locationArray['Postcode*'],
-                'country' => $locationArray['Country*'],
-            ]));
-
-            $location->has_wheelchair_access = false;
-            $location->has_induction_loop = false;
-
-            // Save the location.
-            $location->updateCoordinate()->save();
-
-            // Assign the ID provided by the spreadsheet.
-            $location->_id = $locationArray['ID*'];
-
-            return $location;
-        });
-
-        return $locations;
+        // Persist the SNOMED topic links.
+        foreach ($snomedCodes as &$snomedCode) {
+            $snomedCode['_model']->syncCollectionTaxonomies(
+                Taxonomy::query()->whereIn(
+                    'id',
+                    $snomedCode['_topic_ids']
+                )->get()
+            );
+        }
     }
 
     /**
      * @param array $organisations
-     * @return \Illuminate\Database\Eloquent\Collection
      */
-    protected function processOrganisations(array $organisations): EloquentCollection
+    protected function processOrganisations(array &$organisations)
     {
-        $organisations = new EloquentCollection($organisations);
-        $organisations = $organisations->map(function (array $organisationArray): Organisation {
-            $slug = Str::slug($organisationArray['Name*']);
-            $iteration = 0;
-            do {
-                $slug = $iteration > 0 ? $slug . '-' . $iteration : $slug;
-                $duplicate = Organisation::query()->where('slug', $slug)->exists();
-                $iteration++;
-            } while ($duplicate);
+        // Give each organisation a UUID.
+        foreach ($organisations as &$organisation) {
+            $organisation['_id'] = Str::uuid()->toString();
+        }
 
-            $organisation = Organisation::create([
-                'slug' => $slug,
-                'name' => $organisationArray['Name*'],
-                'description' => $organisationArray['Description*'],
-                'url' => $organisationArray['URL*'],
-                'email' => $organisationArray['Email*'],
-                'phone' => $organisationArray['Phone*'],
+        // Persist the organisations.
+        foreach ($organisations as &$organisation) {
+            Organisation::create([
+                'id' => $organisation['_id'],
+                'slug' => Str::slug(
+                    implode(' ', preg_split(
+                        '/(?=[A-Z])/',
+                        $organisation['slug']
+                    ))
+                ),
+                'name' => $organisation['name'],
+                'description' => $organisation['description'] ?: 'No description.',
+                'url' => $organisation['url'] ?: 'https://example.com/no-url-provided',
+                'email' => $organisation['email'] ?: 'no-url-provided@example.com',
+                'phone' => $organisation['phone'] ?: '00000000000',
             ]);
-
-            $organisation->_id = $organisationArray['ID*'];
-
-            return $organisation;
-        });
-
-        return $organisations;
+        }
     }
 
     /**
+     * @param array $organisations
+     * @param array $topics
      * @param array $services
-     * @param \Illuminate\Database\Eloquent\Collection $organisations
-     * @return \Illuminate\Database\Eloquent\Collection
      */
-    protected function processServices(array $services, EloquentCollection $organisations): EloquentCollection
-    {
-        $services = new EloquentCollection($services);
-        $services = $services->map(function (array $serviceArray) use ($organisations): Service {
-            $organisationId = $organisations->first(function (Organisation $organisation) use ($serviceArray): bool {
-                return $organisation->_id == $serviceArray['Organisation ID*'];
-            })->id;
-
-            $slug = Str::slug($serviceArray['Name*']);
-            $iteration = 0;
-            do {
-                $slug = $iteration > 0 ? $slug . '-' . $iteration : $slug;
-                $duplicate = Service::query()->where('slug', $slug)->exists();
-                $iteration++;
-            } while ($duplicate);
-
-            $isFree = $serviceArray['Is Free*'] == 'yes';
-
-            $isInternal = $serviceArray['Referral Method*'] == 'internal';
-            $isExternal = $serviceArray['Referral Method*'] == 'external';
-            $isNone = $serviceArray['Referral Method*'] == 'none';
-
-            $service = Service::create([
-                'organisation_id' => $organisationId,
-                'slug' => $slug,
-                'name' => $serviceArray['Name*'],
-                'status' => $serviceArray['Status*'],
-                'intro' => Str::limit($serviceArray['Intro*'], 250),
-                'description' => $serviceArray['Description*'],
-                'wait_time' => $this->parseWaitTime($serviceArray['Wait Time']),
-                'is_free' => $isFree,
-                'fees_text' => !$isFree ? $serviceArray['Fees Text'] : null,
-                'fees_url' => !$isFree ? $serviceArray['Fees URL'] : null,
-                'testimonial' => $serviceArray['Testimonial'],
-                'video_embed' => $serviceArray['Video Embed'],
-                'url' => $serviceArray['URL*'],
-                'contact_name' => $serviceArray['Contact Name*'],
-                'contact_phone' => $serviceArray['Contact Phone*'],
-                'contact_email' => $serviceArray['Contact Email*'],
-                'show_referral_disclaimer' => $serviceArray['Show Referral Disclaimer*'] == 'yes',
-                'referral_method' => $serviceArray['Referral Method*'],
-                'referral_button_text' => !$isNone ? 'Make referral' : null,
-                'referral_email' => $isInternal ? $serviceArray['Referral Email'] : null,
-                'referral_url' => $isExternal ? $serviceArray['Referral URL'] : null,
-                'last_modified_at' => Date::now(),
-            ]);
-
-            $service->_id = $serviceArray['ID*'];
-
-            $service->criteria = $this->processCriteria($serviceArray, $service);
-            $service->social_medias = $this->processSocialMedia($serviceArray, $service);
-
-            return $service;
-        });
-
-        return $services;
-    }
-
-    /**
-     * @param string|null $waitTime
-     * @return string|null
-     */
-    protected function parseWaitTime(?string $waitTime): ?string
-    {
-        switch ($waitTime) {
-            case 'Within a week':
-                return Service::WAIT_TIME_ONE_WEEK;
-            case 'Up to two weeks':
-                return Service::WAIT_TIME_TWO_WEEKS;
-            case 'Up to three weeks':
-                return Service::WAIT_TIME_THREE_WEEKS;
-            case 'Up to a month':
-                return Service::WAIT_TIME_MONTH;
-            case 'Not applicable for this service':
-            default:
-                return null;
-        }
-    }
-
-    /**
-     * @param array $serviceArray
-     * @param \App\Models\Service $service
-     * @return \App\Models\ServiceCriterion
-     */
-    protected function processCriteria(array $serviceArray, Service $service): ServiceCriterion
-    {
-        return $service->serviceCriterion()->create([
-            'age_group' => $serviceArray['Critera - Age Group'],
-            'disability' => $serviceArray['Criteria - Disability'],
-            'employment' => $serviceArray['Criteria Employment'],
-            'gender' => $serviceArray['Criteria - Gender'],
-            'housing' => $serviceArray['Criteria - Housing'],
-            'income' => $serviceArray['Criteria - Income'],
-            'language' => $serviceArray['Criteria - Language'],
-            'other' => $serviceArray['Criteria - Other'],
-        ]);
-    }
-
-    /**
-     * @param array $serviceArray
-     * @param \App\Models\Service $service
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    protected function processSocialMedia(array $serviceArray, Service $service): EloquentCollection
-    {
-        $socialMedias = new EloquentCollection();
-
-        if ($serviceArray['Social Medias - Twitter']) {
-            $socialMedias->push($service->socialMedias()->create([
-                'type' => SocialMedia::TYPE_TWITTER,
-                'url' => $serviceArray['Social Medias - Twitter'],
-            ]));
+    protected function processServices(
+        array &$organisations,
+        array &$topics,
+        array &$services
+    ) {
+        // Map each service's organisation_id to a UUID.
+        foreach ($services as &$service) {
+            $service['_organisation_id'] = Arr::first(
+                $organisations,
+                function (array $organisation) use ($service) {
+                    return $service['organisation_id'] === $organisation['id'];
+                }
+            )['_id'];
         }
 
-        if ($serviceArray['Social Medias - Facebook']) {
-            $socialMedias->push($service->socialMedias()->create([
-                'type' => SocialMedia::TYPE_FACEBOOK,
-                'url' => $serviceArray['Social Medias - Facebook'],
-            ]));
+        // Map each service's topic IDs to their UUID.
+        foreach ($services as $row => &$service) {
+            $topicIds = explode(';', $service['Topics']);
+
+            $linkedTopics = array_filter(
+                $topics,
+                function (array $topic) use ($topicIds): bool {
+                    return in_array((string)$topic['id'], $topicIds);
+                }
+            );
+
+            $service['_topic_ids'] = Arr::pluck(
+                $linkedTopics,
+                '_id'
+            );
         }
 
-        if ($serviceArray['Social Medias - Instagram']) {
-            $socialMedias->push($service->socialMedias()->create([
-                'type' => SocialMedia::TYPE_INSTAGRAM,
-                'url' => $serviceArray['Social Medias - Instagram'],
-            ]));
-        }
+        // Persist the services.
+        foreach ($services as &$service) {
+            try {
+                $service['_model'] = Service::create([
+                    'organisation_id' => $service['_organisation_id'],
+                    'slug' => Str::slug(
+                        implode(' ', preg_split(
+                            '/(?=[A-Z])/',
+                            $service['slug']
+                        ))
+                    ),
+                    'name' => $service['name'],
+                    'type' => Service::TYPE_SERVICE,
+                    'status' => Service::STATUS_ACTIVE,
+                    'intro' => $service['intro'] ?: 'No intro provided.',
+                    'description' => sanitize_markdown(
+                        $service['description'] ?: 'No description provided.'
+                    ),
+                    'wait_time' => null,
+                    'is_free' => $service['is_free'] === 'Yes',
+                    'fees_text' => $service['fees_text'] ?: null,
+                    'fees_url' => null,
+                    'testimonial' => null,
+                    'video_embed' => null,
+                    'url' => $service['url'] ?: 'https://example.com/no-url-provided',
+                    'contact_name' => null,
+                    'contact_phone' => $service['contact_phone'] ?: null,
+                    'contact_email' => $service['contact_email'] ?: null,
+                    'show_referral_disclaimer' => false,
+                    'referral_method' => Service::REFERRAL_METHOD_NONE,
+                    'referral_button_text' => null,
+                    'referral_email' => null,
+                    'referral_url' => null,
+                    'logo_file_id' => null,
+                    'last_modified_at' => Date::now(),
+                ]);
 
-        if ($serviceArray['Social Medias - YouTube']) {
-            $socialMedias->push($service->socialMedias()->create([
-                'type' => SocialMedia::TYPE_YOUTUBE,
-                'url' => $serviceArray['Social Medias - YouTube'],
-            ]));
-        }
+                $service['_model']->serviceCriterion()->create([
+                    'age_group' => null,
+                    'disability' => null,
+                    'employment' => null,
+                    'gender' => null,
+                    'housing' => null,
+                    'income' => null,
+                    'language' => null,
+                    'other' => null,
+                ]);
 
-        if ($serviceArray['Social Medias - Other']) {
-            $socialMedias->push($service->socialMedias()->create([
-                'type' => SocialMedia::TYPE_OTHER,
-                'url' => $serviceArray['Social Medias - Other'],
-            ]));
-        }
+                $service['_model']->syncServiceTaxonomies(
+                    Taxonomy::query()->whereIn(
+                        'id',
+                        $service['_topic_ids']
+                    )->get()
+                );
 
-        return $socialMedias;
-    }
+                if (
+                    (string)$service['address_line_1'] !== ''
+                    && (string)$service['city'] !== ''
+                    && (string)$service['county'] !== ''
+                    && (string)$service['postcode'] !== ''
+                    && (string)$service['country'] !== ''
+                ) {
+                    $location = new Location([
+                        'address_line_1' => $service['address_line_1'],
+                        'address_line_2' => null,
+                        'address_line_3' => null,
+                        'city' => $service['city'],
+                        'county' => $service['county'],
+                        'postcode' => $service['postcode'],
+                        'country' => $service['country'],
+                        'accessibility_info' => null,
+                        'has_wheelchair_access' => false,
+                        'has_induction_loop' => false,
+                        'image_file_id' => null,
+                    ]);
+                    $location->updateCoordinate()->save();
 
-    /**
-     * @param array $serviceArray
-     * @param \App\Models\Service $service
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    protected function processUsefulInfo(array $serviceArray, Service $service): EloquentCollection
-    {
-        $usefulInfos = new EloquentCollection();
+                    $serviceLocation = ServiceLocation::create([
+                        'service_id' => $service['_model']->id,
+                        'location_id' => $location->id,
+                        'name' => null,
+                        'image_file_id' => null,
+                    ]);
 
-        if ($serviceArray['Useful Info 1 - Title'] && $serviceArray['Useful Info 1 - Description']) {
-            $usefulInfos->push($service->usefulInfos()->create([
-                'title' => $serviceArray['Useful Info 1 - Title'],
-                'description' => $serviceArray['Useful Info 1 - Description'],
-                'order' => 1,
-            ]));
+                    if ($service['open_monday'] === 'yes') {
+                        $serviceLocation->regularOpeningHours()->create([
+                            'frequency' => RegularOpeningHour::FREQUENCY_WEEKLY,
+                            'weekday' => RegularOpeningHour::WEEKDAY_MONDAY,
+                            'day_of_month' => null,
+                            'occurrence_of_month' => null,
+                            'starts_at' => null,
+                            'opens_at' => '00:00:00',
+                            'closes_at' => '23:59:59',
+                        ]);
+                    }
 
-            if ($serviceArray['Useful Info 2 - Title'] && $serviceArray['Useful Info 2 - Description']) {
-                $usefulInfos->push($service->usefulInfos()->create([
-                    'title' => $serviceArray['Useful Info 2 - Title'],
-                    'description' => $serviceArray['Useful Info 2 - Description'],
-                    'order' => 2,
-                ]));
+                    if ($service['open_tuesday'] === 'yes') {
+                        $serviceLocation->regularOpeningHours()->create([
+                            'frequency' => RegularOpeningHour::FREQUENCY_WEEKLY,
+                            'weekday' => RegularOpeningHour::WEEKDAY_TUESDAY,
+                            'day_of_month' => null,
+                            'occurrence_of_month' => null,
+                            'starts_at' => null,
+                            'opens_at' => '00:00:00',
+                            'closes_at' => '23:59:59',
+                        ]);
+                    }
+
+                    if ($service['open_wednesday'] === 'yes') {
+                        $serviceLocation->regularOpeningHours()->create([
+                            'frequency' => RegularOpeningHour::FREQUENCY_WEEKLY,
+                            'weekday' => RegularOpeningHour::WEEKDAY_WEDNESDAY,
+                            'day_of_month' => null,
+                            'occurrence_of_month' => null,
+                            'starts_at' => null,
+                            'opens_at' => '00:00:00',
+                            'closes_at' => '23:59:59',
+                        ]);
+                    }
+
+                    if ($service['open_thursday'] === 'yes') {
+                        $serviceLocation->regularOpeningHours()->create([
+                            'frequency' => RegularOpeningHour::FREQUENCY_WEEKLY,
+                            'weekday' => RegularOpeningHour::WEEKDAY_THURSDAY,
+                            'day_of_month' => null,
+                            'occurrence_of_month' => null,
+                            'starts_at' => null,
+                            'opens_at' => '00:00:00',
+                            'closes_at' => '23:59:59',
+                        ]);
+                    }
+
+                    if ($service['open_friday'] === 'yes') {
+                        $serviceLocation->regularOpeningHours()->create([
+                            'frequency' => RegularOpeningHour::FREQUENCY_WEEKLY,
+                            'weekday' => RegularOpeningHour::WEEKDAY_FRIDAY,
+                            'day_of_month' => null,
+                            'occurrence_of_month' => null,
+                            'starts_at' => null,
+                            'opens_at' => '00:00:00',
+                            'closes_at' => '23:59:59',
+                        ]);
+                    }
+
+                    if ($service['open_saturday'] === 'yes') {
+                        $serviceLocation->regularOpeningHours()->create([
+                            'frequency' => RegularOpeningHour::FREQUENCY_WEEKLY,
+                            'weekday' => RegularOpeningHour::WEEKDAY_SATURDAY,
+                            'day_of_month' => null,
+                            'occurrence_of_month' => null,
+                            'starts_at' => null,
+                            'opens_at' => '00:00:00',
+                            'closes_at' => '23:59:59',
+                        ]);
+                    }
+
+                    if ($service['open_sunday'] === 'yes') {
+                        $serviceLocation->regularOpeningHours()->create([
+                            'frequency' => RegularOpeningHour::FREQUENCY_WEEKLY,
+                            'weekday' => RegularOpeningHour::WEEKDAY_SUNDAY,
+                            'day_of_month' => null,
+                            'occurrence_of_month' => null,
+                            'starts_at' => null,
+                            'opens_at' => '00:00:00',
+                            'closes_at' => '23:59:59',
+                        ]);
+                    }
+                }
+            } catch (\Exception $exception) {
+                logger()->error($exception);
             }
         }
-
-        return $usefulInfos;
-    }
-
-    /**
-     * @param array $serviceLocations
-     * @param \Illuminate\Database\Eloquent\Collection $services
-     * @param \Illuminate\Database\Eloquent\Collection $locations
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    protected function processServiceLocations(
-        array $serviceLocations,
-        EloquentCollection $services,
-        EloquentCollection $locations
-    ): EloquentCollection {
-        $serviceLocations = new EloquentCollection($serviceLocations);
-
-        $serviceLocations = $serviceLocations->map(function (array $serviceLocationArray) use ($services, $locations): ServiceLocation {
-            $serviceId = $services->first(function (Service $service) use ($serviceLocationArray): bool {
-                return $service->_id == $serviceLocationArray['Service ID*'];
-            })->id;
-
-            $locationId = $locations->first(function (Location $location) use ($serviceLocationArray): bool {
-                return $location->_id == $serviceLocationArray['Location ID*'];
-            })->id;
-
-            return ServiceLocation::create([
-                'service_id' => $serviceId,
-                'location_id' => $locationId,
-            ]);
-        });
-
-        return $serviceLocations;
-    }
-
-    /**
-     * @param array $serviceTaxonomies
-     * @param \Illuminate\Database\Eloquent\Collection $services
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    protected function processServiceTaxonomies(
-        array $serviceTaxonomies,
-        EloquentCollection $services
-    ): EloquentCollection {
-        $serviceTaxonomies = new EloquentCollection($serviceTaxonomies);
-
-        $taxonomies = $serviceTaxonomies->map(function (array $serviceTaxonomyArray) {
-            $taxonomy = Taxonomy::findOrFail($serviceTaxonomyArray['Taxonomy ID']);
-            $taxonomy->_service_id = $serviceTaxonomyArray['Service ID'];
-
-            return $taxonomy;
-        })->groupBy('_service_id');
-
-        $services->each(function (Service $service) use ($taxonomies) {
-            if ($taxonomies->has($service->_id)) {
-                $service->syncServiceTaxonomies($taxonomies[$service->_id]);
-            }
-        });
-
-        return $services->load('serviceTaxonomies');
     }
 }
