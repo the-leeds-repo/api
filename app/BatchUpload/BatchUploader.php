@@ -300,7 +300,7 @@ class BatchUploader
                             '/(?=[A-Z])/',
                             $service['slug']
                         ))
-                    ),
+                    ) . '-' . mt_rand(1, 999),
                     'name' => $service['name'],
                     'type' => Service::TYPE_SERVICE,
                     'status' => Service::STATUS_ACTIVE,
