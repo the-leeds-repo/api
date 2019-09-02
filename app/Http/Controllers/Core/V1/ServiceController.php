@@ -6,6 +6,9 @@ use App\Events\EndpointHit;
 use App\Http\Controllers\Controller;
 use App\Http\Filters\Service\HasPermissionFilter;
 use App\Http\Filters\Service\OrganisationNameFilter;
+use App\Http\Filters\Service\SnomedCodeFilter;
+use App\Http\Filters\Service\TaxonomyIdFilter;
+use App\Http\Filters\Service\TaxonomyNameFilter;
 use App\Http\Requests\Service\DestroyRequest;
 use App\Http\Requests\Service\IndexRequest;
 use App\Http\Requests\Service\ShowRequest;
@@ -69,6 +72,9 @@ class ServiceController extends Controller
                 Filter::exact('status'),
                 Filter::exact('referral_method'),
                 Filter::custom('has_permission', HasPermissionFilter::class),
+                Filter::custom('taxonomy_id', TaxonomyIdFilter::class),
+                Filter::custom('taxonomy_name', TaxonomyNameFilter::class),
+                Filter::custom('snomed_code', SnomedCodeFilter::class),
             ])
             ->allowedIncludes(['organisation'])
             ->allowedSorts([

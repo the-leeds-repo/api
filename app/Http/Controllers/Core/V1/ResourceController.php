@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Core\V1;
 use App\Events\EndpointHit;
 use App\Http\Controllers\Controller;
 use App\Http\Filters\Resource\OrganisationNameFilter;
+use App\Http\Filters\Resource\SnomedCodeFilter;
+use App\Http\Filters\Resource\TaxonomyIdFilter;
+use App\Http\Filters\Resource\TaxonomyNameFilter;
 use App\Http\Requests\Resource\DestroyRequest;
 use App\Http\Requests\Resource\IndexRequest;
 use App\Http\Requests\Resource\ShowRequest;
@@ -49,6 +52,9 @@ class ResourceController extends Controller
                 Filter::exact('organisation_id'),
                 'name',
                 Filter::custom('organisation_name', OrganisationNameFilter::class),
+                Filter::custom('taxonomy_id', TaxonomyIdFilter::class),
+                Filter::custom('taxonomy_name', TaxonomyNameFilter::class),
+                Filter::custom('snomed_code', SnomedCodeFilter::class),
             ])
             ->allowedIncludes(['organisation'])
             ->allowedSorts([
