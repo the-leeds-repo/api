@@ -4,8 +4,11 @@ namespace App\BatchUpload;
 
 use App\Models\Collection;
 use App\Models\Organisation;
+use App\Models\Service;
 use App\Models\Taxonomy;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx as XlsxReader;
@@ -59,6 +62,8 @@ class BatchUploader
                 &$topics,
                 &$snomedCodes
             ) {
+                Service::disableSearchSyncing();
+
                 $this->truncateTables();
 
                 // Process topics.
@@ -70,9 +75,11 @@ class BatchUploader
                 // Process organisations.
                 $this->processOrganisations($organisations);
 
-                // TODO: Process services.
+                // Process services.
+                $this->processServices($organisations, $topics, $services);
 
-                // TODO: Process admins.
+                Service::enableSearchSyncing();
+                Artisan::call('tlr:reindex-elasticsearch');
             }
         );
     }
@@ -236,10 +243,107 @@ class BatchUploader
                 ),
                 'name' => $organisation['name'],
                 'description' => $organisation['description'] ?: 'No description.',
-                'url' => $organisation['url'] ?: 'http://example.com/no-url-provided',
+                'url' => $organisation['url'] ?: 'https://example.com/no-url-provided',
                 'email' => $organisation['email'] ?: 'no-url-provided@example.com',
                 'phone' => $organisation['phone'] ?: '00000000000',
             ]);
+        }
+    }
+
+    /**
+     * @param array $organisations
+     * @param array $topics
+     * @param array $services
+     */
+    protected function processServices(
+        array &$organisations,
+        array &$topics,
+        array &$services
+    ) {
+        // Map each service's organisation_id to a UUID.
+        foreach ($services as &$service) {
+            $service['_organisation_id'] = Arr::first(
+                $organisations,
+                function (array $organisation) use ($service) {
+                    return $service['organisation_id'] === $organisation['id'];
+                }
+            )['_id'];
+        }
+
+        // Map each service's topic IDs to their UUID.
+        foreach ($services as $row => &$service) {
+            $topicIds = explode(';', $service['Topics']);
+
+            $linkedTopics = array_filter(
+                $topics,
+                function (array $topic) use ($topicIds): bool {
+                    return in_array((string)$topic['id'], $topicIds);
+                }
+            );
+
+            $service['_topic_ids'] = Arr::pluck(
+                $linkedTopics,
+                '_id'
+            );
+        }
+
+        // Persist the services.
+        foreach ($services as &$service) {
+            try {
+                $service['_model'] = Service::create([
+                    'organisation_id' => $service['_organisation_id'],
+                    'slug' => Str::slug(
+                        implode(' ', preg_split(
+                            '/(?=[A-Z])/',
+                            $service['slug']
+                        ))
+                    ),
+                    'name' => $service['name'],
+                    'type' => Service::TYPE_SERVICE,
+                    'status' => Service::STATUS_ACTIVE,
+                    'intro' => $service['intro'] ?: 'No intro provided.',
+                    'description' => sanitize_markdown(
+                        $service['description'] ?: 'No description provided.'
+                    ),
+                    'wait_time' => null,
+                    'is_free' => $service['is_free'] === 'Yes',
+                    'fees_text' => $service['fees_text'] ?: null,
+                    'fees_url' => null,
+                    'testimonial' => null,
+                    'video_embed' => null,
+                    'url' => $service['url'] ?: 'https://example.com/no-url-provided',
+                    'contact_name' => null,
+                    'contact_phone' => $service['contact_phone'] ?: null,
+                    'contact_email' => $service['contact_email'] ?: null,
+                    'show_referral_disclaimer' => false,
+                    'referral_method' => Service::REFERRAL_METHOD_NONE,
+                    'referral_button_text' => null,
+                    'referral_email' => null,
+                    'referral_url' => null,
+                    'logo_file_id' => null,
+                    'last_modified_at' => Date::now(),
+                ]);
+
+                $service['_model']->serviceCriterion()->create([
+                    'age_group' => null,
+                    'disability' => null,
+                    'employment' => null,
+                    'gender' => null,
+                    'housing' => null,
+                    'income' => null,
+                    'language' => null,
+                    'other' => null,
+                ]);
+
+                $service['_model']->syncServiceTaxonomies(
+                    Taxonomy::query()->whereIn(
+                        'id',
+                        $service['_topic_ids']
+                    )->get()
+                );
+            } catch (\Exception $exception) {
+                echo "Failed for service [{$service['name']}].";
+            }
         }
     }
 }
