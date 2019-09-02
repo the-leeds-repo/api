@@ -301,16 +301,16 @@ class BatchUploader
                             $service['slug']
                         ))
                     ) . '-' . mt_rand(1, 999),
-                    'name' => $service['name'],
+                    'name' => Str::limit($service['name'], 255, ''),
                     'type' => Service::TYPE_SERVICE,
                     'status' => Service::STATUS_ACTIVE,
-                    'intro' => $service['intro'] ?: 'No intro provided.',
+                    'intro' => Str::limit($service['intro'], 255, '') ?: 'No intro provided.',
                     'description' => sanitize_markdown(
                         $service['description'] ?: 'No description provided.'
                     ),
                     'wait_time' => null,
                     'is_free' => $service['is_free'] === 'Yes',
-                    'fees_text' => $service['fees_text'] ?: null,
+                    'fees_text' => Str::limit($service['fees_text'], 255, '') ?: null,
                     'fees_url' => null,
                     'testimonial' => null,
                     'video_embed' => null,
