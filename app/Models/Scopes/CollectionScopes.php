@@ -32,6 +32,17 @@ trait CollectionScopes
     }
 
     /**
+     * Get only persona collections.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSnomed(Builder $query): Builder
+    {
+        return $query->where('type', Collection::TYPE_SNOMED);
+    }
+
+    /**
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param \App\Models\Collection $collection
      * @return \Illuminate\Database\Eloquent\Builder
