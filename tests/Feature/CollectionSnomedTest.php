@@ -18,6 +18,25 @@ use Tests\TestCase;
 
 class CollectionSnomedTest extends TestCase
 {
+    /**
+     * Setup the test environment.
+     *
+     * @return void
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Collection::create([
+            'type' => Collection::TYPE_SNOMED,
+            'name' => '000',
+            'meta' => [
+                'name' => 'Test SNOMED Collection',
+            ],
+            'order' => 1,
+        ]);
+    }
+
     /*
      * List all the SNOMED collections.
      */
@@ -398,6 +417,8 @@ class CollectionSnomedTest extends TestCase
     public function test_audit_created_when_created()
     {
         $this->fakeEvents();
+
+        $this->truncateCollectionSnomed();
 
         /**
          * @var \App\Models\User $user
