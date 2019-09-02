@@ -17,6 +17,7 @@ class Collection extends Model
 
     const TYPE_CATEGORY = 'category';
     const TYPE_PERSONA = 'persona';
+    const TYPE_SNOMED = 'snomed';
 
     /**
      * @return \App\Models\Collection

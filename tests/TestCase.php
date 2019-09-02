@@ -104,6 +104,17 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
+     * Delete all the SNOMED collections and pivot records.
+     */
+    protected function truncateCollectionSnomed()
+    {
+        Collection::snomed()->get()->each(function (Collection $collection) {
+            $collection->collectionTaxonomies()->delete();
+        });
+        Collection::snomed()->delete();
+    }
+
+    /**
      * Delete all the category taxonomy records.
      */
     protected function truncateTaxonomies()
