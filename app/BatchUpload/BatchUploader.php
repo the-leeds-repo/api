@@ -40,14 +40,12 @@ class BatchUploader
         $spreadsheet = $this->reader->load($filePath);
 
         // Load each worksheet.
-        $adminsSheet = $spreadsheet->getSheetByName('Admins');
         $organisationsSheet = $spreadsheet->getSheetByName('Organisations');
         $servicesSheet = $spreadsheet->getSheetByName('Services');
         $topicsSheet = $spreadsheet->getSheetByName('Topics');
         $snomedSheet = $spreadsheet->getSheetByName('SNOMED');
 
         // Convert the worksheets to associative arrays.
-        $admins = $this->toArray($adminsSheet);
         $organisations = $this->toArray($organisationsSheet);
         $services = $this->toArray($servicesSheet);
         $topics = $this->toArray($topicsSheet);
@@ -56,7 +54,6 @@ class BatchUploader
         // Process.
         DB::transaction(
             function () use (
-                &$admins,
                 &$organisations,
                 &$services,
                 &$topics,
