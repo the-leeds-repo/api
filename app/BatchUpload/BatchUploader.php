@@ -56,18 +56,19 @@ class BatchUploader
         // Process.
         DB::transaction(
             function () use (
-                $admins,
-                $organisations,
-                $services,
-                $topics,
-                $snomedCodes
+                &$admins,
+                &$organisations,
+                &$services,
+                &$topics,
+                &$snomedCodes
             ) {
                 $this->truncateTables();
 
                 // Process topics.
                 $this->processTopics($topics);
 
-                // TODO: Process SNOMED codes.
+                // Process SNOMED codes.
+                $this->processSnomedCodes($topics, $snomedCodes);
 
                 // TODO: Process organisations.
 
@@ -87,15 +88,15 @@ class BatchUploader
         $array = $sheet->toArray();
         $headings = array_shift($array);
 
-        $array = array_map(function ($row) use ($headings) {
+        foreach ($array as $rowIndex => &$rowValue) {
             $resource = [];
 
             foreach ($headings as $column => $heading) {
-                $resource[$heading] = $row[$column];
+                $resource[$heading] = $rowValue[$column];
             }
 
-            return $resource;
-        }, $array);
+            $rowValue = $resource;
+        }
 
         return $array;
     }
@@ -105,6 +106,13 @@ class BatchUploader
      */
     protected function truncateTables()
     {
+        // Delete topic taxonomies.
+        Taxonomy::category()->children()->each(
+            function (Taxonomy $topic) {
+                $topic->delete();
+            }
+        );
+
         // Delete SNOMED collections.
         Collection::query()->snomed()->get()->each(
             function (Collection $snomedCode) {
@@ -146,19 +154,64 @@ class BatchUploader
             )['_id'];
         }
 
-        // Set the order for the topics.
-        foreach ($topics as &$topic) {
-            $topic['_order'] = 0; // TODO
-        }
-
         // Persist the topics.
-        foreach ($topics as &$topic) {
+        foreach ($topics as $topic) {
+            if (Taxonomy::find($topic['_id'])) {
+                continue;
+            }
+
             Taxonomy::create([
                 'id' => $topic['_id'],
                 'parent_id' => $topic['_parent_id'],
                 'name' => $topic['name'],
-                'order' => $topic['_order'],
+                'order' => 1,
             ]);
+        }
+    }
+
+    /**
+     * @param array $topics
+     * @param array $snomedCodes
+     */
+    protected function processSnomedCodes(array &$topics, array &$snomedCodes)
+    {
+        // Map each SNOMED code's topic IDs to their UUID.
+        foreach ($snomedCodes as $row => &$snomedCode) {
+            $topicIds = explode(';', $snomedCode['topic_ids']);
+
+            $linkedTopics = array_filter(
+                $topics,
+                function (array $topic) use ($topicIds): bool {
+                    return in_array((string)$topic['id'], $topicIds);
+                }
+            );
+
+            $snomedCode['_topic_ids'] = Arr::pluck(
+                $linkedTopics,
+                '_id'
+            );
+        }
+
+        // Persist the SNOMED codes.
+        foreach ($snomedCodes as &$snomedCode) {
+            $snomedCode['_model'] = Collection::create([
+                'type' => Collection::TYPE_SNOMED,
+                'name' => $snomedCode['code'],
+                'meta' => [
+                    'name' => $snomedCode['name'] ?: null,
+                ],
+                'order' => 1,
+            ]);
+        }
+
+        // Persist the SNOMED topic links.
+        foreach ($snomedCodes as $snomedCode) {
+            $snomedCode['_model']->syncCollectionTaxonomies(
+                Taxonomy::query()->whereIn(
+                    'id',
+                    $snomedCode['_topic_ids']
+                )->get()
+            );
         }
     }
 }
