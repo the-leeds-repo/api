@@ -4,12 +4,14 @@ namespace Tests\Feature;
 
 use App\Events\EndpointHit;
 use App\Models\Audit;
+use App\Models\Collection as CollectionModel;
 use App\Models\Organisation;
 use App\Models\Resource;
 use App\Models\Service;
 use App\Models\Taxonomy;
 use App\Models\User;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Event;
 use Laravel\Passport\Passport;
@@ -158,6 +160,116 @@ class ResourcesTest extends TestCase
         $response->assertStatus(Response::HTTP_OK);
         $response->assertJsonMissing(['id' => $resourceOne->id]);
         $response->assertJsonFragment(['id' => $resourceTwo->id]);
+    }
+
+    public function test_guest_can_filter_by_taxonomy_id()
+    {
+        /** @var \App\Models\Resource $resourceOne */
+        $resourceOne = factory(Resource::class)->create();
+
+        /** @var \App\Models\Taxonomy $taxonomyOne */
+        $taxonomyOne = Taxonomy::category()->children()->firstOrFail();
+
+        $resourceOne->syncResourceTaxonomies(
+            new Collection([$taxonomyOne])
+        );
+
+        /** @var \App\Models\Resource $resourceTwo */
+        $resourceTwo = factory(Resource::class)->create();
+
+        $response = $this->json('GET', "/core/v1/resources?filter[taxonomy_id]={$taxonomyOne->id}");
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonFragment(['id' => $resourceOne->id]);
+        $response->assertJsonMissing(['id' => $resourceTwo->id]);
+    }
+
+    public function test_guest_can_filter_by_taxonomy_name()
+    {
+        /** @var \App\Models\Resource $resourceOne */
+        $resourceOne = factory(Resource::class)->create();
+
+        /** @var \App\Models\Taxonomy $taxonomyOne */
+        $taxonomyOne = Taxonomy::create([
+            'parent_id' => Taxonomy::category()->id,
+            'name' => 'Alpha',
+            'order' => Taxonomy::category()->children()->max('order') + 1,
+        ]);
+
+        $resourceOne->syncResourceTaxonomies(
+            new Collection([$taxonomyOne])
+        );
+
+        /** @var \App\Models\Resource $resourceTwo */
+        $resourceTwo = factory(Resource::class)->create();
+
+        /** @var \App\Models\Taxonomy $taxonomyTwo */
+        $taxonomyTwo = Taxonomy::create([
+            'parent_id' => Taxonomy::category()->id,
+            'name' => 'Beta',
+            'order' => Taxonomy::category()->children()->max('order') + 1,
+        ]);
+
+        $resourceTwo->syncResourceTaxonomies(
+            new Collection([$taxonomyTwo])
+        );
+
+        $response = $this->json('GET', '/core/v1/resources?filter[taxonomy_name]=Alpha');
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonFragment(['id' => $resourceOne->id]);
+        $response->assertJsonMissing(['id' => $resourceTwo->id]);
+    }
+
+    public function test_guest_can_filter_by_snomed_code()
+    {
+        /** @var \App\Models\Resource $resourceOne */
+        $resourceOne = factory(Resource::class)->create();
+
+        /** @var \App\Models\Taxonomy $taxonomyOne */
+        $taxonomyOne = Taxonomy::create([
+            'parent_id' => Taxonomy::category()->id,
+            'name' => 'Alpha',
+            'order' => Taxonomy::category()->children()->max('order') + 1,
+        ]);
+
+        $resourceOne->syncResourceTaxonomies(
+            new Collection([$taxonomyOne])
+        );
+
+        /** @var \App\Models\Resource $resourceTwo */
+        $resourceTwo = factory(Resource::class)->create();
+
+        /** @var \App\Models\Taxonomy $taxonomyTwo */
+        $taxonomyTwo = Taxonomy::create([
+            'parent_id' => Taxonomy::category()->id,
+            'name' => 'Beta',
+            'order' => Taxonomy::category()->children()->max('order') + 1,
+        ]);
+
+        $resourceTwo->syncResourceTaxonomies(
+            new Collection([$taxonomyTwo])
+        );
+
+        /** @var \App\Models\Collection $snomedCode */
+        $snomedCode = CollectionModel::create([
+            'type' => CollectionModel::TYPE_SNOMED,
+            'name' => '001',
+            'meta' => [
+                'name' => 'Test SNOMED code',
+            ],
+            'order' => 1,
+        ]);
+
+        $snomedCode->syncCollectionTaxonomies(
+            new Collection([$taxonomyOne])
+        );
+
+        $response = $this->json('GET', "/core/v1/resources?filter[snomed_code]={$snomedCode->name}");
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonFragment(['id' => $resourceOne->id]);
+        $response->assertJsonMissing(['id' => $resourceTwo->id]);
     }
 
     public function test_guest_can_sort_by_name()

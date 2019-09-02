@@ -2,6 +2,7 @@
 
 namespace App\Models\Relationships;
 
+use App\Models\Collection;
 use App\Models\CollectionTaxonomy;
 use App\Models\Referral;
 use App\Models\ResourceTaxonomy;
@@ -36,6 +37,14 @@ trait TaxonomyRelationships
     public function collectionTaxonomies(): HasMany
     {
         return $this->hasMany(CollectionTaxonomy::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function collections(): BelongsToMany
+    {
+        return $this->belongsToMany(Collection::class, (new CollectionTaxonomy())->getTable());
     }
 
     /**
