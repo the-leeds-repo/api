@@ -236,14 +236,22 @@ class BatchUploader
 
         // Persist the organisations.
         foreach ($organisations as &$organisation) {
+            $standardSlug = Str::slug(
+                implode(' ', preg_split('/(?=[A-Z])/', $organisation['slug']))
+            );
+            $suffix = '';
+            $count = 1;
+
+            do {
+                $slug = $standardSlug . $suffix;
+                $slugTaken = Organisation::where('slug', '=', $slug)->exists();
+                $suffix = '-' . $count;
+                $count++;
+            } while ($slugTaken);
+
             Organisation::create([
                 'id' => $organisation['_id'],
-                'slug' => Str::slug(
-                    implode(' ', preg_split(
-                        '/(?=[A-Z])/',
-                        $organisation['slug']
-                    ))
-                ),
+                'slug' => $slug,
                 'name' => $organisation['name'],
                 'description' => $organisation['description'] ?: 'No description.',
                 'url' => $organisation['url'] ?: 'https://example.com/no-url-provided',
@@ -298,14 +306,22 @@ class BatchUploader
         // Persist the services.
         foreach ($services as &$service) {
             try {
+                $standardSlug = Str::slug(
+                    implode(' ', preg_split('/(?=[A-Z])/', $service['slug']))
+                );
+                $suffix = '';
+                $count = 1;
+
+                do {
+                    $slug = $standardSlug . $suffix;
+                    $slugTaken = Service::where('slug', '=', $slug)->exists();
+                    $suffix = '-' . $count;
+                    $count++;
+                } while ($slugTaken);
+
                 $service['_model'] = Service::create([
                     'organisation_id' => $service['_organisation_id'],
-                    'slug' => Str::slug(
-                        implode(' ', preg_split(
-                            '/(?=[A-Z])/',
-                            $service['slug']
-                        ))
-                    ) . '-' . mt_rand(1, 999),
+                    'slug' => $slug,
                     'name' => Str::limit($service['name'], 255, ''),
                     'type' => Service::TYPE_SERVICE,
                     'status' => Service::STATUS_ACTIVE,
