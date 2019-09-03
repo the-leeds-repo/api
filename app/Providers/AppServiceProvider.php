@@ -2,19 +2,22 @@
 
 namespace App\Providers;
 
+use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap any application services.
-     *
-     * @return void
      */
     public function boot()
     {
+        // Use CarbonImmutable instead of Carbon.
+        Date::use(CarbonImmutable::class);
+
         // Geocode.
-        switch (config('ck.geocode_driver')) {
+        switch (config('tlr.geocode_driver')) {
             case 'google':
                 $this->app->singleton(\App\Contracts\Geocoder::class, \App\Geocode\GoogleGeocoder::class);
                 break;
@@ -36,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
         }
 
         // Email Sender.
-        switch (config('ck.email_driver')) {
+        switch (config('tlr.email_driver')) {
             case 'gov':
                 $this->app->singleton(\App\Contracts\EmailSender::class, \App\EmailSenders\GovNotifyEmailSender::class);
                 break;
@@ -50,7 +53,7 @@ class AppServiceProvider extends ServiceProvider
         }
 
         // SMS Sender.
-        switch (config('ck.sms_driver')) {
+        switch (config('tlr.sms_driver')) {
             case 'gov':
                 $this->app->singleton(\App\Contracts\SmsSender::class, \App\SmsSenders\GovNotifySmsSender::class);
                 break;
@@ -66,8 +69,6 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Register any application services.
-     *
-     * @return void
      */
     public function register()
     {

@@ -19,44 +19,41 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
-     * @return void
+     * @param \Illuminate\Console\Scheduling\Schedule $schedule
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command(Commands\Ck\Notify\StaleServicesCommand::class)
+        $schedule->command(Commands\Tlr\Notify\StaleServicesCommand::class)
             ->monthlyOn(15, '09:00');
 
-        $schedule->command(Commands\Ck\Notify\UnactionedReferralsCommand::class)
+        $schedule->command(Commands\Tlr\Notify\UnactionedReferralsCommand::class)
             ->dailyAt('09:00');
 
-        $schedule->command(Commands\Ck\Notify\StillUnactionedReferralsCommand::class)
+        $schedule->command(Commands\Tlr\Notify\StillUnactionedReferralsCommand::class)
             ->dailyAt('09:00');
 
-        $schedule->command(Commands\Ck\AutoDelete\AuditsCommand::class)
+        $schedule->command(Commands\Tlr\AutoDelete\AuditsCommand::class)
             ->daily();
 
-        $schedule->command(Commands\Ck\AutoDelete\PageFeedbacksCommand::class)
+        $schedule->command(Commands\Tlr\AutoDelete\PageFeedbacksCommand::class)
             ->daily();
 
-        $schedule->command(Commands\Ck\AutoDelete\PendingAssignmentFilesCommand::class)
+        $schedule->command(Commands\Tlr\AutoDelete\PendingAssignmentFilesCommand::class)
             ->daily();
 
-        $schedule->command(Commands\Ck\AutoDelete\ReferralsCommand::class)
+        $schedule->command(Commands\Tlr\AutoDelete\ReferralsCommand::class)
             ->daily();
 
-        $schedule->command(Commands\Ck\AutoDelete\ServiceRefreshTokensCommand::class)
+        $schedule->command(Commands\Tlr\AutoDelete\ServiceRefreshTokensCommand::class)
             ->daily();
     }
 
     /**
      * Register the commands for the application.
-     *
-     * @return void
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

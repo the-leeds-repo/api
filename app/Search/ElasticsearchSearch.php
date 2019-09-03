@@ -3,12 +3,12 @@
 namespace App\Search;
 
 use App\Contracts\Search;
-use App\Models\Collection as CollectionModel;
-use App\Models\ServiceLocation;
-use App\Support\Coordinate;
 use App\Http\Resources\ServiceResource;
+use App\Models\Collection as CollectionModel;
 use App\Models\SearchHistory;
 use App\Models\Service;
+use App\Models\ServiceLocation;
+use App\Support\Coordinate;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -39,7 +39,7 @@ class ElasticsearchSearch implements Search
     {
         $this->query = [
             'from' => 0,
-            'size' => config('ck.pagination_results'),
+            'size' => config('tlr.pagination_results'),
             'query' => [
                 'bool' => [
                     'filter' => [
@@ -98,8 +98,8 @@ class ElasticsearchSearch implements Search
                 $field => [
                     'query' => $term,
                     'boost' => $boost,
-                ]
-            ]
+                ],
+            ],
         ];
     }
 
@@ -116,8 +116,8 @@ class ElasticsearchSearch implements Search
                 $field => [
                     'query' => $term,
                     'boost' => $boost,
-                ]
-            ]
+                ],
+            ],
         ];
     }
 
@@ -228,8 +228,8 @@ class ElasticsearchSearch implements Search
     {
         $this->query['query']['bool']['filter']['bool']['must'][] = [
             'term' => [
-                'is_free' => $isFree
-            ]
+                'is_free' => $isFree,
+            ],
         ];
 
         return $this;
@@ -248,8 +248,8 @@ class ElasticsearchSearch implements Search
                     '_geo_distance' => [
                         'service_locations.location' => $location->toArray(),
                         'nested_path' => 'service_locations',
-                    ]
-                ]
+                    ],
+                ],
             ];
         }
 
@@ -270,9 +270,9 @@ class ElasticsearchSearch implements Search
                     'geo_distance' => [
                         'distance' => $this->distance($radius),
                         'service_locations.location' => $location->toArray(),
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
 
         return $this;
@@ -370,7 +370,7 @@ class ElasticsearchSearch implements Search
             $services = new LengthAwarePaginator(
                 $services,
                 $response['hits']['total'],
-                config('ck.pagination_results'),
+                config('tlr.pagination_results'),
                 $page,
                 ['path' => Paginator::resolveCurrentPath()]
             );

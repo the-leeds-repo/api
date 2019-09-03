@@ -11,7 +11,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\TestResponse;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 
@@ -24,10 +24,15 @@ abstract class TestCase extends BaseTestCase
     /**
      * @var bool
      */
+    protected static $testLogCleared = false;
+
+    /**
+     * @var bool
+     */
     protected static $elasticsearchInitialised = false;
 
     /**
-     * @var \Illuminate\Support\Carbon
+     * @var \Carbon\CarbonImmutable
      */
     protected $now;
 
@@ -40,18 +45,16 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        // Set the log path.
-        Config::set('logging.channels.single.path', storage_path('logs/testing.log'));
-
         // Clear the cache.
         $this->artisan('cache:clear');
 
         // Disable the API throttle middleware.
         $this->withoutMiddleware('throttle');
 
+        $this->clearLog();
         $this->setUpElasticsearch();
 
-        $this->now = now();
+        $this->now = Date::now();
     }
 
     /**
@@ -101,6 +104,17 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
+     * Delete all the SNOMED collections and pivot records.
+     */
+    protected function truncateCollectionSnomed()
+    {
+        Collection::snomed()->get()->each(function (Collection $collection) {
+            $collection->collectionTaxonomies()->delete();
+        });
+        Collection::snomed()->delete();
+    }
+
+    /**
      * Delete all the category taxonomy records.
      */
     protected function truncateTaxonomies()
@@ -109,11 +123,22 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
+     * Clears the testing log file.
+     */
+    protected function clearLog()
+    {
+        if (!static::$testLogCleared) {
+            file_put_contents(config('logging.channels.testing.path'), '');
+            static::$testLogCleared = true;
+        }
+    }
+
+    /**
      * Sets up the Elasticsearch indices.
      */
     protected function setUpElasticsearch()
     {
-        if (! $this instanceof UsesElasticsearch) {
+        if (!$this instanceof UsesElasticsearch) {
             Service::disableSearchSyncing();
             return;
         } else {
@@ -121,7 +146,7 @@ abstract class TestCase extends BaseTestCase
         }
 
         if (!static::$elasticsearchInitialised) {
-            $this->artisan('ck:reindex-elasticsearch');
+            $this->artisan('tlr:reindex-elasticsearch');
             static::$elasticsearchInitialised = true;
         }
     }
@@ -131,7 +156,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function tearDownElasticsearch()
     {
-        if (! $this instanceof UsesElasticsearch) {
+        if (!$this instanceof UsesElasticsearch) {
             Service::disableSearchSyncing();
             return;
         } else {

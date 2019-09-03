@@ -32,8 +32,6 @@ class ResetPasswordController extends Controller
 
     /**
      * Create a new controller instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -57,14 +55,14 @@ class ResetPasswordController extends Controller
     /**
      * Get the response for a successful password reset.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  string  $response
+     * @param \Illuminate\Http\Request $request
+     * @param string $response
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
      */
     protected function sendResetResponse(Request $request, $response)
     {
         // If OTP is disabled then skip this method.
-        if (!config('ck.otp_enabled')) {
+        if (!config('tlr.otp_enabled')) {
             return redirect($this->redirectPath())
                 ->with('status', trans($response));
         }

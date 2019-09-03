@@ -13,8 +13,7 @@ class PageFeedbackReceived
     /**
      * Handle the event.
      *
-     * @param  EndpointHit $event
-     * @return void
+     * @param EndpointHit $event
      */
     public function handle(EndpointHit $event)
     {
@@ -32,7 +31,7 @@ class PageFeedbackReceived
     protected function notifyGlobalAdmins(PageFeedback $pageFeedback)
     {
         Notification::sendEmail(
-            new NotifyGlobalAdminEmail(config('ck.global_admin.email'), [
+            new NotifyGlobalAdminEmail(config('tlr.global_admin.email'), [
                 'FEEDBACK_URL' => $pageFeedback->url,
                 'FEEDBACK_CONTENT' => $pageFeedback->feedback,
                 'CONTACT_DETAILS_PROVIDED' => $pageFeedback->userDetailsProvided(),

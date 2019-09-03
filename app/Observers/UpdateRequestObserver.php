@@ -18,8 +18,7 @@ class UpdateRequestObserver
     /**
      * Handle to the update request "created" event.
      *
-     * @param  \App\Models\UpdateRequest  $updateRequest
-     * @return void
+     * @param \App\Models\UpdateRequest $updateRequest
      */
     public function created(UpdateRequest $updateRequest)
     {
@@ -112,7 +111,7 @@ class UpdateRequestObserver
 
         // Send notification to the global admins.
         Notification::sendEmail(
-            new NotifyGlobalAdminEmail(config('ck.global_admin.email'), [
+            new NotifyGlobalAdminEmail(config('tlr.global_admin.email'), [
                 'RESOURCE_NAME' => $resourceName,
                 'RESOURCE_TYPE' => $resourceType,
                 'RESOURCE_ID' => $updateRequest->updateable_id,

@@ -14,8 +14,7 @@ class ServiceObserver
     /**
      * Handle the organisation "created" event.
      *
-     * @param  \App\Models\Service $service
-     * @return void
+     * @param \App\Models\Service $service
      */
     public function created(Service $service)
     {
@@ -32,8 +31,7 @@ class ServiceObserver
     /**
      * Handle the organisation "updated" event.
      *
-     * @param  \App\Models\Service $service
-     * @return void
+     * @param \App\Models\Service $service
      */
     public function updated(Service $service)
     {
@@ -78,7 +76,7 @@ class ServiceObserver
             ) {
                 Notification::sendEmail(
                     new NotifyGlobalAdminEmail(
-                        config('ck.global_admin.email'),
+                        config('tlr.global_admin.email'),
                         ['SERVICE_NAME' => $service->name]
                     )
                 );
@@ -89,8 +87,7 @@ class ServiceObserver
     /**
      * Handle the organisation "deleting" event.
      *
-     * @param  \App\Models\Service $service
-     * @return void
+     * @param \App\Models\Service $service
      */
     public function deleting(Service $service)
     {

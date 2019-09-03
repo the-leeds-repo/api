@@ -15,15 +15,15 @@ class ThesaurusTest extends TestCase
     /**
      * Clean up the testing environment before the next test.
      *
-     * @return void
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @return void
      */
     protected function tearDown(): void
     {
         // Reindex to prevent synonyms persisting.
         $synonyms = Storage::disk('local')->get('elasticsearch/thesaurus.csv');
         Storage::cloud()->put('elasticsearch/thesaurus.csv', $synonyms);
-        $this->artisan('ck:reindex-elasticsearch');
+        $this->artisan('tlr:reindex-elasticsearch');
 
         parent::tearDown();
     }
@@ -154,7 +154,7 @@ class ThesaurusTest extends TestCase
         $response->assertJson([
             'data' => [
                 ['persons', 'people'],
-            ]
+            ],
         ]);
     }
 

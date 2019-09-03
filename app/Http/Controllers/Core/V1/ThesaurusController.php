@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Core\V1;
 
-use App\Console\Commands\Ck\ReindexElasticsearchCommand;
+use App\Console\Commands\Tlr\ReindexElasticsearchCommand;
 use App\Events\EndpointHit;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Thesaurus\IndexRequest;
@@ -29,8 +29,8 @@ class ThesaurusController extends Controller
      * Display a listing of the resource.
      *
      * @param \App\Http\Requests\Thesaurus\IndexRequest $request
-     * @return \App\Http\Responses\Thesaurus
      * @throws \Exception
+     * @return \App\Http\Responses\Thesaurus
      */
     public function index(IndexRequest $request)
     {
@@ -69,8 +69,8 @@ class ThesaurusController extends Controller
      * Update the specified resource in storage.
      *
      * @param \App\Http\Requests\Thesaurus\UpdateRequest $request
-     * @return \App\Http\Responses\Thesaurus
      * @throws \Exception
+     * @return \App\Http\Responses\Thesaurus
      */
     public function update(UpdateRequest $request)
     {

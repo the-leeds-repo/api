@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Core\V1;
 
-use App\Console\Commands\Ck\ReindexElasticsearchCommand;
+use App\Console\Commands\Tlr\ReindexElasticsearchCommand;
 use App\Events\EndpointHit;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StopWords\IndexRequest;
@@ -29,8 +29,8 @@ class StopWordsController extends Controller
      * Display a listing of the resource.
      *
      * @param \App\Http\Requests\StopWords\IndexRequest $request
-     * @return \App\Http\Responses\StopWords
      * @throws \Exception
+     * @return \App\Http\Responses\StopWords
      */
     public function index(IndexRequest $request)
     {
@@ -54,8 +54,8 @@ class StopWordsController extends Controller
      * Update the specified resource in storage.
      *
      * @param \App\Http\Requests\StopWords\UpdateRequest $request
-     * @return \App\Http\Responses\StopWords
      * @throws \Exception
+     * @return \App\Http\Responses\StopWords
      */
     public function update(UpdateRequest $request)
     {

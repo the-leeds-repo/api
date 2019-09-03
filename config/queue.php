@@ -51,11 +51,12 @@ return [
 
         'sqs' => [
             'driver' => 'sqs',
-            'key' => env('SQS_KEY', 'your-public-key'),
-            'secret' => env('SQS_SECRET', 'your-secret-key'),
+            'key' => env('AWS_ACCESS_KEY_ID', 'your-public-key'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY', 'your-secret-key'),
             'prefix' => env('SQS_PREFIX', 'https://sqs.eu-west-1.amazonaws.com/your-account-id'),
-            'queue' => env('SQS_QUEUE', 'default'),
-            'region' => env('SQS_REGION', 'eu-west-1'),
+            'suffix' => env('SQS_SUFFIX', ''),
+            'queue' => env('SQS_QUEUE', 'default') . env('SQS_SUFFIX', ''),
+            'region' => env('AWS_DEFAULT_REGION', 'eu-west-1'),
         ],
 
         'redis' => [

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
+  <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -10,39 +10,58 @@
     <title>@yield('title', config('app.name', 'Laravel'))</title>
 
     <!-- Favicon -->
-    @include('partials.favicons')
+  @include('partials.favicons')
 
-    <!-- Styles -->
+  <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     @yield('css')
-</head>
-<body>
+  </head>
+  <body>
     <header class="govuk-header" role="banner" data-module="header">
-        <div class="govuk-header__container govuk-width-container">
+      <div class="govuk-header__container govuk-width-container">
 
-            <div class="govuk-header__logo">
-                <a href="{{ route('home') }}" class="govuk-header__link govuk-header__link--homepage">
+        <div class="govuk-header__logo">
+          <a href="{{ route('home') }}" class="govuk-header__link govuk-header__link--homepage">
                     <span class="govuk-header__logotype">
-                      <img src="{{ asset('/img/logo-white.png') }}" class="govuk-header__logotype-crown" alt="Connected Kingston logo" title="Connected Kingston">
+                      <img src="{{ asset('/img/logo-white.png') }}"
+                        class="govuk-header__logotype-crown"
+                        alt="{{ config('app.name') }} logo"
+                        title="{{ config('app.name') }}">
                     </span>
-                </a>
-            </div>
-
-            <div class="govuk-header__content">
-                <a href="{{ route('home') }}" class="govuk-header__link govuk-header__link--service-name">
-                    {{ config('app.name') }}
-                </a>
-            </div>
-
+          </a>
         </div>
+
+        <div class="govuk-header__content">
+          <a href="{{ route('home') }}" class="govuk-header__link govuk-header__link--service-name">
+            {{ config('app.name') }}
+          </a>
+        </div>
+
+      </div>
     </header>
 
     <div class="govuk-width-container">
-        <main class="govuk-main-wrapper " id="main-content" role="main">
-            @yield('content')
-        </main>
+      <main class="govuk-main-wrapper " id="main-content" role="main">
+        @yield('content')
+      </main>
     </div>
 
+    <footer role="contentinfo" class="govuk-footer">
+      <div class="govuk-width-container">
+        <div class="govuk-footer__meta">
+          <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+            <span class="govuk-footer__licence-description">
+              This project is based upon the
+              <a
+                href="https://github.com/RoyalBoroughKingston/ck-api"
+                class="govuk-link govuk-link--no-visited-state"
+              >Connected Kingston</a> project.
+            </span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
     @yield('js')
-</body>
+  </body>
 </html>

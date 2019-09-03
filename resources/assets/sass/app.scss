@@ -1,3 +1,5 @@
+$govuk-brand-colour: #4D65F1;
+
 @import "node_modules/govuk-frontend/all";
 
 body {
@@ -16,7 +18,7 @@ body {
 }
 
 .govuk-header {
-  background-color: #485b7f;
+  background-color: $govuk-brand-colour;
 
   &__link--homepage {
     margin-right: 1rem;
@@ -32,16 +34,18 @@ body {
   border-bottom: none !important;
 }
 
-.govuk-header__navigation-item--active a:link, .govuk-header__navigation-item--active a:hover, .govuk-header__navigation-item--active a:visited {
+.govuk-header__navigation-item--active a:link,
+.govuk-header__navigation-item--active a:hover,
+.govuk-header__navigation-item--active a:visited {
   color: #75d0c4 !important;
 }
 
 .govuk-button {
-  background-color: #485b7f !important;
-  box-shadow: 0 2px 0 #003618 !important;;
-  -webkit-box-shadow: 0 2px 0 #003618 !important;;
+  background-color: $govuk-brand-colour !important;
+  box-shadow: 0 2px 0 darken($govuk-brand-colour, 15%) !important;;
+  -webkit-box-shadow: 0 2px 0 darken($govuk-brand-colour, 15%) !important;;
 }
 
 .govuk-button:hover, .govuk-button:focus {
-  background-color: #263146 !important;;
+  background-color: darken($govuk-brand-colour, 5%) !important;;
 }

@@ -42,7 +42,7 @@ return [
     */
 
     'queue' => [
-        'queue' => env('SCOUT_QUEUE', 'search'),
+        'queue' => env('SCOUT_QUEUE', 'search') . env('SQS_SUFFIX', ''),
         'connection' => env('QUEUE_DRIVER', 'sync'),
     ],
 

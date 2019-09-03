@@ -14,8 +14,7 @@ class ServiceCreated
     /**
      * Handle the event.
      *
-     * @param  EndpointHit $event
-     * @return void
+     * @param EndpointHit $event
      */
     public function handle(EndpointHit $event)
     {
@@ -37,7 +36,7 @@ class ServiceCreated
     protected function notifyGlobalAdmins(Service $service, User $user)
     {
         Notification::sendEmail(
-            new NotifyGlobalAdminEmail(config('ck.global_admin.email'), [
+            new NotifyGlobalAdminEmail(config('tlr.global_admin.email'), [
                 'SERVICE_NAME' => $service->name,
                 'ORGANISATION_ADMIN_NAME' => $user->full_name,
                 'SERVICE_INTRO' => $service->intro,

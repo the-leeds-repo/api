@@ -15,15 +15,15 @@ class StopWordsTest extends TestCase
     /**
      * Clean up the testing environment before the next test.
      *
-     * @return void
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @return void
      */
     protected function tearDown(): void
     {
         // Reindex to prevent stop words persisting.
         $stopWords = Storage::disk('local')->get('elasticsearch/stop-words.csv');
         Storage::cloud()->put('elasticsearch/stop-words.csv', $stopWords);
-        $this->artisan('ck:reindex-elasticsearch');
+        $this->artisan('tlr:reindex-elasticsearch');
 
         parent::tearDown();
     }

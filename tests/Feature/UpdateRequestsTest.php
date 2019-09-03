@@ -6,6 +6,7 @@ use App\Events\EndpointHit;
 use App\Models\Audit;
 use App\Models\Location;
 use App\Models\Organisation;
+use App\Models\Resource;
 use App\Models\Role;
 use App\Models\Service;
 use App\Models\ServiceLocation;
@@ -13,8 +14,9 @@ use App\Models\Taxonomy;
 use App\Models\UpdateRequest;
 use App\Models\User;
 use App\Models\UserRole;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\Response;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Event;
 use Laravel\Passport\Passport;
 use Tests\TestCase;
@@ -688,6 +690,45 @@ class UpdateRequestsTest extends TestCase
         ]);
     }
 
+    public function test_global_admin_can_approve_one_for_resource()
+    {
+        $resource = factory(Resource::class)->create();
+        $resource->resourceTaxonomies()->create([
+            'taxonomy_id' => Taxonomy::category()->children()->firstOrFail()->id,
+        ]);
+
+        $user = factory(User::class)->create()->makeGlobalAdmin();
+        Passport::actingAs($user);
+
+        $updateRequest = $resource->updateRequests()->create([
+            'user_id' => $user->id,
+            'data' => [
+                'organisation_id' => $resource->organisation_id,
+                'name' => 'Test Name',
+                'slug' => $resource->slug,
+                'description' => $resource->description,
+                'url' => $resource->url,
+                'license' => $resource->license,
+                'author' => $resource->author,
+                'category_taxonomies' => $resource->taxonomies()->pluck('taxonomies.id')->toArray(),
+                'published_at' => optional($resource->published_at)->toDateString(),
+                'last_modified_at' => optional($resource->last_modified_at)->toDateString(),
+            ],
+        ]);
+
+        $response = $this->json('PUT', "/core/v1/update-requests/{$updateRequest->id}/approve");
+
+        $response->assertStatus(Response::HTTP_OK);
+        $this->assertDatabaseMissing(
+            (new UpdateRequest())->getTable(),
+            ['id' => $updateRequest->id, 'approved_at' => null]
+        );
+        $this->assertDatabaseHas((new Resource())->getTable(), [
+            'id' => $resource->id,
+            'name' => 'Test Name',
+        ]);
+    }
+
     public function test_audit_created_when_approved()
     {
         $this->fakeEvents();
@@ -763,9 +804,9 @@ class UpdateRequestsTest extends TestCase
 
     public function test_last_modified_at_is_set_to_now_when_service_updated()
     {
-        $oldNow = now()->subMonths(6);
-        $newNow = now();
-        Carbon::setTestNow($newNow);
+        $oldNow = Date::now()->subMonths(6);
+        $newNow = Date::now();
+        Date::setTestNow($newNow);
 
         $user = factory(User::class)->create()->makeGlobalAdmin();
         Passport::actingAs($user);
@@ -786,7 +827,7 @@ class UpdateRequestsTest extends TestCase
 
         $response->assertStatus(Response::HTTP_OK);
         $this->assertDatabaseHas($service->getTable(), [
-            'last_modified_at' => $newNow->format(Carbon::ISO8601),
+            'last_modified_at' => $newNow->format(CarbonImmutable::ISO8601),
         ]);
     }
 }

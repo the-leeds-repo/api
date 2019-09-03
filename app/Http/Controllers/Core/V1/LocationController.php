@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Core\V1;
 
 use App\Events\EndpointHit;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Location\DestroyRequest;
 use App\Http\Requests\Location\IndexRequest;
 use App\Http\Requests\Location\ShowRequest;
@@ -13,7 +14,6 @@ use App\Http\Responses\ResourceDeleted;
 use App\Http\Responses\UpdateRequestReceived;
 use App\Models\File;
 use App\Models\Location;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\Filter;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -104,7 +104,7 @@ class LocationController extends Controller
                 $file = File::findOrFail($request->image_file_id)->assigned();
 
                 // Create resized version for common dimensions.
-                foreach (config('ck.cached_image_dimensions') as $maxDimension) {
+                foreach (config('tlr.cached_image_dimensions') as $maxDimension) {
                     $file->resizedVersion($maxDimension);
                 }
             }
@@ -122,7 +122,7 @@ class LocationController extends Controller
      * Display the specified resource.
      *
      * @param \App\Http\Requests\Location\ShowRequest $request
-     * @param  \App\Models\Location $location
+     * @param \App\Models\Location $location
      * @return \App\Http\Resources\LocationResource
      */
     public function show(ShowRequest $request, Location $location)
@@ -142,7 +142,7 @@ class LocationController extends Controller
      * Update the specified resource in storage.
      *
      * @param \App\Http\Requests\Location\UpdateRequest $request
-     * @param  \App\Models\Location $location
+     * @param \App\Models\Location $location
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateRequest $request, Location $location)
@@ -170,7 +170,7 @@ class LocationController extends Controller
                 $file = File::findOrFail($request->image_file_id)->assigned();
 
                 // Create resized version for common dimensions.
-                foreach (config('ck.cached_image_dimensions') as $maxDimension) {
+                foreach (config('tlr.cached_image_dimensions') as $maxDimension) {
                     $file->resizedVersion($maxDimension);
                 }
             }
@@ -185,7 +185,7 @@ class LocationController extends Controller
      * Remove the specified resource from storage.
      *
      * @param \App\Http\Requests\Location\DestroyRequest $request
-     * @param  \App\Models\Location $location
+     * @param \App\Models\Location $location
      * @return \Illuminate\Http\Response
      */
     public function destroy(DestroyRequest $request, Location $location)

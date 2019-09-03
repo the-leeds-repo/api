@@ -26,8 +26,8 @@ class IsOrganisationAdmin implements Rule
     /**
      * Determine if the validation rule passes.
      *
-     * @param  string  $attribute
-     * @param  mixed  $value
+     * @param string $attribute
+     * @param mixed $value
      * @return bool
      */
     public function passes($attribute, $value)
@@ -37,6 +37,7 @@ class IsOrganisationAdmin implements Rule
             return false;
         }
 
+        /** @var \App\Models\Organisation|null $organisation */
         $organisation = Organisation::query()->find($value);
 
         return $organisation ? $this->user->isOrganisationAdmin($organisation) : false;

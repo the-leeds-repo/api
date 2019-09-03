@@ -1,6 +1,6 @@
 <?php
 
-use App\Console\Commands\Ck\ReindexElasticsearchCommand;
+use App\Console\Commands\Tlr\ReindexElasticsearchCommand;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
@@ -10,7 +10,6 @@ class UploadThesaurus extends Migration
     /**
      * Run the migrations.
      *
-     * @return void
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function up()
@@ -23,8 +22,6 @@ class UploadThesaurus extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {

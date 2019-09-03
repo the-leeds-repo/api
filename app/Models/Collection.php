@@ -17,6 +17,7 @@ class Collection extends Model
 
     const TYPE_CATEGORY = 'category';
     const TYPE_PERSONA = 'persona';
+    const TYPE_SNOMED = 'snomed';
 
     /**
      * @return \App\Models\Collection
@@ -47,8 +48,8 @@ class Collection extends Model
 
     /**
      * @param int|null $maxDimension
-     * @return \App\Models\File|\Illuminate\Http\Response|\Illuminate\Contracts\Support\Responsable
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException|\InvalidArgumentException
+     * @return \App\Models\File|\Illuminate\Http\Response|\Illuminate\Contracts\Support\Responsable
      */
     public static function personaPlaceholderLogo(int $maxDimension = null)
     {

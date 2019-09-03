@@ -45,6 +45,18 @@ Route::prefix('core/v1')->namespace('Core\\V1')->name('core.v1.')->group(functio
         ]);
     Route::get('/collections/personas/{collection}/image.png', 'CollectionPersona\\ImageController')->name('collection-personas.image');
 
+    // SNOMED Collections.
+    Route::match(['GET', 'POST'], '/collections/snomed/index', 'CollectionSnomedController@index');
+    Route::apiResource('/collections/snomed', 'CollectionSnomedController')
+        ->parameter('snomed', 'collection')
+        ->names([
+            'index' => 'collection-snomed.index',
+            'store' => 'collection-snomed.store',
+            'show' => 'collection-snomed.show',
+            'update' => 'collection-snomed.update',
+            'destroy' => 'collection-snomed.destroy',
+        ]);
+
     // Files.
     Route::apiResource('/files', 'FileController')->only('store');
 
@@ -78,6 +90,10 @@ Route::prefix('core/v1')->namespace('Core\\V1')->name('core.v1.')->group(functio
     Route::match(['GET', 'POST'], '/reports/index', 'ReportController@index');
     Route::apiResource('/reports', 'ReportController')->only('index', 'store', 'show', 'destroy');
     Route::get('/reports/{report}/download', 'Report\\DownloadController@show')->name('reports.download');
+
+    // Resources.
+    Route::match(['GET', 'POST'], '/resources/index', 'ResourceController@index');
+    Route::apiResource('/resources', 'ResourceController');
 
     // Search.
     Route::post('/search', 'SearchController')->name('search');
