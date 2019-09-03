@@ -270,8 +270,13 @@ class BatchUploader
                 function (array $organisation) use ($service) {
                     return $service['organisation_id'] === $organisation['id'];
                 }
-            )['_id'];
+            )['_id'] ?? null;
         }
+
+        // Filter out services that don't have an organisation ID.
+        $services = array_filter($services, function (array $service): bool {
+            return $service['_organisation_id'] !== null;
+        });
 
         // Map each service's topic IDs to their UUID.
         foreach ($services as $row => &$service) {
