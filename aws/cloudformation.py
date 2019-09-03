@@ -233,6 +233,7 @@ elasticsearch_instance_count_parameter = template.add_parameter(
 # ==================================================
 default_queue_name_variable = Join('-', ['default', Ref(environment_parameter), Ref(uuid_parameter)])
 notifications_queue_name_variable = Join('-', ['notifications', Ref(environment_parameter), Ref(uuid_parameter)])
+search_queue_name_variable = Join('-', ['search', Ref(environment_parameter), Ref(uuid_parameter)])
 uploads_bucket_name_variable = Join('-', ['uploads', Ref(environment_parameter), Ref(uuid_parameter)])
 api_launch_template_name_variable = Join('-', ['api-launch-template', Ref(environment_parameter)])
 docker_repository_name_variable = Join('-', ['api', Ref(environment_parameter), Ref(uuid_parameter)])
@@ -377,6 +378,13 @@ notifications_queue_resource = template.add_resource(
   sqs.Queue(
     'NotificationsQueue',
     QueueName=notifications_queue_name_variable
+  )
+)
+
+search_queue_resource = template.add_resource(
+  sqs.Queue(
+    'SearchQueue',
+    QueueName=search_queue_name_variable
   )
 )
 
@@ -820,6 +828,11 @@ api_user_resource = template.add_resource(
               'Action': 'sqs:*',
               'Effect': 'Allow',
               'Resource': GetAtt(notifications_queue_resource, 'Arn')
+            },
+            {
+              'Action': 'sqs:*',
+              'Effect': 'Allow',
+              'Resource': GetAtt(search_queue_resource, 'Arn')
             }
           ]
         }
