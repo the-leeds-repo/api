@@ -374,13 +374,13 @@ class BatchUploader
                     && (string)$service['country'] !== ''
                 ) {
                     $location = new Location([
-                        'address_line_1' => $service['address_line_1'],
+                        'address_line_1' => Str::limit($service['address_line_1'], 255, ''),
                         'address_line_2' => null,
                         'address_line_3' => null,
-                        'city' => $service['city'],
-                        'county' => $service['county'],
-                        'postcode' => $service['postcode'],
-                        'country' => $service['country'],
+                        'city' =>Str::limit($service['city'], 255, ''),
+                        'county' => Str::limit($service['county'], 255, ''),
+                        'postcode' => Str::limit($service['postcode'], 255, ''),
+                        'country' => Str::limit($service['country'], 255, ''),
                         'accessibility_info' => null,
                         'has_wheelchair_access' => false,
                         'has_induction_loop' => false,
