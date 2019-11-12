@@ -34,6 +34,7 @@ class EndActiveServicesCommand extends Command
         // Get all the services and chunk them for performance.
         Service::query()
             ->whereNotNull('ends_at')
+            ->where('status', '=', Service::STATUS_ACTIVE)
             ->where('ends_at', '<', Date::now())
             ->chunk(200, function (Collection $services) {
                 $services->each(function (Service $service) {
