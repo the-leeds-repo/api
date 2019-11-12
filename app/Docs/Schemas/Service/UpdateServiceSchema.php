@@ -44,7 +44,8 @@ class UpdateServiceSchema extends Schema
                 'offerings',
                 'social_medias',
                 'gallery_items',
-                'category_taxonomies'
+                'category_taxonomies',
+                'ends_at'
             )
             ->properties(
                 Schema::string('organisation_id')
@@ -157,7 +158,10 @@ class UpdateServiceSchema extends Schema
                     ->items(
                         Schema::string()
                             ->format(Schema::FORMAT_UUID)
-                    )
+                    ),
+                Schema::string('ends_at')
+                    ->format(Schema::FORMAT_DATE_TIME)
+                    ->nullable()
             );
     }
 }
