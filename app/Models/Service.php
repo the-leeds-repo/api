@@ -14,6 +14,7 @@ use App\Rules\FileIsMimeType;
 use App\Sms\Sms;
 use App\UpdateRequest\AppliesUpdateRequests;
 use App\UpdateRequest\UpdateRequests;
+use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -235,6 +236,9 @@ class Service extends Model implements AppliesUpdateRequests, Notifiable
             'logo_file_id' => array_key_exists('logo_file_id', $data)
                 ? $data['logo_file_id']
                 : $this->logo_file_id,
+            'ends_at' => array_key_exists('ends_at', $data)
+                ? $data['ends_at']
+                : $this->ends_at,
             // This must always be updated regardless of the fields changed.
             'last_modified_at' => Date::now(),
         ]);
