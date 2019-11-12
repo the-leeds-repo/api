@@ -126,6 +126,7 @@ class ServiceController extends Controller
                 'referral_email' => $request->referral_email,
                 'referral_url' => $request->referral_url,
                 'logo_file_id' => $request->logo_file_id,
+                'ends_at' => $request->ends_at,
                 'last_modified_at' => Date::now(),
             ]);
 
@@ -293,6 +294,7 @@ class ServiceController extends Controller
                 'gallery_items' => $request->has('gallery_items') ? [] : new MissingValue(),
                 'category_taxonomies' => $request->missing('category_taxonomies'),
                 'logo_file_id' => $request->missing('logo_file_id'),
+                'ends_at' => $request->missing('ends_at'),
             ]);
 
             if ($request->filled('gallery_items') && !$request->isPreview()) {
