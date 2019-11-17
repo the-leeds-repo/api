@@ -18,6 +18,7 @@ use App\Rules\RootTaxonomyIs;
 use App\Rules\Slug;
 use App\Rules\UserHasRole;
 use App\Rules\VideoEmbed;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -163,6 +164,8 @@ class StoreRequest extends FormRequest
                     null
                 ),
             ],
+            'ends_at' => ['present', 'nullable', 'date_format:' . CarbonImmutable::ISO8601],
+
             'criteria' => ['required', 'array'],
             'criteria.age_group' => ['present', 'nullable', 'string', 'min:1', 'max:255'],
             'criteria.disability' => ['present', 'nullable', 'string', 'min:1', 'max:255'],

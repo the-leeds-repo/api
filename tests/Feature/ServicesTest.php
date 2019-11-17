@@ -121,6 +121,7 @@ class ServicesTest extends TestCase
                     'updated_at' => Taxonomy::category()->children()->first()->updated_at->format(CarbonImmutable::ISO8601),
                 ],
             ],
+            'ends_at' => null,
             'last_modified_at' => $service->last_modified_at->format(CarbonImmutable::ISO8601),
             'created_at' => $service->created_at->format(CarbonImmutable::ISO8601),
         ]);
@@ -404,6 +405,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => null,
             'referral_email' => null,
             'referral_url' => null,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -472,6 +474,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => null,
             'referral_email' => null,
             'referral_url' => null,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -541,6 +544,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => null,
             'referral_email' => $this->faker->safeEmail,
             'referral_url' => null,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -618,6 +622,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => null,
             'referral_email' => $this->faker->safeEmail,
             'referral_url' => null,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -671,6 +676,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => null,
             'referral_email' => $this->faker->safeEmail,
             'referral_url' => null,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -741,6 +747,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => null,
             'referral_email' => null,
             'referral_url' => null,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -819,6 +826,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => null,
             'referral_email' => $this->faker->safeEmail,
             'referral_url' => null,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -897,6 +905,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => null,
             'referral_email' => null,
             'referral_url' => null,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -968,6 +977,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => null,
             'referral_email' => null,
             'referral_url' => null,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -1098,6 +1108,7 @@ class ServicesTest extends TestCase
                 ],
             ],
             'gallery_items' => [],
+            'ends_at' => null,
             'last_modified_at' => $service->last_modified_at->format(CarbonImmutable::ISO8601),
             'created_at' => $service->created_at->format(CarbonImmutable::ISO8601),
         ]);
@@ -1190,6 +1201,7 @@ class ServicesTest extends TestCase
                 ],
             ],
             'gallery_items' => [],
+            'ends_at' => null,
             'last_modified_at' => $service->last_modified_at->format(CarbonImmutable::ISO8601),
             'created_at' => $service->created_at->format(CarbonImmutable::ISO8601),
         ]);
@@ -1284,6 +1296,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => null,
             'referral_email' => null,
             'referral_url' => null,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -1357,6 +1370,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => $service->referral_button_text,
             'referral_email' => $service->referral_email,
             'referral_url' => $service->referral_url,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -1431,6 +1445,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => $service->referral_button_text,
             'referral_email' => $service->referral_email,
             'referral_url' => $service->referral_url,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -1505,6 +1520,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => $service->referral_button_text,
             'referral_email' => $service->referral_email,
             'referral_url' => $service->referral_url,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -1581,6 +1597,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => null,
             'referral_email' => $this->faker->safeEmail,
             'referral_url' => null,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -1655,6 +1672,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => null,
             'referral_email' => $this->faker->safeEmail,
             'referral_url' => null,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -1728,6 +1746,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => null,
             'referral_email' => $this->faker->safeEmail,
             'referral_url' => null,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -1784,6 +1803,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => null,
             'referral_email' => $this->faker->safeEmail,
             'referral_url' => null,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -1840,6 +1860,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => null,
             'referral_email' => $this->faker->safeEmail,
             'referral_url' => null,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -1896,6 +1917,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => null,
             'referral_email' => $this->faker->safeEmail,
             'referral_url' => null,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -1952,6 +1974,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => null,
             'referral_email' => null,
             'referral_url' => null,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -2010,6 +2033,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => null,
             'referral_email' => null,
             'referral_url' => null,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -2070,6 +2094,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => null,
             'referral_email' => null,
             'referral_url' => null,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,
@@ -2633,6 +2658,7 @@ class ServicesTest extends TestCase
             'referral_button_text' => null,
             'referral_email' => $this->faker->safeEmail,
             'referral_url' => null,
+            'ends_at' => null,
             'criteria' => [
                 'age_group' => '18+',
                 'disability' => null,

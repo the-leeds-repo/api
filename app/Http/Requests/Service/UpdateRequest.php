@@ -20,6 +20,7 @@ use App\Rules\RootTaxonomyIs;
 use App\Rules\Slug;
 use App\Rules\UserHasRole;
 use App\Rules\VideoEmbed;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -205,6 +206,8 @@ class UpdateRequest extends FormRequest
                     $this->service->referral_url
                 ),
             ],
+            'ends_at' => ['nullable', 'date_format:' . CarbonImmutable::ISO8601],
+
             'criteria' => ['array'],
             'criteria.age_group' => ['nullable', 'string', 'min:1', 'max:255'],
             'criteria.disability' => ['nullable', 'string', 'min:1', 'max:255'],

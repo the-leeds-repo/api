@@ -14,6 +14,7 @@ use App\Rules\FileIsMimeType;
 use App\Sms\Sms;
 use App\UpdateRequest\AppliesUpdateRequests;
 use App\UpdateRequest\UpdateRequests;
+use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -60,6 +61,7 @@ class Service extends Model implements AppliesUpdateRequests, Notifiable
     protected $casts = [
         'is_free' => 'boolean',
         'show_referral_disclaimer' => 'boolean',
+        'ends_at' => 'datetime',
         'last_modified_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -234,6 +236,9 @@ class Service extends Model implements AppliesUpdateRequests, Notifiable
             'logo_file_id' => array_key_exists('logo_file_id', $data)
                 ? $data['logo_file_id']
                 : $this->logo_file_id,
+            'ends_at' => array_key_exists('ends_at', $data)
+                ? Date::createFromFormat(CarbonImmutable::ISO8601, $data['ends_at'])
+                : $this->ends_at,
             // This must always be updated regardless of the fields changed.
             'last_modified_at' => Date::now(),
         ]);

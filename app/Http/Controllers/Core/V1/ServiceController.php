@@ -23,6 +23,7 @@ use App\Models\Service;
 use App\Models\Taxonomy;
 use App\Models\UpdateRequest as UpdateRequestModel;
 use App\Support\MissingValue;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -126,6 +127,9 @@ class ServiceController extends Controller
                 'referral_email' => $request->referral_email,
                 'referral_url' => $request->referral_url,
                 'logo_file_id' => $request->logo_file_id,
+                'ends_at' => $request->filled('ends_at')
+                    ? Date::createFromFormat(CarbonImmutable::ISO8601, $request->ends_at)
+                    : null,
                 'last_modified_at' => Date::now(),
             ]);
 
@@ -293,6 +297,7 @@ class ServiceController extends Controller
                 'gallery_items' => $request->has('gallery_items') ? [] : new MissingValue(),
                 'category_taxonomies' => $request->missing('category_taxonomies'),
                 'logo_file_id' => $request->missing('logo_file_id'),
+                'ends_at' => $request->missing('ends_at'),
             ]);
 
             if ($request->filled('gallery_items') && !$request->isPreview()) {

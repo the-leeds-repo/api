@@ -101,6 +101,9 @@ class ServiceSchema extends Schema
                     ->items(GalleryItemSchema::create()),
                 Schema::array('category_taxonomies')
                     ->items(TaxonomyCategorySchema::create()),
+                Schema::string('ends_at')
+                    ->format(Schema::FORMAT_DATE_TIME)
+                    ->nullable(),
                 Schema::string('last_modified_at')
                     ->format(Schema::FORMAT_DATE_TIME),
                 Schema::string('created_at')

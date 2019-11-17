@@ -65,10 +65,16 @@ script:
 
 ## Running the tests
 
+To run all tests:
+
+```bash
+./develop composer test
+```
+
 To run the PHPUnit tests:
  
 ```bash
-./develop phpunit
+./develop composer test:unit
 ```
 
 To run the code style tests:
