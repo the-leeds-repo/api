@@ -25,9 +25,9 @@ export PUBLIC_KEY_SECRET_ID="oauth-public.key.${ENVIRONMENT}"
 export PRIVATE_KEY_SECRET_ID="oauth-private.key.${ENVIRONMENT}"
 
 # Build the image.
-./docker/build
+./docker/build.sh
 
 # Deploy the update to the services.
-SERVICE="api" ./docker/deploy
-SERVICE="scheduler" ./docker/deploy
-SERVICE="queue-worker" ./docker/deploy
+SERVICE="api" ./docker/deploy.sh
+SERVICE="scheduler" ./docker/deploy.sh
+SERVICE="queue-worker" ./docker/deploy.sh

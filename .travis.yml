@@ -35,7 +35,7 @@ after_failure:
 
 deploy:
   - provider: script
-    script: ./.travis/deploy
+    script: ./.travis/deploy.sh
     skip_cleanup: true
     on:
       branch:
