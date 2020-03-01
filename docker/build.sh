@@ -34,20 +34,14 @@ docker run --rm \
 
 # Get the .env file.
 echo "Downloading .env file..."
-aws secretsmanager get-secret-value \
-    --secret-id ${ENV_SECRET_ID} | \
-    python -c "import json,sys;obj=json.load(sys.stdin);print obj['SecretString'];" > .env
+gcloud secrets versions access latest --secret=${ENV_SECRET_ID} > .env
 
 # Get the OAuth keys.
 echo "Downloading public OAuth key..."
-aws secretsmanager get-secret-value \
-    --secret-id ${PUBLIC_KEY_SECRET_ID} | \
-    python -c "import json,sys;obj=json.load(sys.stdin);print obj['SecretString'];" > storage/oauth-public.key
+gcloud secrets versions access latest --secret=${PUBLIC_KEY_SECRET_ID} > storage/oauth-public.key
 
 echo "Downloading private OAuth key..."
-aws secretsmanager get-secret-value \
-    --secret-id ${PRIVATE_KEY_SECRET_ID} | \
-    python -c "import json,sys;obj=json.load(sys.stdin);print obj['SecretString'];" > storage/oauth-private.key
+gcloud secrets versions access latest --secret=${PRIVATE_KEY_SECRET_ID} > storage/oauth-private.key
 
 # Build the Docker image with latest code.
 echo "Building Docker images..."
