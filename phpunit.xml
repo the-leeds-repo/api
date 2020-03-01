@@ -26,6 +26,7 @@
         <server name="APP_ENV" value="testing"/>
         <server name="BCRYPT_ROUNDS" value="4"/>
         <server name="QUEUE_DRIVER" value="sync"/>
+        <server name="SCOUT_DRIVER" value="elastic"/>
         <server name="SCOUT_PREFIX" value="testing_"/>
         <server name="GEOCODE_DRIVER" value="stub"/>
         <server name="EMAIL_DRIVER" value='"null"'/>
