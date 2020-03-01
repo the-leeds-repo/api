@@ -71,15 +71,6 @@ services:
     ports:
       - "${ELASTICSEARCH_PORT:-9200}:9200"
 
-  troposphere:
-    image: the-leeds-repo/api/troposphere
-    build:
-      context: ./docker/troposphere
-      dockerfile: Dockerfile
-    volumes:
-      - ./aws:/tmp
-    command: "python ${CFN_TEMPLATE:-cloudformation}.py"
-
 networks:
   app-net:
     driver: bridge
