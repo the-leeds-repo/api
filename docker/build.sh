@@ -4,9 +4,9 @@
 # $TRAVIS_BUILD_DIR = The directory of the project.
 # $TRAVIS_COMMIT = The commit hash of the build.
 # $REPO_URI = The URI of the Docker repo to tag the image with.
-# $ENV_SECRET_ID = The ID of the .env file in AWS Secrets Manager (defaults to ".env").
-# $PUBLIC_KEY_SECRET_ID = The ID of the OAuth public key file in AWS Secrets Manager (default to "oauth-public.key").
-# $PRIVATE_KEY_SECRET_ID = The ID of the OAuth private key file in AWS Secrets Manager (default to "oauth-private.key").
+# $ENV_SECRET_ID = The ID of the .env file in AWS Secrets Manager (defaults to "env").
+# $PUBLIC_KEY_SECRET_ID = The ID of the OAuth public key file in AWS Secrets Manager (default to "oauth-public-key").
+# $PRIVATE_KEY_SECRET_ID = The ID of the OAuth private key file in AWS Secrets Manager (default to "oauth-private-key").
 
 # Bail out on first error.
 set -e
@@ -14,6 +14,7 @@ set -e
 # Package the app.
 echo "Packaging the app..."
 cd ${TRAVIS_BUILD_DIR}
+mkdir ${TRAVIS_BUILD_DIR}/docker/app/packaged
 # We can use `archive` which makes use of .gitattributes to `export-ignore` extraneous files.
 git archive --format=tar --worktree-attributes ${TRAVIS_COMMIT} | tar -xf - -C ${TRAVIS_BUILD_DIR}/docker/app/packaged
 
@@ -62,5 +63,4 @@ if [[ "$PWD" == "$TRAVIS_BUILD_DIR/docker/app/packaged" ]]; then
         -w /opt \
         -v ${TRAVIS_BUILD_DIR}/docker/app/packaged:/opt \
         ubuntu:16.04 bash -c "rm -rf ./* && rm -rf ./.git* && rm .env*"
-    echo -e "*\n!.gitignore\n" > .gitignore
 fi
