@@ -4,7 +4,7 @@
 # $TRAVIS_BUILD_DIR = The directory of the project.
 # $TRAVIS_COMMIT = The commit hash of the build.
 # $REPO_URI = The URI of the Docker repo to tag the image with.
-# $ENV_SECRET_ID = The ID of the .env file in AWS Secrets Manager (defaults to "env").
+# $ENV_SECRET_ID = The ID of the .env file in AWS Secrets Manager (defaults to "env-api").
 # $PUBLIC_KEY_SECRET_ID = The ID of the OAuth public key file in AWS Secrets Manager (default to "oauth-public-key").
 # $PRIVATE_KEY_SECRET_ID = The ID of the OAuth private key file in AWS Secrets Manager (default to "oauth-private-key").
 
