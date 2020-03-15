@@ -7,6 +7,7 @@
 # $ENV_SECRET_ID = The ID of the .env file in AWS Secrets Manager (defaults to "env-api").
 # $PUBLIC_KEY_SECRET_ID = The ID of the OAuth public key file in AWS Secrets Manager (default to "oauth-public-key").
 # $PRIVATE_KEY_SECRET_ID = The ID of the OAuth private key file in AWS Secrets Manager (default to "oauth-private-key").
+# $GCLOUD_SERVICE_KEY = The JSON file contents of the GCP service account.
 
 # Bail out on first error.
 set -e
@@ -43,6 +44,9 @@ gcloud secrets versions access latest --secret=${PUBLIC_KEY_SECRET_ID} > storage
 
 echo "Downloading private OAuth key..."
 gcloud secrets versions access latest --secret=${PRIVATE_KEY_SECRET_ID} > storage/oauth-private.key
+
+# Save the GCP service-account.json file.
+cat $GCLOUD_SERVICE_KEY > service-account.json
 
 # Build the Docker image with latest code.
 echo "Building Docker images..."
