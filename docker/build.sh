@@ -61,6 +61,6 @@ if [[ "$PWD" == "$TRAVIS_BUILD_DIR/docker/app/packaged" ]]; then
     # So we'll use Docker to delete them with a one-off container
     docker run --rm \
         -w /opt \
-        -v ${TRAVIS_BUILD_DIR}/docker/app/packaged:/opt \
-        ubuntu:16.04 bash -c "rm -rf ./* && rm -rf ./.git* && rm .env*"
+        -v ${TRAVIS_BUILD_DIR}/docker/app:/opt \
+        ubuntu:16.04 bash -c "rm -rf ./packaged"
 fi
