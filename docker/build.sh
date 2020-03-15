@@ -46,7 +46,7 @@ echo "Downloading private OAuth key..."
 gcloud secrets versions access latest --secret=${PRIVATE_KEY_SECRET_ID} > storage/oauth-private.key
 
 # Save the GCP service-account.json file.
-cat $GCLOUD_SERVICE_KEY > service-account.json
+echo $GCLOUD_SERVICE_KEY > service-account.json
 
 # Build the Docker image with latest code.
 echo "Building Docker images..."
