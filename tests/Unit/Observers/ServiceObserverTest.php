@@ -39,7 +39,6 @@ class ServiceObserverTest extends TestCase
 
         $service->applyUpdateRequest($updateRequest);
 
-        Queue::assertPushedOn('notifications', NotifyGlobalAdminEmail::class);
         Queue::assertPushed(NotifyGlobalAdminEmail::class, function (NotifyGlobalAdminEmail $email): bool {
             $this->assertArrayHasKey('SERVICE_NAME', $email->values);
             return true;

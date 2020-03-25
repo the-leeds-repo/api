@@ -25,7 +25,6 @@ class StillUnactionedReferralsCommandTest extends TestCase
 
         Artisan::call(StillUnactionedReferralsCommand::class);
 
-        Queue::assertPushedOn('notifications', NotifyGlobalAdminEmail::class);
         Queue::assertPushed(NotifyGlobalAdminEmail::class, function (NotifyGlobalAdminEmail $email) {
             $this->assertArrayHasKey('REFERRAL_SERVICE_NAME', $email->values);
             $this->assertArrayHasKey('REFERRAL_CREATED_AT', $email->values);

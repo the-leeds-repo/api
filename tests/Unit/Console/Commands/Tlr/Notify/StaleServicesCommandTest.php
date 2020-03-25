@@ -59,7 +59,6 @@ class StaleServicesCommandTest extends TestCase
 
         Artisan::call(StaleServicesCommand::class);
 
-        Queue::assertPushedOn('notifications', NotifyServiceAdminEmail::class);
         Queue::assertPushed(NotifyServiceAdminEmail::class, function (NotifyServiceAdminEmail $email): bool {
             $this->assertArrayHasKey('SERVICE_NAME', $email->values);
             $this->assertArrayHasKey('SERVICE_URL', $email->values);
@@ -81,7 +80,6 @@ class StaleServicesCommandTest extends TestCase
 
         Artisan::call(StaleServicesCommand::class);
 
-        Queue::assertPushedOn('notifications', NotifyServiceAdminEmail::class);
         Queue::assertPushed(NotifyServiceAdminEmail::class, function (NotifyServiceAdminEmail $email): bool {
             $this->assertArrayHasKey('SERVICE_NAME', $email->values);
             $this->assertArrayHasKey('SERVICE_URL', $email->values);
@@ -102,7 +100,6 @@ class StaleServicesCommandTest extends TestCase
 
         Artisan::call(StaleServicesCommand::class);
 
-        Queue::assertPushedOn('notifications', NotifyServiceAdminEmail::class);
         Queue::assertPushed(NotifyServiceAdminEmail::class, function (NotifyServiceAdminEmail $email): bool {
             $this->assertArrayHasKey('SERVICE_NAME', $email->values);
             $this->assertArrayHasKey('SERVICE_URL', $email->values);
@@ -187,7 +184,6 @@ class StaleServicesCommandTest extends TestCase
 
         Artisan::call(StaleServicesCommand::class);
 
-        Queue::assertPushedOn('notifications', NotifyGlobalAdminEmail::class);
         Queue::assertPushed(NotifyGlobalAdminEmail::class, function (NotifyGlobalAdminEmail $email): bool {
             $this->assertArrayHasKey('SERVICE_NAME', $email->values);
             $this->assertArrayHasKey('SERVICE_URL', $email->values);
