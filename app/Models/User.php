@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use Laravel\Passport\HasApiTokens;
@@ -151,34 +152,6 @@ class User extends Authenticatable implements Notifiable
                 return $collection->where('organisation_id', $organisation->id);
             })
             ->isNotEmpty();
-    }
-
-    /**
-     * @param \App\Models\Role $role
-     * @param \App\Models\Service|null $service
-     * @param \App\Models\Organisation|null $organisation
-     * @return \App\Models\User
-     */
-    protected function assignRole(Role $role, Service $service = null, Organisation $organisation = null): self
-    {
-        if ($service !== null && $organisation !== null) {
-            throw new InvalidArgumentException('A role cannot be assigned to both a service and an organisation');
-        }
-
-        // Check if the user already has the role.
-        if ($this->hasRole($role, $service, $organisation)) {
-            return $this;
-        }
-
-        // Create the role.
-        UserRole::create([
-            'user_id' => $this->id,
-            'role_id' => $role->id,
-            'service_id' => $service->id ?? null,
-            'organisation_id' => $organisation->id ?? null,
-        ]);
-
-        return $this;
     }
 
     /**
@@ -361,40 +334,92 @@ class User extends Authenticatable implements Notifiable
     }
 
     /**
-     * @param \App\Models\Service $service
+     * @param \App\Models\Service[] $services
      * @return \App\Models\User
      */
-    public function makeServiceWorker(Service $service): self
+    public function makeServiceWorker(Service ...$services): self
     {
-        $this->assignRole(Role::serviceWorker(), $service);
+        $services = collect($services);
+
+        $this->userRoles()
+            ->where('user_roles.role_id', '=', Role::serviceWorker()->id)
+            ->whereIn('user_roles.service_id', $services->pluck('id'))
+            ->delete();
+
+        $this->userRoles()->insert(
+            array_map(function (Service $service): array {
+                return [
+                    'id' => uuid(),
+                    'user_id' => $this->id,
+                    'role_id' => Role::serviceWorker()->id,
+                    'service_id' => $service->id,
+                    'created_at' => Date::now(),
+                    'updated_at' => Date::now(),
+                ];
+            }, $services->all())
+        );
 
         return $this;
     }
 
     /**
-     * @param \App\Models\Service $service
+     * @param \App\Models\Service[] $services
      * @return \App\Models\User
      */
-    public function makeServiceAdmin(Service $service): self
+    public function makeServiceAdmin(Service ...$services): self
     {
-        $this->makeServiceWorker($service);
-        $this->assignRole(Role::serviceAdmin(), $service);
+        $services = collect($services);
+
+        $this->makeServiceWorker(...$services);
+
+        $this->userRoles()
+            ->where('user_roles.role_id', '=', Role::serviceAdmin()->id)
+            ->whereIn('user_roles.service_id', $services->pluck('id'))
+            ->delete();
+
+        $this->userRoles()->insert(
+            array_map(function (Service $service): array {
+                return [
+                    'id' => uuid(),
+                    'user_id' => $this->id,
+                    'role_id' => Role::serviceAdmin()->id,
+                    'service_id' => $service->id,
+                    'created_at' => Date::now(),
+                    'updated_at' => Date::now(),
+                ];
+            }, $services->all())
+        );
 
         return $this;
     }
 
     /**
-     * @param \App\Models\Organisation $organisation
+     * @param \App\Models\Organisation[] $organisations
      * @return \App\Models\User
      */
-    public function makeOrganisationAdmin(Organisation $organisation): self
+    public function makeOrganisationAdmin(Organisation ...$organisations): self
     {
-        foreach ($organisation->services as $service) {
-            $this->makeServiceWorker($service);
-            $this->makeServiceAdmin($service);
-        }
+        $organisations = collect($organisations);
 
-        $this->assignRole(Role::organisationAdmin(), null, $organisation);
+        $this->makeServiceAdmin(...$organisations->pluck('services')->flatten()->all());
+
+        $this->userRoles()
+            ->where('user_roles.role_id', '=', Role::organisationAdmin()->id)
+            ->whereIn('user_roles.organisation_id', $organisations->pluck('id'))
+            ->delete();
+
+        $this->userRoles()->insert(
+            array_map(function (Organisation $organisation): array {
+                return [
+                    'id' => uuid(),
+                    'user_id' => $this->id,
+                    'role_id' => Role::organisationAdmin()->id,
+                    'organisation_id' => $organisation->id,
+                    'created_at' => Date::now(),
+                    'updated_at' => Date::now(),
+                ];
+            }, $organisations->all())
+        );
 
         return $this;
     }
@@ -404,11 +429,19 @@ class User extends Authenticatable implements Notifiable
      */
     public function makeGlobalAdmin(): self
     {
-        foreach (Organisation::all() as $organisation) {
-            $this->makeOrganisationAdmin($organisation);
-        }
+        $this->makeOrganisationAdmin(...Organisation::all());
 
-        $this->assignRole(Role::globalAdmin());
+        $this->userRoles()
+            ->where('user_roles.role_id', '=', Role::globalAdmin()->id)
+            ->delete();
+
+        $this->userRoles()->insert([
+            'id' => uuid(),
+            'user_id' => $this->id,
+            'role_id' => Role::globalAdmin()->id,
+            'created_at' => Date::now(),
+            'updated_at' => Date::now(),
+        ]);
 
         return $this;
     }
@@ -419,7 +452,18 @@ class User extends Authenticatable implements Notifiable
     public function makeSuperAdmin(): self
     {
         $this->makeGlobalAdmin();
-        $this->assignRole(Role::superAdmin());
+
+        $this->userRoles()
+            ->where('user_roles.role_id', '=', Role::superAdmin()->id)
+            ->delete();
+
+        $this->userRoles()->insert([
+            'id' => uuid(),
+            'user_id' => $this->id,
+            'role_id' => Role::superAdmin()->id,
+            'created_at' => Date::now(),
+            'updated_at' => Date::now(),
+        ]);
 
         return $this;
     }
