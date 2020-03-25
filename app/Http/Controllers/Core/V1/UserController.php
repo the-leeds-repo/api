@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Core\V1;
 
 use App\Events\EndpointHit;
 use App\Events\UserRolesUpdated;
-use App\Exceptions\CannotAddRoleException;
+use App\Exceptions\CannotRevokeRoleException;
 use App\Http\Controllers\Controller;
 use App\Http\Filters\User\AtOrganisationFilter;
 use App\Http\Filters\User\AtServiceFilter;
@@ -26,7 +26,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Spatie\QueryBuilder\Filter;
 use Spatie\QueryBuilder\QueryBuilder;
-use function Symfony\Component\HttpKernel\Tests\controller_func;
 
 class UserController extends Controller
 {
@@ -116,26 +115,22 @@ class UserController extends Controller
                     ? Organisation::findOrFail($role['organisation_id'])
                     : null;
 
-                try {
-                    switch ($role['role']) {
-                        case Role::NAME_SERVICE_WORKER:
-                            $user->makeServiceWorker($service);
-                            break;
-                        case Role::NAME_SERVICE_ADMIN:
-                            $user->makeServiceAdmin($service);
-                            break;
-                        case Role::NAME_ORGANISATION_ADMIN:
-                            $user->makeOrganisationAdmin($organisation);
-                            break;
-                        case Role::NAME_GLOBAL_ADMIN:
-                            $user->makeGlobalAdmin();
-                            break;
-                        case Role::NAME_SUPER_ADMIN:
-                            $user->makeSuperAdmin();
-                            break;
-                    }
-                } catch (CannotAddRoleException $exception) {
-                    continue;
+                switch ($role['role']) {
+                    case Role::NAME_SERVICE_WORKER:
+                        $user->makeServiceWorker($service);
+                        break;
+                    case Role::NAME_SERVICE_ADMIN:
+                        $user->makeServiceAdmin($service);
+                        break;
+                    case Role::NAME_ORGANISATION_ADMIN:
+                        $user->makeOrganisationAdmin($organisation);
+                        break;
+                    case Role::NAME_GLOBAL_ADMIN:
+                        $user->makeGlobalAdmin();
+                        break;
+                    case Role::NAME_SUPER_ADMIN:
+                        $user->makeSuperAdmin();
+                        break;
                 }
             }
 
@@ -217,25 +212,29 @@ class UserController extends Controller
             $deletedRoles = $request->getDeletedRoles();
             $orderedDeletedRoles = $request->orderRoles($deletedRoles);
             foreach ($orderedDeletedRoles as $role) {
-                $service = isset($role['service_id']) ? Service::findOrFail($role['service_id']) : null;
-                $organisation = isset($role['organisation_id']) ? Organisation::findOrFail($role['organisation_id']) : null;
+                try {
+                    $service = isset($role['service_id']) ? Service::findOrFail($role['service_id']) : null;
+                    $organisation = isset($role['organisation_id']) ? Organisation::findOrFail($role['organisation_id']) : null;
 
-                switch ($role['role']) {
-                    case Role::NAME_SERVICE_WORKER:
-                        $user->revokeServiceWorker($service);
-                        break;
-                    case Role::NAME_SERVICE_ADMIN:
-                        $user->revokeServiceAdmin($service);
-                        break;
-                    case Role::NAME_ORGANISATION_ADMIN:
-                        $user->revokeOrganisationAdmin($organisation);
-                        break;
-                    case Role::NAME_GLOBAL_ADMIN:
-                        $user->revokeGlobalAdmin();
-                        break;
-                    case Role::NAME_SUPER_ADMIN:
-                        $user->revokeSuperAdmin();
-                        break;
+                    switch ($role['role']) {
+                        case Role::NAME_SERVICE_WORKER:
+                            $user->revokeServiceWorker($service);
+                            break;
+                        case Role::NAME_SERVICE_ADMIN:
+                            $user->revokeServiceAdmin($service);
+                            break;
+                        case Role::NAME_ORGANISATION_ADMIN:
+                            $user->revokeOrganisationAdmin($organisation);
+                            break;
+                        case Role::NAME_GLOBAL_ADMIN:
+                            $user->revokeGlobalAdmin();
+                            break;
+                        case Role::NAME_SUPER_ADMIN:
+                            $user->revokeSuperAdmin();
+                            break;
+                    }
+                } catch (CannotRevokeRoleException $exception) {
+                    continue;
                 }
             }
 
@@ -244,26 +243,22 @@ class UserController extends Controller
                 $service = isset($role['service_id']) ? Service::findOrFail($role['service_id']) : null;
                 $organisation = isset($role['organisation_id']) ? Organisation::findOrFail($role['organisation_id']) : null;
 
-                try {
-                    switch ($role['role']) {
-                        case Role::NAME_SERVICE_WORKER:
-                            $user->makeServiceWorker($service);
-                            break;
-                        case Role::NAME_SERVICE_ADMIN:
-                            $user->makeServiceAdmin($service);
-                            break;
-                        case Role::NAME_ORGANISATION_ADMIN:
-                            $user->makeOrganisationAdmin($organisation);
-                            break;
-                        case Role::NAME_GLOBAL_ADMIN:
-                            $user->makeGlobalAdmin();
-                            break;
-                        case Role::NAME_SUPER_ADMIN:
-                            $user->makeSuperAdmin();
-                            break;
-                    }
-                } catch (CannotAddRoleException $exception) {
-                    continue;
+                switch ($role['role']) {
+                    case Role::NAME_SERVICE_WORKER:
+                        $user->makeServiceWorker($service);
+                        break;
+                    case Role::NAME_SERVICE_ADMIN:
+                        $user->makeServiceAdmin($service);
+                        break;
+                    case Role::NAME_ORGANISATION_ADMIN:
+                        $user->makeOrganisationAdmin($organisation);
+                        break;
+                    case Role::NAME_GLOBAL_ADMIN:
+                        $user->makeGlobalAdmin();
+                        break;
+                    case Role::NAME_SUPER_ADMIN:
+                        $user->makeSuperAdmin();
+                        break;
                 }
             }
 

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Emails\Email;
 use App\Emails\PasswordReset\UserEmail;
-use App\Exceptions\CannotAddRoleException;
+use App\Exceptions\CannotRevokeRoleException;
 use App\Models\Mutators\UserMutators;
 use App\Models\Relationships\UserRelationships;
 use App\Models\Scopes\UserScopes;
@@ -187,7 +187,7 @@ class User extends Authenticatable implements Notifiable
      * @param \App\Models\Organisation|null $organisation
      * @return \App\Models\User
      */
-    protected function revokeRoll(Role $role, Service $service = null, Organisation $organisation = null): self
+    protected function removeRoll(Role $role, Service $service = null, Organisation $organisation = null): self
     {
         if ($service !== null && $organisation !== null) {
             throw new InvalidArgumentException('A role cannot be assigned to both a service and an organisation');
@@ -362,17 +362,10 @@ class User extends Authenticatable implements Notifiable
 
     /**
      * @param \App\Models\Service $service
-     * @throws \App\Exceptions\CannotAddRoleException
      * @return \App\Models\User
      */
     public function makeServiceWorker(Service $service): self
     {
-        if ($this->isServiceAdmin($service)) {
-            throw new CannotAddRoleException(
-                'Cannot assign service worker role when user is a service admin'
-            );
-        }
-
         $this->assignRole(Role::serviceWorker(), $service);
 
         return $this;
@@ -380,22 +373,11 @@ class User extends Authenticatable implements Notifiable
 
     /**
      * @param \App\Models\Service $service
-     * @throws \App\Exceptions\CannotAddRoleException
      * @return \App\Models\User
      */
     public function makeServiceAdmin(Service $service): self
     {
-        if ($this->isOrganisationAdmin($service->organisation)) {
-            throw new CannotAddRoleException(
-                'Cannot assign service admin role when user is an organisation admin'
-            );
-        }
-
-        $this->userRoles()
-            ->where('user_roles.role_id', '=', Role::serviceWorker()->id)
-            ->where('user_roles.service_id', '=', $service->id)
-            ->delete();
-
+        $this->makeServiceWorker($service);
         $this->assignRole(Role::serviceAdmin(), $service);
 
         return $this;
@@ -403,27 +385,14 @@ class User extends Authenticatable implements Notifiable
 
     /**
      * @param \App\Models\Organisation $organisation
-     * @throws \App\Exceptions\CannotAddRoleException
      * @return \App\Models\User
      */
     public function makeOrganisationAdmin(Organisation $organisation): self
     {
-        if ($this->isGlobalAdmin()) {
-            throw new CannotAddRoleException(
-                'Cannot assign organisation admin role when user is a global admin'
-            );
+        foreach ($organisation->services as $service) {
+            $this->makeServiceWorker($service);
+            $this->makeServiceAdmin($service);
         }
-
-        $this->userRoles()
-            ->whereIn('user_roles.role_id', [
-                Role::serviceWorker()->id,
-                Role::serviceAdmin()->id,
-            ])
-            ->whereIn(
-                'user_roles.service_id',
-                $organisation->services()->pluck('services.id')
-            )
-            ->delete();
 
         $this->assignRole(Role::organisationAdmin(), null, $organisation);
 
@@ -431,18 +400,13 @@ class User extends Authenticatable implements Notifiable
     }
 
     /**
-     * @throws \App\Exceptions\CannotAddRoleException
      * @return \App\Models\User
      */
     public function makeGlobalAdmin(): self
     {
-        if ($this->isSuperAdmin()) {
-            throw new CannotAddRoleException(
-                'Cannot assign global admin role when user is a super admin'
-            );
+        foreach (Organisation::all() as $organisation) {
+            $this->makeOrganisationAdmin($organisation);
         }
-
-        $this->userRoles()->delete();
 
         $this->assignRole(Role::globalAdmin());
 
@@ -454,8 +418,7 @@ class User extends Authenticatable implements Notifiable
      */
     public function makeSuperAdmin(): self
     {
-        $this->userRoles()->delete();
-
+        $this->makeGlobalAdmin();
         $this->assignRole(Role::superAdmin());
 
         return $this;
@@ -463,41 +426,61 @@ class User extends Authenticatable implements Notifiable
 
     /**
      * @param \App\Models\Service $service
+     * @throws \App\Exceptions\CannotRevokeRoleException
      * @return \App\Models\User
      */
     public function revokeServiceWorker(Service $service)
     {
-        return $this->revokeRoll(Role::serviceWorker(), $service);
+        if ($this->hasRole(Role::serviceAdmin(), $service)) {
+            throw new CannotRevokeRoleException('Cannot revoke service worker role when user is a service admin');
+        }
+
+        return $this->removeRoll(Role::serviceWorker(), $service);
     }
 
     /**
      * @param \App\Models\Service $service
+     * @throws \App\Exceptions\CannotRevokeRoleException
      * @return \App\Models\User
      */
     public function revokeServiceAdmin(Service $service)
     {
-        $this->revokeRoll(Role::serviceAdmin(), $service);
+        if ($this->hasRole(Role::organisationAdmin(), null, $service->organisation)) {
+            throw new CannotRevokeRoleException('Cannot revoke service admin role when user is an organisation admin');
+        }
+
+        $this->removeRoll(Role::serviceAdmin(), $service);
 
         return $this;
     }
 
     /**
      * @param \App\Models\Organisation $organisation
+     * @throws \App\Exceptions\CannotRevokeRoleException
      * @return \App\Models\User
      */
     public function revokeOrganisationAdmin(Organisation $organisation)
     {
-        $this->revokeRoll(Role::organisationAdmin(), null, $organisation);
+        if ($this->hasRole(Role::globalAdmin())) {
+            throw new CannotRevokeRoleException('Cannot revoke organisation admin role when user is an global admin');
+        }
+
+        $this->removeRoll(Role::organisationAdmin(), null, $organisation);
 
         return $this;
     }
 
     /**
+     * @throws \App\Exceptions\CannotRevokeRoleException
      * @return \App\Models\User
      */
     public function revokeGlobalAdmin()
     {
-        $this->revokeRoll(Role::globalAdmin());
+        if ($this->hasRole(Role::superAdmin())) {
+            throw new CannotRevokeRoleException('Cannot revoke global admin role when user is an super admin');
+        }
+
+        $this->removeRoll(Role::globalAdmin());
 
         return $this;
     }
@@ -507,7 +490,7 @@ class User extends Authenticatable implements Notifiable
      */
     public function revokeSuperAdmin()
     {
-        $this->revokeRoll(Role::superAdmin());
+        $this->removeRoll(Role::superAdmin());
 
         return $this;
     }
