@@ -16,8 +16,10 @@ set -e
 echo "Packaging the app..."
 cd ${TRAVIS_BUILD_DIR}
 mkdir ${TRAVIS_BUILD_DIR}/docker/app/packaged
-# We can use `archive` which makes use of .gitattributes to `export-ignore` extraneous files.
-git archive --format=tar --worktree-attributes ${TRAVIS_COMMIT} | tar -xf - -C ${TRAVIS_BUILD_DIR}/docker/app/packaged
+# We can use `archive` which makes use of .gitattributes to `export-ignore`
+# extraneous files.
+git archive \--format=tar --worktree-attributes ${TRAVIS_COMMIT} \
+  | tar -xf - -C ${TRAVIS_BUILD_DIR}/docker/app/packaged
 
 # Production Build Steps.
 echo "Installing composer dependencies..."
@@ -36,14 +38,17 @@ docker run --rm \
 
 # Get the .env file.
 echo "Downloading .env file..."
-gcloud secrets versions access latest --secret=${ENV_SECRET_ID} > .env
+gcloud secrets versions access latest \
+  --secret=${ENV_SECRET_ID} > .env
 
 # Get the OAuth keys.
 echo "Downloading public OAuth key..."
-gcloud secrets versions access latest --secret=${PUBLIC_KEY_SECRET_ID} > storage/oauth-public.key
+gcloud secrets versions access latest \
+  --secret=${PUBLIC_KEY_SECRET_ID} > storage/oauth-public.key
 
 echo "Downloading private OAuth key..."
-gcloud secrets versions access latest --secret=${PRIVATE_KEY_SECRET_ID} > storage/oauth-private.key
+gcloud secrets versions access latest \
+  --secret=${PRIVATE_KEY_SECRET_ID} > storage/oauth-private.key
 
 # Save the GCP service-account.json file.
 echo $GCLOUD_SERVICE_KEY > service-account.json
@@ -57,14 +62,14 @@ docker build \
 
 # Clean up packaged directory, but only if not in CI environment.
 echo "Cleaning up..."
-cd ${TRAVIS_BUILD_DIR}/docker/app/packaged
-PWD=$(pwd)
-if [[ "$PWD" == "$TRAVIS_BUILD_DIR/docker/app/packaged" ]]; then
-    # The "vendor" directory (any any built assets!) will be owned
-    # as user "root" on the Linux file system
-    # So we'll use Docker to delete them with a one-off container
-    docker run --rm \
-        -w /opt \
-        -v ${TRAVIS_BUILD_DIR}/docker/app:/opt \
-        ubuntu:16.04 bash -c "rm -rf ./packaged"
-fi
+cd ${TRAVIS_BUILD_DIR}/docker/app
+# The "vendor" directory (any any built assets!) will be owned as user "root" on
+# the Linux file system. So we'll use Docker to delete them with a one-off
+# container.
+docker run --rm \
+    -w /opt \
+    -v ${TRAVIS_BUILD_DIR}/docker/app:/opt \
+    ubuntu:16.04 bash -c "rm -rf ./packaged"
+
+mkdir packaged
+echo -e "*\n!.gitignore\n" > packaged/.gitignore
