@@ -3,6 +3,7 @@
 namespace App\Http\Requests\User;
 
 use App\Models\Role;
+use App\Models\UserRole;
 use App\Rules\CanAssignRoleToUser;
 use App\Rules\Password;
 use App\Rules\UkPhoneNumber;
@@ -11,6 +12,8 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
 {
+    use UserRoleHelpers;
+
     /**
      * Determine if the user is authorized to make this request.
      *

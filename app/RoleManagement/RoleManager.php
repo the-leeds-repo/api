@@ -31,6 +31,7 @@ class RoleManager implements RoleManagerInterface
         $this->user = $user;
         $this->userRoles = $userRoles;
 
+        $this->uniqueRoles();
         $this->deleteExistingRoles();
 
         if (count($userRoles) === 0) {
@@ -98,6 +99,19 @@ class RoleManager implements RoleManagerInterface
         return $this->user;
     }
 
+    protected function uniqueRoles(): void
+    {
+        $this->userRoles = collect($this->userRoles)
+            ->unique(function (UserRole $userRole): array {
+                return [
+                    'role_id' => $userRole['role_id'],
+                    'service_id' => $userRole['service_id'] ?? null,
+                    'organisation_id' => $userRole['organisation_id'] ?? null,
+                ];
+            })
+            ->all();
+    }
+
     protected function deleteExistingRoles(): void
     {
         $this->user->userRoles()->delete();
@@ -112,19 +126,21 @@ class RoleManager implements RoleManagerInterface
     {
         foreach ($haystack as $userRole) {
             if ($needle->role_id !== $userRole->role_id) {
-                return false;
+                continue;
             }
 
             if ($needle->service_id !== $userRole->service_id) {
-                return false;
+                continue;
             }
 
             if ($needle->organisation_id !== $userRole->organisation_id) {
-                return false;
+                continue;
             }
+
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -218,7 +234,7 @@ class RoleManager implements RoleManagerInterface
 
         $serviceIds = Service::query()
             ->when(
-                $organisationUserRoles !== null,
+                count($organisationUserRoles) > 0,
                 function (Builder $query) use ($organisationUserRoles): Builder {
                     return $query->whereIn(
                         'organisation_id',
@@ -227,7 +243,7 @@ class RoleManager implements RoleManagerInterface
                 }
             )
             ->when(
-                $serviceUserRoles !== null,
+                count($serviceUserRoles) > 0,
                 function (Builder $query) use ($serviceUserRoles): Builder {
                     return $query->whereIn(
                         'id',
@@ -255,7 +271,6 @@ class RoleManager implements RoleManagerInterface
     protected function makeSuperAdminUserRole(): UserRole
     {
         return new UserRole([
-            'user_id' => $this->user->id,
             'role_id' => Role::superAdmin()->id,
         ]);
     }
@@ -266,7 +281,6 @@ class RoleManager implements RoleManagerInterface
     protected function makeGlobalAdminUserRole(): UserRole
     {
         return new UserRole([
-            'user_id' => $this->user->id,
             'role_id' => Role::globalAdmin()->id,
         ]);
     }

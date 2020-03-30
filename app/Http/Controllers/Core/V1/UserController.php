@@ -21,6 +21,7 @@ use App\Models\Organisation;
 use App\Models\Role;
 use App\Models\Service;
 use App\Models\User;
+use App\RoleManagement\RoleManagerInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -93,11 +94,12 @@ class UserController extends Controller
      * Store a newly created resource in storage.
      *
      * @param \App\Http\Requests\User\StoreRequest $request
+     * @param \App\RoleManagement\RoleManagerInterface $roleManager
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreRequest $request)
+    public function store(StoreRequest $request, RoleManagerInterface $roleManager)
     {
-        return DB::transaction(function () use ($request) {
+        return DB::transaction(function () use ($request, $roleManager) {
             /** @var \App\Models\User $user */
             $user = User::create([
                 'first_name' => $request->first_name,
@@ -107,32 +109,7 @@ class UserController extends Controller
                 'password' => bcrypt($request->password),
             ]);
 
-            foreach ($request->roles as $role) {
-                $service = isset($role['service_id'])
-                    ? Service::findOrFail($role['service_id'])
-                    : null;
-                $organisation = isset($role['organisation_id'])
-                    ? Organisation::findOrFail($role['organisation_id'])
-                    : null;
-
-                switch ($role['role']) {
-                    case Role::NAME_SERVICE_WORKER:
-                        $user->makeServiceWorker($service);
-                        break;
-                    case Role::NAME_SERVICE_ADMIN:
-                        $user->makeServiceAdmin($service);
-                        break;
-                    case Role::NAME_ORGANISATION_ADMIN:
-                        $user->makeOrganisationAdmin($organisation);
-                        break;
-                    case Role::NAME_GLOBAL_ADMIN:
-                        $user->makeGlobalAdmin();
-                        break;
-                    case Role::NAME_SUPER_ADMIN:
-                        $user->makeSuperAdmin();
-                        break;
-                }
-            }
+            $roleManager->updateRoles($user, $request->getUserRoles());
 
             event(EndpointHit::onCreate($request, "Created user [{$user->id}]", $user));
 
@@ -187,11 +164,12 @@ class UserController extends Controller
      *
      * @param \App\Http\Requests\User\UpdateRequest $request
      * @param \App\Models\User $user
+     * @param \App\RoleManagement\RoleManagerInterface $roleManager
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateRequest $request, User $user)
+    public function update(UpdateRequest $request, User $user, RoleManagerInterface $roleManager)
     {
-        return DB::transaction(function () use ($request, $user) {
+        return DB::transaction(function () use ($request, $user, $roleManager) {
             // Store the original user roles in case they have been updated in the request (used for notification).
             $originalRoles = $user->userRoles;
 
@@ -208,59 +186,8 @@ class UserController extends Controller
                 $user->update(['password' => bcrypt($request->password)]);
             }
 
-            // Revoke the deleted roles.
-            $deletedRoles = $request->getDeletedRoles();
-            $orderedDeletedRoles = $request->orderRoles($deletedRoles);
-            foreach ($orderedDeletedRoles as $role) {
-                try {
-                    $service = isset($role['service_id']) ? Service::findOrFail($role['service_id']) : null;
-                    $organisation = isset($role['organisation_id']) ? Organisation::findOrFail($role['organisation_id']) : null;
-
-                    switch ($role['role']) {
-                        case Role::NAME_SERVICE_WORKER:
-                            $user->revokeServiceWorker($service);
-                            break;
-                        case Role::NAME_SERVICE_ADMIN:
-                            $user->revokeServiceAdmin($service);
-                            break;
-                        case Role::NAME_ORGANISATION_ADMIN:
-                            $user->revokeOrganisationAdmin($organisation);
-                            break;
-                        case Role::NAME_GLOBAL_ADMIN:
-                            $user->revokeGlobalAdmin();
-                            break;
-                        case Role::NAME_SUPER_ADMIN:
-                            $user->revokeSuperAdmin();
-                            break;
-                    }
-                } catch (CannotRevokeRoleException $exception) {
-                    continue;
-                }
-            }
-
-            // Add the new roles.
-            foreach ($request->getNewRoles() as $role) {
-                $service = isset($role['service_id']) ? Service::findOrFail($role['service_id']) : null;
-                $organisation = isset($role['organisation_id']) ? Organisation::findOrFail($role['organisation_id']) : null;
-
-                switch ($role['role']) {
-                    case Role::NAME_SERVICE_WORKER:
-                        $user->makeServiceWorker($service);
-                        break;
-                    case Role::NAME_SERVICE_ADMIN:
-                        $user->makeServiceAdmin($service);
-                        break;
-                    case Role::NAME_ORGANISATION_ADMIN:
-                        $user->makeOrganisationAdmin($organisation);
-                        break;
-                    case Role::NAME_GLOBAL_ADMIN:
-                        $user->makeGlobalAdmin();
-                        break;
-                    case Role::NAME_SUPER_ADMIN:
-                        $user->makeSuperAdmin();
-                        break;
-                }
-            }
+            // Update the user roles.
+            $roleManager->updateRoles($user, $request->getUserRoles());
 
             // Refresh the user roles.
             $user->load('userRoles');

@@ -14,6 +14,8 @@ use Illuminate\Support\Arr;
 
 class UpdateRequest extends FormRequest
 {
+    use UserRoleHelpers;
+
     /**
      * Cache the existing roles to prevent multiple database queries.
      *
