@@ -33,6 +33,10 @@ class RoleManager implements RoleManagerInterface
 
         $this->deleteExistingRoles();
 
+        if (count($userRoles) === 0) {
+            return $this->user;
+        }
+
         $insert = [];
 
         if ($this->containsRole(

@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\RoleManagement\RoleManager;
+use App\RoleManagement\RoleManagerInterface;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\ServiceProvider;
@@ -65,6 +67,8 @@ class AppServiceProvider extends ServiceProvider
                 $this->app->singleton(\App\Contracts\SmsSender::class, \App\SmsSenders\LogSmsSender::class);
                 break;
         }
+
+        $this->app->singleton(RoleManagerInterface::class, RoleManager::class);
     }
 
     /**
