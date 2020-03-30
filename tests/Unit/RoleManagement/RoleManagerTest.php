@@ -193,4 +193,46 @@ class RoleManagerTest extends TestCase
             'role_id' => Role::superAdmin()->id,
         ]);
     }
+
+    public function test_can_make_user_organisation_admin_and_service_admin()
+    {
+        /** @var \App\Models\User $user */
+        $user = factory(User::class)->create();
+
+        /** @var \App\Models\Organisation $organisation */
+        $organisation = factory(Organisation::class)->create();
+
+        /** @var \App\Models\Service $service */
+        $service = factory(Service::class)->create();
+
+        $this->roleManager->updateRoles($user, [
+            new UserRole([
+                'user_id' => $user->id,
+                'role_id' => Role::organisationAdmin()->id,
+                'organisation_id' => $organisation->id,
+            ]),
+            new UserRole([
+                'user_id' => $user->id,
+                'role_id' => Role::serviceAdmin()->id,
+                'service_id' => $service->id,
+            ]),
+        ]);
+
+        $this->assertCount(3, UserRole::all());
+        $this->assertDatabaseHas(table(UserRole::class), [
+            'user_id' => $user->id,
+            'role_id' => Role::organisationAdmin()->id,
+            'organisation_id' => $organisation->id,
+        ]);
+        $this->assertDatabaseHas(table(UserRole::class), [
+            'user_id' => $user->id,
+            'role_id' => Role::serviceWorker()->id,
+            'service_id' => $service->id,
+        ]);
+        $this->assertDatabaseHas(table(UserRole::class), [
+            'user_id' => $user->id,
+            'role_id' => Role::serviceAdmin()->id,
+            'service_id' => $service->id,
+        ]);
+    }
 }
