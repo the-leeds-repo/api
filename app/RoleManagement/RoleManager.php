@@ -218,7 +218,7 @@ class RoleManager implements RoleManagerInterface
                 function (Builder $query) use ($organisationUserRoles): Builder {
                     return $query->whereIn(
                         'organisation_id',
-                        collect($organisationUserRoles)->pluck('id')
+                        collect($organisationUserRoles)->pluck('organisation_id')
                     );
                 }
             )
@@ -226,8 +226,8 @@ class RoleManager implements RoleManagerInterface
                 $serviceUserRoles !== null,
                 function (Builder $query) use ($serviceUserRoles): Builder {
                     return $query->whereIn(
-                        'service_id',
-                        collect($serviceUserRoles)->pluck('id')
+                        'id',
+                        collect($serviceUserRoles)->pluck('service_id')
                     );
                 }
             )
