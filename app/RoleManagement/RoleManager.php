@@ -268,28 +268,6 @@ class RoleManager implements RoleManagerInterface
     }
 
     /**
-     * @param \App\Models\UserRole $organisationAdminUserRole
-     * @return \App\Models\Organisation
-     */
-    protected function makeOrganisation(UserRole $organisationAdminUserRole): Organisation
-    {
-        return new Organisation([
-            'id' => $organisationAdminUserRole->organisation_id,
-        ]);
-    }
-
-    /**
-     * @param \App\Models\UserRole $serviceAdminUserRole
-     * @return \App\Models\Service
-     */
-    protected function makeService(UserRole $serviceAdminUserRole): Service
-    {
-        return new Service([
-            'id' => $serviceAdminUserRole->service_id,
-        ]);
-    }
-
-    /**
      * @return array
      */
     protected function getSuperAdminRole(): array
@@ -298,6 +276,8 @@ class RoleManager implements RoleManagerInterface
             'id' => uuid(),
             'user_id' => $this->user->id,
             'role_id' => Role::superAdmin()->id,
+            'organisation_id' => null,
+            'service_id' => null,
             'created_at' => Date::now(),
             'updated_at' => Date::now(),
         ];
@@ -312,6 +292,8 @@ class RoleManager implements RoleManagerInterface
             'id' => uuid(),
             'user_id' => $this->user->id,
             'role_id' => Role::globalAdmin()->id,
+            'organisation_id' => null,
+            'service_id' => null,
             'created_at' => Date::now(),
             'updated_at' => Date::now(),
         ];
@@ -328,6 +310,7 @@ class RoleManager implements RoleManagerInterface
             'user_id' => $this->user->id,
             'role_id' => Role::organisationAdmin()->id,
             'organisation_id' => $organisation->id,
+            'service_id' => null,
             'created_at' => Date::now(),
             'updated_at' => Date::now(),
         ];
@@ -343,6 +326,7 @@ class RoleManager implements RoleManagerInterface
             'id' => uuid(),
             'user_id' => $this->user->id,
             'role_id' => Role::serviceAdmin()->id,
+            'organisation_id' => null,
             'service_id' => $service->id,
             'created_at' => Date::now(),
             'updated_at' => Date::now(),
@@ -359,6 +343,7 @@ class RoleManager implements RoleManagerInterface
             'id' => uuid(),
             'user_id' => $this->user->id,
             'role_id' => Role::serviceWorker()->id,
+            'organisation_id' => null,
             'service_id' => $service->id,
             'created_at' => Date::now(),
             'updated_at' => Date::now(),
