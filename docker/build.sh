@@ -15,7 +15,6 @@ set -e
 # Package the app.
 echo "Packaging the app..."
 cd ${TRAVIS_BUILD_DIR}
-mkdir ${TRAVIS_BUILD_DIR}/docker/app/packaged
 # We can use `archive` which makes use of .gitattributes to `export-ignore`
 # extraneous files.
 git archive \--format=tar --worktree-attributes ${TRAVIS_COMMIT} \
