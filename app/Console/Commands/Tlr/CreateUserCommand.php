@@ -92,7 +92,7 @@ class CreateUserCommand extends Command
      */
     protected function makeSuperAdmin(User $user): User
     {
-        return $this->roleManager->updateRoles($user, [
+        return $this->roleManager->addRoles($user, [
             new UserRole(['role_id' => Role::superAdmin()->id]),
         ]);
     }
