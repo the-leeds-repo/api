@@ -3,7 +3,6 @@
 namespace App\RoleManagement;
 
 use App\Models\User;
-use App\Models\UserRole;
 
 interface RoleManagerInterface
 {
