@@ -2,9 +2,12 @@
 
 namespace App\Console\Commands\Tlr;
 
+use App\Models\Role;
 use App\Models\User;
+use App\Models\UserRole;
+use App\RoleManagement\RoleManagerInterface;
 use Illuminate\Console\Command;
-use Illuminate\Database\DatabaseManager;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class CreateUserCommand extends Command
@@ -28,20 +31,20 @@ class CreateUserCommand extends Command
     protected $description = 'Creates a new user with Super Admin privileges';
 
     /**
-     * @var \Illuminate\Database\DatabaseManager
+     * @var \App\RoleManagement\RoleManagerInterface
      */
-    protected $db;
+    protected $roleManager;
 
     /**
      * CreateUserCommand constructor.
      *
-     * @param \Illuminate\Database\DatabaseManager $db
+     * @param \App\RoleManagement\RoleManagerInterface $roleManager
      */
-    public function __construct(DatabaseManager $db)
+    public function __construct(RoleManagerInterface $roleManager)
     {
         parent::__construct();
 
-        $this->db = $db;
+        $this->roleManager = $roleManager;
     }
 
     /**
@@ -52,15 +55,12 @@ class CreateUserCommand extends Command
      */
     public function handle()
     {
-        return $this->db->transaction(function () {
+        return DB::transaction(function () {
             // Cache the password to display.
             $password = Str::random();
 
-            // Create the user record.
             $user = $this->createUser($password);
-
-            // Make the user a Super Admin.
-            $user->makeSuperAdmin();
+            $this->makeSuperAdmin($user);
 
             // Output message.
             $this->info('User created successfully.');
@@ -83,6 +83,17 @@ class CreateUserCommand extends Command
             'email' => $this->argument('email'),
             'phone' => $this->argument('phone'),
             'password' => bcrypt($password),
+        ]);
+    }
+
+    /**
+     * @param \App\Models\User $user
+     * @return \App\Models\User
+     */
+    protected function makeSuperAdmin(User $user): User
+    {
+        return $this->roleManager->updateRoles($user, [
+            new UserRole(['role_id' => Role::superAdmin()->id]),
         ]);
     }
 }
