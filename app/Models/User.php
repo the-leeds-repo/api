@@ -182,33 +182,6 @@ class User extends Authenticatable implements Notifiable
     }
 
     /**
-     * @param \App\Models\Role $role
-     * @param \App\Models\Service|null $service
-     * @param \App\Models\Organisation|null $organisation
-     * @return \App\Models\User
-     */
-    protected function removeRoll(Role $role, Service $service = null, Organisation $organisation = null): self
-    {
-        if ($service !== null && $organisation !== null) {
-            throw new InvalidArgumentException('A role cannot be assigned to both a service and an organisation');
-        }
-
-        // Check if the user doesn't already have the role.
-        if (!$this->hasRole($role)) {
-            return $this;
-        }
-
-        // Remove the role.
-        $this->userRoles()
-            ->where('user_roles.role_id', $role->id)
-            ->where('user_roles.service_id', $service->id ?? null)
-            ->where('user_roles.organisation_id', $organisation->id ?? null)
-            ->delete();
-
-        return $this;
-    }
-
-    /**
      * Performs a check to see if the current user instance (invoker) can revoke a role on the subject.
      * This is an extremely important algorithm for user management.
      * This algorithm does not care about the exact role the invoker is trying to revoke on the subject.
@@ -420,77 +393,6 @@ class User extends Authenticatable implements Notifiable
     {
         $this->makeGlobalAdmin();
         $this->assignRole(Role::superAdmin());
-
-        return $this;
-    }
-
-    /**
-     * @param \App\Models\Service $service
-     * @throws \App\Exceptions\CannotRevokeRoleException
-     * @return \App\Models\User
-     */
-    public function revokeServiceWorker(Service $service)
-    {
-        if ($this->hasRole(Role::serviceAdmin(), $service)) {
-            throw new CannotRevokeRoleException('Cannot revoke service worker role when user is a service admin');
-        }
-
-        return $this->removeRoll(Role::serviceWorker(), $service);
-    }
-
-    /**
-     * @param \App\Models\Service $service
-     * @throws \App\Exceptions\CannotRevokeRoleException
-     * @return \App\Models\User
-     */
-    public function revokeServiceAdmin(Service $service)
-    {
-        if ($this->hasRole(Role::organisationAdmin(), null, $service->organisation)) {
-            throw new CannotRevokeRoleException('Cannot revoke service admin role when user is an organisation admin');
-        }
-
-        $this->removeRoll(Role::serviceAdmin(), $service);
-
-        return $this;
-    }
-
-    /**
-     * @param \App\Models\Organisation $organisation
-     * @throws \App\Exceptions\CannotRevokeRoleException
-     * @return \App\Models\User
-     */
-    public function revokeOrganisationAdmin(Organisation $organisation)
-    {
-        if ($this->hasRole(Role::globalAdmin())) {
-            throw new CannotRevokeRoleException('Cannot revoke organisation admin role when user is an global admin');
-        }
-
-        $this->removeRoll(Role::organisationAdmin(), null, $organisation);
-
-        return $this;
-    }
-
-    /**
-     * @throws \App\Exceptions\CannotRevokeRoleException
-     * @return \App\Models\User
-     */
-    public function revokeGlobalAdmin()
-    {
-        if ($this->hasRole(Role::superAdmin())) {
-            throw new CannotRevokeRoleException('Cannot revoke global admin role when user is an super admin');
-        }
-
-        $this->removeRoll(Role::globalAdmin());
-
-        return $this;
-    }
-
-    /**
-     * @return \App\Models\User
-     */
-    public function revokeSuperAdmin()
-    {
-        $this->removeRoll(Role::superAdmin());
 
         return $this;
     }

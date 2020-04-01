@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\RoleManagement\RoleAuthorizer;
+use App\RoleManagement\RoleAuthorizerInterface;
 use App\RoleManagement\RoleManager;
 use App\RoleManagement\RoleManagerInterface;
 use Carbon\CarbonImmutable;
@@ -69,6 +71,7 @@ class AppServiceProvider extends ServiceProvider
         }
 
         $this->app->singleton(RoleManagerInterface::class, RoleManager::class);
+        $this->app->singleton(RoleAuthorizerInterface::class, RoleAuthorizer::class);
     }
 
     /**
