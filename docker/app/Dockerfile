@@ -33,7 +33,7 @@ RUN wget -q -O - https://packages.blackfire.io/gpg.key | apt-key add - \
     && apt-get update \
     && apt-get install -y blackfire-agent blackfire-php \
     && blackfire-agent --register --server-id="${BLACKFIRE_SERVER_ID}" --server-token="${BLACKFIRE_SERVER_TOKEN}" \
-    && /etc/init.d/blackfire-agent restart
+    && /etc/init.d/blackfire-agent start
 
 # Cleanup.
 RUN apt-get remove -y --purge software-properties-common \
