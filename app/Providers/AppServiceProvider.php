@@ -72,9 +72,9 @@ class AppServiceProvider extends ServiceProvider
                 break;
         }
 
-        $this->app->singleton(RoleAuthorizerInterface::class, RoleAuthorizer::class);
-        $this->app->singleton(RoleCheckerInterface::class, RoleChecker::class);
-        $this->app->singleton(RoleManagerInterface::class, RoleManager::class);
+        $this->app->bind(RoleAuthorizerInterface::class, RoleAuthorizer::class);
+        $this->app->bind(RoleCheckerInterface::class, RoleChecker::class);
+        $this->app->bind(RoleManagerInterface::class, RoleManager::class);
     }
 
     /**
