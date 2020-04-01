@@ -8,6 +8,8 @@
 # $PUBLIC_KEY_SECRET_ID = The ID of the OAuth public key file in AWS Secrets Manager (default to "oauth-public-key").
 # $PRIVATE_KEY_SECRET_ID = The ID of the OAuth private key file in AWS Secrets Manager (default to "oauth-private-key").
 # $GCLOUD_SERVICE_KEY = The JSON file contents of the GCP service account.
+# $BLACKFIRE_SERVER_ID = The Blackfire server ID.
+# $BLACKFIRE_SERVER_TOKEN = The Blackfire server token.
 
 # Bail out on first error.
 set -e
@@ -56,6 +58,8 @@ echo $GCLOUD_SERVICE_KEY > service-account.json
 echo "Building Docker images..."
 cd ${TRAVIS_BUILD_DIR}/docker/app
 docker build \
+    --build-arg BLACKFIRE_SERVER_ID=$BLACKFIRE_SERVER_ID \
+    --build-arg BLACKFIRE_SERVER_TOKEN=$BLACKFIRE_SERVER_TOKEN \
     -t ${REPO_URI}:latest \
     -t ${REPO_URI}:${TRAVIS_COMMIT} .
 
@@ -71,4 +75,4 @@ docker run --rm \
     ubuntu:16.04 bash -c "rm -rf ./packaged"
 
 mkdir packaged
-echo -e "*\n!.gitignore\n" > packaged/.gitignore
+touch packaged/.gitkeep
