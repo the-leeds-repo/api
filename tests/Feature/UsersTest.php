@@ -153,10 +153,10 @@ class UsersTest extends TestCase
     public function test_service_worker_can_sort_by_at_organisation_and_excludes_global_admins()
     {
         $organisation = factory(Organisation::class)->create();
-        $organisationAdmin = factory(User::class)->create()->makeOrganisationAdmin($organisation);
+        $organisationAdmin = $this->makeOrganisationAdmin(factory(User::class)->create(), $organisation);
         // This user shouldn't show up in the results.
-        $user = $this->makeGlobalAdmin(factory(User::class)->create());
-        $user = $user = $this->makeServiceWorker(factory(User::class)->create(), factory(Service::class)->create());
+        $this->makeGlobalAdmin(factory(User::class)->create());
+        $user = $this->makeServiceWorker(factory(User::class)->create(), factory(Service::class)->create());
         Passport::actingAs($user);
 
         $response = $this->json('GET', "/core/v1/users?filter[at_organisation]={$organisation->id}");
@@ -1118,7 +1118,7 @@ class UsersTest extends TestCase
         $invoker = $this->makeOrganisationAdmin(factory(User::class)->create(), $service->organisation);
         Passport::actingAs($invoker);
 
-        $user = factory(User::class)->create()->makeGlobalAdmin($service->organisation);
+        $user = $this->makeGlobalAdmin(factory(User::class)->create());
 
         $response = $this->json('PUT', "/core/v1/users/{$user->id}", [
             'first_name' => $user->first_name,

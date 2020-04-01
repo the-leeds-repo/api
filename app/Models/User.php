@@ -9,6 +9,7 @@ use App\Models\Relationships\UserRelationships;
 use App\Models\Scopes\UserScopes;
 use App\Notifications\Notifiable;
 use App\Notifications\Notifications;
+use App\RoleManagement\RoleCheckerInterface;
 use App\Sms\Sms;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -296,5 +297,83 @@ class User extends Authenticatable implements Notifiable
     public function highestRole(): ?Role
     {
         return $this->orderedRoles()->first();
+    }
+
+    /**
+     * @return string[]
+     */
+    public function serviceIds(): array
+    {
+        /** @var \App\RoleManagement\RoleCheckerInterface $roleChecker */
+        $roleChecker = app()->make(RoleCheckerInterface::class, [
+            'userRoles' => $this->userRoles->all(),
+        ]);
+
+        if ($roleChecker->isGlobalAdmin()) {
+            $serviceIds = Service::query()->pluck('id')->toArray();
+        } else {
+            $organisationIds = $this->organisations()->pluck('id')->toArray();
+            $serviceIds = array_merge(
+                $this->services()
+                    ->pluck('id')
+                    ->toArray(),
+                Service::query()
+                    ->whereIn('organisation_id', $organisationIds)
+                    ->pluck('id')
+                    ->toArray()
+            );
+        }
+
+        return $serviceIds;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function administeredServiceIds(): array
+    {
+        /** @var \App\RoleManagement\RoleCheckerInterface $roleChecker */
+        $roleChecker = app()->make(RoleCheckerInterface::class, [
+            'userRoles' => $this->userRoles->all(),
+        ]);
+
+        if ($roleChecker->isGlobalAdmin()) {
+            $serviceIds = Service::query()->pluck('id')->toArray();
+        } else {
+            $organisationIds = $this->organisations()->pluck('id')->toArray();
+            $serviceIds = $this->services()
+                ->whereIn(table(Service::class, 'organisation_id'), $organisationIds)
+                ->orWherePivot('role_id', '=', Role::serviceAdmin()->id)
+                ->pluck(table(Service::class, 'id'))
+                ->toArray();
+        }
+
+        return $serviceIds;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function organisationIds(): array
+    {
+        /** @var \App\RoleManagement\RoleCheckerInterface $roleChecker */
+        $roleChecker = app()->make(RoleCheckerInterface::class, [
+            'userRoles' => $this->userRoles->all(),
+        ]);
+
+        if ($roleChecker->isGlobalAdmin()) {
+            $organisationIds = Organisation::query()->pluck('id')->toArray();
+        } else {
+            $organisationIds = array_merge(
+                $this->organisations()
+                    ->pluck('id')
+                    ->toArray(),
+                $this->services()
+                    ->pluck('organisation_id')
+                    ->toArray()
+            );
+        }
+
+        return $organisationIds;
     }
 }

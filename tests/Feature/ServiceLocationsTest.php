@@ -146,7 +146,7 @@ class ServiceLocationsTest extends TestCase
         $location = factory(Location::class)->create();
         $service = factory(Service::class)->create();
         $anotherService = factory(Service::class)->create();
-        $user = factory(User::class)->create()->makeServiceAdmin($anotherService);
+        $user = $this->makeServiceAdmin(factory(User::class)->create(), $anotherService);
 
         Passport::actingAs($user);
 

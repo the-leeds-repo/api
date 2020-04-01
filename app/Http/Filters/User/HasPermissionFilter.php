@@ -2,7 +2,6 @@
 
 namespace App\Http\Filters\User;
 
-use App\Models\Organisation;
 use App\Models\Role;
 use App\Models\Service;
 use App\Models\User;
@@ -29,7 +28,7 @@ class HasPermissionFilter implements Filter
         }
 
         // Get the ID's of the organisations the user is an admin of.
-        $organisationIds = $this->getAdministeredOrganisationIds($user);
+        $organisationIds = $user->organisationIds();
 
         // Get the ID's of the services that belong to the organisations.
         $serviceIdsForOrganisations = $this->getServiceIdsForAdministeredOrganisations($organisationIds);
@@ -41,7 +40,7 @@ class HasPermissionFilter implements Filter
         ]);
 
         // Get the ID's of the services the user is an admin of.
-        $serviceIdsForServices = $this->getAdministeredServiceIds($user);
+        $serviceIdsForServices = $user->administeredServiceIds();
 
         // Get the ID's of the users that work in that service.
         $userIdsForServices = $this->getUserIdsForServices($serviceIdsForServices, [
@@ -57,19 +56,6 @@ class HasPermissionFilter implements Filter
     }
 
     /**
-     * Gets the ID's of the organisations the user is an organisation admin for.
-     *
-     * @param \App\Models\User $user
-     * @return array
-     */
-    protected function getAdministeredOrganisationIds(User $user): array
-    {
-        return $user->organisations()
-            ->pluck(table(Organisation::class, 'id'))
-            ->toArray();
-    }
-
-    /**
      * Gets the ID's of the services that belong to the organisations.
      *
      * @param array $organisationIds
@@ -79,20 +65,6 @@ class HasPermissionFilter implements Filter
     {
         return Service::query()
             ->whereIn(table(Service::class, 'organisation_id'), $organisationIds)
-            ->pluck(table(Service::class, 'id'))
-            ->toArray();
-    }
-
-    /**
-     * Gets the ID's of the service the user is a service admin for.
-     *
-     * @param \App\Models\User $user
-     * @return array
-     */
-    protected function getAdministeredServiceIds(User $user): array
-    {
-        return $user->services()
-            ->wherePivot('role_id', '=', Role::serviceAdmin()->id)
             ->pluck(table(Service::class, 'id'))
             ->toArray();
     }

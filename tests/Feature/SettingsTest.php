@@ -167,7 +167,8 @@ class SettingsTest extends TestCase
     public function test_service_admin_cannot_update_them()
     {
         Passport::actingAs(
-            factory(User::class)->create()->makeServiceAdmin(
+            $this->makeServiceAdmin(
+                factory(User::class)->create(),
                 factory(Service::class)->create()
             )
         );

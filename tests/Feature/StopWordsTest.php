@@ -53,7 +53,8 @@ class StopWordsTest extends TestCase
     public function test_service_admin_cannot_view_stop_words()
     {
         Passport::actingAs(
-            factory(User::class)->create()->makeServiceAdmin(
+            $this->makeServiceAdmin(
+                factory(User::class)->create(),
                 factory(Service::class)->create()
             )
         );
@@ -117,7 +118,8 @@ class StopWordsTest extends TestCase
     public function test_service_admin_cannot_update_stop_words()
     {
         Passport::actingAs(
-            factory(User::class)->create()->makeServiceAdmin(
+            $this->makeServiceAdmin(
+                factory(User::class)->create(),
                 factory(Service::class)->create()
             )
         );

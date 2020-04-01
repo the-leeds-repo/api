@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\RoleManagement\RoleAuthorizer;
 use App\RoleManagement\RoleAuthorizerInterface;
+use App\RoleManagement\RoleChecker;
+use App\RoleManagement\RoleCheckerInterface;
 use App\RoleManagement\RoleManager;
 use App\RoleManagement\RoleManagerInterface;
 use Carbon\CarbonImmutable;
@@ -70,8 +72,9 @@ class AppServiceProvider extends ServiceProvider
                 break;
         }
 
-        $this->app->singleton(RoleManagerInterface::class, RoleManager::class);
         $this->app->singleton(RoleAuthorizerInterface::class, RoleAuthorizer::class);
+        $this->app->singleton(RoleCheckerInterface::class, RoleChecker::class);
+        $this->app->singleton(RoleManagerInterface::class, RoleManager::class);
     }
 
     /**

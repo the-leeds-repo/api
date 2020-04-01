@@ -193,7 +193,7 @@ class ServiceLocationController extends Controller
             }
 
             $updateRequest = $serviceLocation->updateRequests()->create([
-                'user_id' => $request->user()->id,
+                'user_id' => $request->user('api')->id,
                 'data' => $data,
             ]);
 

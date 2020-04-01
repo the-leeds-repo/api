@@ -156,7 +156,7 @@ class UserController extends Controller
      */
     public function user(ShowRequest $request)
     {
-        return $this->show($request, $request->user());
+        return $this->show($request, $request->user('api'));
     }
 
     /**
