@@ -275,7 +275,7 @@ class UsersTest extends TestCase
         $createdUser = User::findOrFail($createdUserId);
         $this->assertTrue($createdUser->isServiceWorker($service));
         $this->assertTrue($createdUser->isServiceAdmin($service));
-        $this->assertEquals(2, $createdUser->roles()->count());
+        $this->assertEquals(1, $createdUser->roles()->count());
     }
 
     public function test_service_admin_cannot_create_organisation_admin()
@@ -367,7 +367,7 @@ class UsersTest extends TestCase
         $createdUser = User::findOrFail($createdUserId);
         $this->assertTrue($createdUser->isServiceWorker($service));
         $this->assertTrue($createdUser->isServiceAdmin($service));
-        $this->assertEquals(2, $createdUser->roles()->count());
+        $this->assertEquals(1, $createdUser->roles()->count());
     }
 
     public function test_organisation_admin_cannot_create_organisation_admin_for_another_organisation()
@@ -405,7 +405,7 @@ class UsersTest extends TestCase
         $this->assertTrue($createdUser->isServiceWorker($service));
         $this->assertTrue($createdUser->isServiceAdmin($service));
         $this->assertTrue($createdUser->isOrganisationAdmin($service->organisation));
-        $this->assertEquals(3, $createdUser->roles()->count());
+        $this->assertEquals(1, $createdUser->roles()->count());
     }
 
     public function test_organisation_admin_cannot_create_global_admin()
@@ -462,7 +462,7 @@ class UsersTest extends TestCase
         $createdUser = User::findOrFail($createdUserId);
         $this->assertTrue($createdUser->isServiceWorker($service));
         $this->assertTrue($createdUser->isServiceAdmin($service));
-        $this->assertEquals(2, $createdUser->roles()->count());
+        $this->assertEquals(1, $createdUser->roles()->count());
     }
 
     public function test_global_admin_can_create_organisation_admin()
@@ -484,7 +484,7 @@ class UsersTest extends TestCase
         $this->assertTrue($createdUser->isServiceWorker($service));
         $this->assertTrue($createdUser->isServiceAdmin($service));
         $this->assertTrue($createdUser->isOrganisationAdmin($service->organisation));
-        $this->assertEquals(3, $createdUser->roles()->count());
+        $this->assertEquals(1, $createdUser->roles()->count());
     }
 
     public function test_global_admin_can_create_global_admin()
@@ -504,7 +504,7 @@ class UsersTest extends TestCase
         $this->assertTrue($createdUser->isServiceAdmin($service));
         $this->assertTrue($createdUser->isOrganisationAdmin($service->organisation));
         $this->assertTrue($createdUser->isGlobalAdmin());
-        $this->assertEquals(4, $createdUser->roles()->count());
+        $this->assertEquals(1, $createdUser->roles()->count());
     }
 
     public function test_global_admin_cannot_create_super_admin()
@@ -561,7 +561,7 @@ class UsersTest extends TestCase
         $createdUser = User::findOrFail($createdUserId);
         $this->assertTrue($createdUser->isServiceWorker($service));
         $this->assertTrue($createdUser->isServiceAdmin($service));
-        $this->assertEquals(2, $createdUser->roles()->count());
+        $this->assertEquals(1, $createdUser->roles()->count());
     }
 
     public function test_super_admin_can_create_organisation_admin()
@@ -583,7 +583,7 @@ class UsersTest extends TestCase
         $this->assertTrue($createdUser->isServiceWorker($service));
         $this->assertTrue($createdUser->isServiceAdmin($service));
         $this->assertTrue($createdUser->isOrganisationAdmin($service->organisation));
-        $this->assertEquals(3, $createdUser->roles()->count());
+        $this->assertEquals(1, $createdUser->roles()->count());
     }
 
     public function test_super_admin_can_create_global_admin()
@@ -603,7 +603,7 @@ class UsersTest extends TestCase
         $this->assertTrue($createdUser->isServiceAdmin($service));
         $this->assertTrue($createdUser->isOrganisationAdmin($service->organisation));
         $this->assertTrue($createdUser->isGlobalAdmin());
-        $this->assertEquals(4, $createdUser->roles()->count());
+        $this->assertEquals(1, $createdUser->roles()->count());
     }
 
     public function test_super_admin_can_create_super_admin()
@@ -624,7 +624,7 @@ class UsersTest extends TestCase
         $this->assertTrue($createdUser->isOrganisationAdmin($service->organisation));
         $this->assertTrue($createdUser->isGlobalAdmin());
         $this->assertTrue($createdUser->isSuperAdmin());
-        $this->assertEquals(5, $createdUser->roles()->count());
+        $this->assertEquals(1, $createdUser->roles()->count());
     }
 
     public function test_super_admin_can_create_super_admin_with_soft_deleted_users_email()
@@ -924,16 +924,11 @@ class UsersTest extends TestCase
             'last_name' => $subject->last_name,
             'email' => $subject->email,
             'phone' => $subject->phone,
-            'roles' => [
-                [
-                    'role' => Role::NAME_SERVICE_WORKER,
-                    'service_id' => $service->id,
-                ],
-                [
-                    'role' => Role::NAME_SERVICE_ADMIN,
-                    'service_id' => $service->id,
-                ],
-            ],
+        ]);
+        $response->assertJsonCount(1, 'data.roles');
+        $response->assertJsonFragment([
+            'role' => Role::NAME_SERVICE_ADMIN,
+            'service_id' => $service->id,
         ]);
     }
 
@@ -1042,16 +1037,11 @@ class UsersTest extends TestCase
             'last_name' => $user->last_name,
             'email' => $user->email,
             'phone' => $user->phone,
-            'roles' => [
-                [
-                    'role' => Role::NAME_SERVICE_WORKER,
-                    'service_id' => $service->id,
-                ],
-                [
-                    'role' => Role::NAME_SERVICE_ADMIN,
-                    'service_id' => $service->id,
-                ],
-            ],
+        ]);
+        $response->assertJsonCount(1, 'data.roles');
+        $response->assertJsonFragment([
+            'role' => Role::NAME_SERVICE_ADMIN,
+            'service_id' => $service->id,
         ]);
     }
 
@@ -1092,23 +1082,10 @@ class UsersTest extends TestCase
             'email' => $user->email,
             'phone' => $user->phone,
         ]);
+        $response->assertJsonCount(1, 'data.roles');
         $response->assertJsonFragment([
-            [
-                'role' => Role::NAME_SERVICE_WORKER,
-                'service_id' => $service->id,
-            ],
-        ]);
-        $response->assertJsonFragment([
-            [
-                'role' => Role::NAME_SERVICE_ADMIN,
-                'service_id' => $service->id,
-            ],
-        ]);
-        $response->assertJsonFragment([
-            [
-                'role' => Role::NAME_ORGANISATION_ADMIN,
-                'organisation_id' => $service->organisation->id,
-            ],
+            'role' => Role::NAME_ORGANISATION_ADMIN,
+            'organisation_id' => $service->organisation->id,
         ]);
     }
 
@@ -1221,16 +1198,11 @@ class UsersTest extends TestCase
             'last_name' => $user->last_name,
             'email' => $user->email,
             'phone' => $user->phone,
-            'roles' => [
-                [
-                    'role' => Role::NAME_SERVICE_WORKER,
-                    'service_id' => $service->id,
-                ],
-                [
-                    'role' => Role::NAME_SERVICE_ADMIN,
-                    'service_id' => $service->id,
-                ],
-            ],
+        ]);
+        $response->assertJsonCount(1, 'data.roles');
+        $response->assertJsonFragment([
+            'role' => Role::NAME_SERVICE_ADMIN,
+            'service_id' => $service->id,
         ]);
     }
 
@@ -1271,23 +1243,10 @@ class UsersTest extends TestCase
             'email' => $user->email,
             'phone' => $user->phone,
         ]);
+        $response->assertJsonCount(1, 'data.roles');
         $response->assertJsonFragment([
-            [
-                'role' => Role::NAME_SERVICE_WORKER,
-                'service_id' => $service->id,
-            ],
-        ]);
-        $response->assertJsonFragment([
-            [
-                'role' => Role::NAME_SERVICE_ADMIN,
-                'service_id' => $service->id,
-            ],
-        ]);
-        $response->assertJsonFragment([
-            [
-                'role' => Role::NAME_ORGANISATION_ADMIN,
-                'organisation_id' => $service->organisation->id,
-            ],
+            'role' => Role::NAME_ORGANISATION_ADMIN,
+            'organisation_id' => $service->organisation->id,
         ]);
     }
 
@@ -1328,27 +1287,11 @@ class UsersTest extends TestCase
             'last_name' => $user->last_name,
             'email' => $user->email,
             'phone' => $user->phone,
-        ]);
-        $response->assertJsonFragment([
-            [
-                'role' => Role::NAME_SERVICE_WORKER,
-                'service_id' => $service->id,
+            'roles' => [
+                [
+                    'role' => Role::NAME_GLOBAL_ADMIN,
+                ],
             ],
-        ]);
-        $response->assertJsonFragment([
-            [
-                'role' => Role::NAME_SERVICE_ADMIN,
-                'service_id' => $service->id,
-            ],
-        ]);
-        $response->assertJsonFragment([
-            [
-                'role' => Role::NAME_ORGANISATION_ADMIN,
-                'organisation_id' => $service->organisation->id,
-            ],
-        ]);
-        $response->assertJsonFragment([
-            ['role' => Role::NAME_GLOBAL_ADMIN],
         ]);
     }
 
@@ -1460,16 +1403,11 @@ class UsersTest extends TestCase
             'last_name' => $user->last_name,
             'email' => $user->email,
             'phone' => $user->phone,
-            'roles' => [
-                [
-                    'role' => Role::NAME_SERVICE_WORKER,
-                    'service_id' => $service->id,
-                ],
-                [
-                    'role' => Role::NAME_SERVICE_ADMIN,
-                    'service_id' => $service->id,
-                ],
-            ],
+        ]);
+        $response->assertJsonCount(1, 'data.roles');
+        $response->assertJsonFragment([
+            'role' => Role::NAME_SERVICE_ADMIN,
+            'service_id' => $service->id,
         ]);
     }
 
@@ -1510,23 +1448,10 @@ class UsersTest extends TestCase
             'email' => $user->email,
             'phone' => $user->phone,
         ]);
+        $response->assertJsonCount(1, 'data.roles');
         $response->assertJsonFragment([
-            [
-                'role' => Role::NAME_SERVICE_WORKER,
-                'service_id' => $service->id,
-            ],
-        ]);
-        $response->assertJsonFragment([
-            [
-                'role' => Role::NAME_SERVICE_ADMIN,
-                'service_id' => $service->id,
-            ],
-        ]);
-        $response->assertJsonFragment([
-            [
-                'role' => Role::NAME_ORGANISATION_ADMIN,
-                'organisation_id' => $service->organisation->id,
-            ],
+            'role' => Role::NAME_ORGANISATION_ADMIN,
+            'organisation_id' => $service->organisation->id,
         ]);
     }
 
@@ -1567,27 +1492,11 @@ class UsersTest extends TestCase
             'last_name' => $user->last_name,
             'email' => $user->email,
             'phone' => $user->phone,
-        ]);
-        $response->assertJsonFragment([
-            [
-                'role' => Role::NAME_SERVICE_WORKER,
-                'service_id' => $service->id,
+            'roles' => [
+                [
+                    'role' => Role::NAME_GLOBAL_ADMIN,
+                ],
             ],
-        ]);
-        $response->assertJsonFragment([
-            [
-                'role' => Role::NAME_SERVICE_ADMIN,
-                'service_id' => $service->id,
-            ],
-        ]);
-        $response->assertJsonFragment([
-            [
-                'role' => Role::NAME_ORGANISATION_ADMIN,
-                'organisation_id' => $service->organisation->id,
-            ],
-        ]);
-        $response->assertJsonFragment([
-            ['role' => Role::NAME_GLOBAL_ADMIN],
         ]);
     }
 
@@ -1629,30 +1538,11 @@ class UsersTest extends TestCase
             'last_name' => $user->last_name,
             'email' => $user->email,
             'phone' => $user->phone,
-        ]);
-        $response->assertJsonFragment([
-            [
-                'role' => Role::NAME_SERVICE_WORKER,
-                'service_id' => $service->id,
+            'roles' => [
+                [
+                    'role' => Role::NAME_SUPER_ADMIN,
+                ],
             ],
-        ]);
-        $response->assertJsonFragment([
-            [
-                'role' => Role::NAME_SERVICE_ADMIN,
-                'service_id' => $service->id,
-            ],
-        ]);
-        $response->assertJsonFragment([
-            [
-                'role' => Role::NAME_ORGANISATION_ADMIN,
-                'organisation_id' => $service->organisation->id,
-            ],
-        ]);
-        $response->assertJsonFragment([
-            ['role' => Role::NAME_GLOBAL_ADMIN],
-        ]);
-        $response->assertJsonFragment([
-            ['role' => Role::NAME_SUPER_ADMIN],
         ]);
     }
 

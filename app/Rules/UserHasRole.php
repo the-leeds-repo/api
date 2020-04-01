@@ -5,6 +5,7 @@ namespace App\Rules;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\UserRole;
+use App\RoleManagement\RoleCheckerInterface;
 use Illuminate\Contracts\Validation\Rule;
 
 class UserHasRole implements Rule
@@ -51,17 +52,22 @@ class UserHasRole implements Rule
             return true;
         }
 
+        /** @var \App\RoleManagement\RoleCheckerInterface $roleChecker */
+        $roleChecker = app()->make(RoleCheckerInterface::class, [
+            'userRoles' => $this->user->userRoles()->get()->all(),
+        ]);
+
         switch ($this->userRole->role->name) {
             case Role::NAME_SERVICE_WORKER:
-                return $this->user->isServiceWorker($this->userRole->service);
+                return $roleChecker->isServiceWorker($this->userRole);
             case Role::NAME_SERVICE_ADMIN:
-                return $this->user->isServiceAdmin($this->userRole->service);
+                return $roleChecker->isServiceAdmin($this->userRole);
             case Role::NAME_ORGANISATION_ADMIN:
-                return $this->user->isOrganisationAdmin($this->userRole->organisation);
+                return $roleChecker->isOrganisationAdmin($this->userRole);
             case Role::NAME_GLOBAL_ADMIN:
-                return $this->user->isGlobalAdmin();
+                return $roleChecker->isGlobalAdmin();
             case Role::NAME_SUPER_ADMIN:
-                return $this->user->isSuperAdmin();
+                return $roleChecker->isSuperAdmin();
             default:
                 return false;
         }

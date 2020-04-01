@@ -2,8 +2,6 @@
 
 namespace App\RoleManagement;
 
-use App\Models\Organisation;
-use App\Models\Service;
 use App\Models\UserRole;
 
 interface RoleCheckerInterface

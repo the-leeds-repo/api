@@ -775,10 +775,6 @@ class UpdateRequestsTest extends TestCase
         );
 
         $newOrganisation = factory(Organisation::class)->create();
-        $newOrganisationAdmin = $this->makeOrganisationAdmin(
-            factory(User::class)->create(),
-            $newOrganisation
-        );
 
         $updateRequest = $service->updateRequests()->create([
             'user_id' => $user->id,
@@ -790,20 +786,20 @@ class UpdateRequestsTest extends TestCase
         $response = $this->json('PUT', "/core/v1/update-requests/{$updateRequest->id}/approve");
 
         $response->assertStatus(Response::HTTP_OK);
-        $this->assertDatabaseMissing(table(UserRole::class), [
+        $this->assertCount(3, UserRole::all());
+        $this->assertDatabaseHas(table(UserRole::class), [
+            'user_id' => $user->id,
+            'role_id' => Role::globalAdmin()->id,
+        ]);
+        $this->assertDatabaseHas(table(UserRole::class), [
             'user_id' => $serviceAdmin->id,
             'role_id' => Role::serviceAdmin()->id,
             'service_id' => $service->id,
         ]);
-        $this->assertDatabaseMissing(table(UserRole::class), [
+        $this->assertDatabaseHas(table(UserRole::class), [
             'user_id' => $organisationAdmin->id,
             'role_id' => Role::organisationAdmin()->id,
-            'service_id' => $service->id,
-        ]);
-        $this->assertDatabaseHas(table(UserRole::class), [
-            'user_id' => $newOrganisationAdmin->id,
-            'role_id' => Role::serviceAdmin()->id,
-            'service_id' => $service->id,
+            'organisation_id' => $service->organisation->id,
         ]);
     }
 
