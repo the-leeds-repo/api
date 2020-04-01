@@ -12,23 +12,6 @@ use Tests\TestCase;
 
 class RoleManagerTest extends TestCase
 {
-    /**
-     * @var \App\RoleManagement\RoleManager
-     */
-    protected $roleManager;
-
-    /**
-     * Setup the test environment.
-     *
-     * @return void
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->roleManager = new RoleManager();
-    }
-
     public function test_can_make_user_service_worker()
     {
         /** @var \App\Models\User $user */
@@ -37,7 +20,9 @@ class RoleManagerTest extends TestCase
         /** @var \App\Models\Service $service */
         $service = factory(Service::class)->create();
 
-        $this->roleManager->updateRoles($user, [
+        $roleManager = new RoleManager($user);
+
+        $roleManager->updateRoles([
             new UserRole([
                 'role_id' => Role::serviceWorker()->id,
                 'service_id' => $service->id,
@@ -60,19 +45,16 @@ class RoleManagerTest extends TestCase
         /** @var \App\Models\Service $service */
         $service = factory(Service::class)->create();
 
-        $this->roleManager->updateRoles($user, [
+        $roleManager = new RoleManager($user);
+
+        $roleManager->updateRoles([
             new UserRole([
                 'role_id' => Role::serviceAdmin()->id,
                 'service_id' => $service->id,
             ])
         ]);
 
-        $this->assertCount(2, UserRole::all());
-        $this->assertDatabaseHas(table(UserRole::class), [
-            'user_id' => $user->id,
-            'role_id' => Role::serviceWorker()->id,
-            'service_id' => $service->id,
-        ]);
+        $this->assertCount(1, UserRole::all());
         $this->assertDatabaseHas(table(UserRole::class), [
             'user_id' => $user->id,
             'role_id' => Role::serviceAdmin()->id,
@@ -88,24 +70,16 @@ class RoleManagerTest extends TestCase
         /** @var \App\Models\Service $service */
         $service = factory(Service::class)->create();
 
-        $this->roleManager->updateRoles($user, [
+        $roleManager = new RoleManager($user);
+
+        $roleManager->updateRoles([
             new UserRole([
                 'role_id' => Role::organisationAdmin()->id,
                 'organisation_id' => $service->organisation->id,
             ])
         ]);
 
-        $this->assertCount(3, UserRole::all());
-        $this->assertDatabaseHas(table(UserRole::class), [
-            'user_id' => $user->id,
-            'role_id' => Role::serviceWorker()->id,
-            'service_id' => $service->id,
-        ]);
-        $this->assertDatabaseHas(table(UserRole::class), [
-            'user_id' => $user->id,
-            'role_id' => Role::serviceAdmin()->id,
-            'service_id' => $service->id,
-        ]);
+        $this->assertCount(1, UserRole::all());
         $this->assertDatabaseHas(table(UserRole::class), [
             'user_id' => $user->id,
             'role_id' => Role::organisationAdmin()->id,
@@ -121,28 +95,15 @@ class RoleManagerTest extends TestCase
         /** @var \App\Models\Service $service */
         $service = factory(Service::class)->create();
 
-        $this->roleManager->updateRoles($user, [
+        $roleManager = new RoleManager($user);
+
+        $roleManager->updateRoles([
             new UserRole([
                 'role_id' => Role::globalAdmin()->id,
             ])
         ]);
 
-        $this->assertCount(4, UserRole::all());
-        $this->assertDatabaseHas(table(UserRole::class), [
-            'user_id' => $user->id,
-            'role_id' => Role::serviceWorker()->id,
-            'service_id' => $service->id,
-        ]);
-        $this->assertDatabaseHas(table(UserRole::class), [
-            'user_id' => $user->id,
-            'role_id' => Role::serviceAdmin()->id,
-            'service_id' => $service->id,
-        ]);
-        $this->assertDatabaseHas(table(UserRole::class), [
-            'user_id' => $user->id,
-            'role_id' => Role::organisationAdmin()->id,
-            'organisation_id' => $service->organisation->id,
-        ]);
+        $this->assertCount(1, UserRole::all());
         $this->assertDatabaseHas(table(UserRole::class), [
             'user_id' => $user->id,
             'role_id' => Role::globalAdmin()->id,
@@ -157,32 +118,15 @@ class RoleManagerTest extends TestCase
         /** @var \App\Models\Service $service */
         $service = factory(Service::class)->create();
 
-        $this->roleManager->updateRoles($user, [
+        $roleManager = new RoleManager($user);
+
+        $roleManager->updateRoles([
             new UserRole([
                 'role_id' => Role::superAdmin()->id,
             ])
         ]);
 
-        $this->assertCount(5, UserRole::all());
-        $this->assertDatabaseHas(table(UserRole::class), [
-            'user_id' => $user->id,
-            'role_id' => Role::serviceWorker()->id,
-            'service_id' => $service->id,
-        ]);
-        $this->assertDatabaseHas(table(UserRole::class), [
-            'user_id' => $user->id,
-            'role_id' => Role::serviceAdmin()->id,
-            'service_id' => $service->id,
-        ]);
-        $this->assertDatabaseHas(table(UserRole::class), [
-            'user_id' => $user->id,
-            'role_id' => Role::organisationAdmin()->id,
-            'organisation_id' => $service->organisation->id,
-        ]);
-        $this->assertDatabaseHas(table(UserRole::class), [
-            'user_id' => $user->id,
-            'role_id' => Role::globalAdmin()->id,
-        ]);
+        $this->assertCount(1, UserRole::all());
         $this->assertDatabaseHas(table(UserRole::class), [
             'user_id' => $user->id,
             'role_id' => Role::superAdmin()->id,
@@ -200,7 +144,9 @@ class RoleManagerTest extends TestCase
         /** @var \App\Models\Service $service */
         $service = factory(Service::class)->create();
 
-        $this->roleManager->updateRoles($user, [
+        $roleManager = new RoleManager($user);
+
+        $roleManager->updateRoles([
             new UserRole([
                 'role_id' => Role::organisationAdmin()->id,
                 'organisation_id' => $organisation->id,
@@ -211,16 +157,11 @@ class RoleManagerTest extends TestCase
             ]),
         ]);
 
-        $this->assertCount(3, UserRole::all());
+        $this->assertCount(2, UserRole::all());
         $this->assertDatabaseHas(table(UserRole::class), [
             'user_id' => $user->id,
             'role_id' => Role::organisationAdmin()->id,
             'organisation_id' => $organisation->id,
-        ]);
-        $this->assertDatabaseHas(table(UserRole::class), [
-            'user_id' => $user->id,
-            'role_id' => Role::serviceWorker()->id,
-            'service_id' => $service->id,
         ]);
         $this->assertDatabaseHas(table(UserRole::class), [
             'user_id' => $user->id,
@@ -239,32 +180,15 @@ class RoleManagerTest extends TestCase
 
         $user->makeSuperAdmin();
 
-        $this->assertCount(5, UserRole::all());
-        $this->assertDatabaseHas(table(UserRole::class), [
-            'user_id' => $user->id,
-            'role_id' => Role::serviceWorker()->id,
-            'service_id' => $service->id,
-        ]);
-        $this->assertDatabaseHas(table(UserRole::class), [
-            'user_id' => $user->id,
-            'role_id' => Role::serviceAdmin()->id,
-            'service_id' => $service->id,
-        ]);
-        $this->assertDatabaseHas(table(UserRole::class), [
-            'user_id' => $user->id,
-            'role_id' => Role::organisationAdmin()->id,
-            'organisation_id' => $service->organisation->id,
-        ]);
-        $this->assertDatabaseHas(table(UserRole::class), [
-            'user_id' => $user->id,
-            'role_id' => Role::globalAdmin()->id,
-        ]);
+        $this->assertCount(1, UserRole::all());
         $this->assertDatabaseHas(table(UserRole::class), [
             'user_id' => $user->id,
             'role_id' => Role::superAdmin()->id,
         ]);
 
-        $this->roleManager->updateRoles($user, [
+        $roleManager = new RoleManager($user);
+
+        $roleManager->updateRoles([
             new UserRole([
                 'role_id' => Role::serviceWorker()->id,
                 'service_id' => $service->id,
@@ -283,38 +207,19 @@ class RoleManagerTest extends TestCase
     {
         /** @var \App\Models\User $user */
         $user = factory(User::class)->create();
-
-        /** @var \App\Models\Service $service */
-        $service = factory(Service::class)->create();
+        factory(Service::class)->create();
 
         $user->makeSuperAdmin();
 
-        $this->assertCount(5, UserRole::all());
-        $this->assertDatabaseHas(table(UserRole::class), [
-            'user_id' => $user->id,
-            'role_id' => Role::serviceWorker()->id,
-            'service_id' => $service->id,
-        ]);
-        $this->assertDatabaseHas(table(UserRole::class), [
-            'user_id' => $user->id,
-            'role_id' => Role::serviceAdmin()->id,
-            'service_id' => $service->id,
-        ]);
-        $this->assertDatabaseHas(table(UserRole::class), [
-            'user_id' => $user->id,
-            'role_id' => Role::organisationAdmin()->id,
-            'organisation_id' => $service->organisation->id,
-        ]);
-        $this->assertDatabaseHas(table(UserRole::class), [
-            'user_id' => $user->id,
-            'role_id' => Role::globalAdmin()->id,
-        ]);
+        $this->assertCount(1, UserRole::all());
         $this->assertDatabaseHas(table(UserRole::class), [
             'user_id' => $user->id,
             'role_id' => Role::superAdmin()->id,
         ]);
 
-        $this->roleManager->updateRoles($user, []);
+        $roleManager = new RoleManager($user);
+
+        $roleManager->updateRoles([]);
 
         $this->assertCount(0, UserRole::all());
     }

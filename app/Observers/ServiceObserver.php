@@ -4,84 +4,17 @@ namespace App\Observers;
 
 use App\Emails\StaleServiceDisabled\NotifyGlobalAdminEmail;
 use App\Models\Notification;
-use App\Models\Role;
 use App\Models\Service;
-use App\Models\UserRole;
-use App\RoleManagement\RoleManagerInterface;
 
 class ServiceObserver
 {
     /**
-     * @var \App\RoleManagement\RoleManagerInterface
-     */
-    protected $roleManager;
-
-    /**
-     * ServiceObserver constructor.
-     *
-     * @param \App\RoleManagement\RoleManagerInterface $roleManager
-     */
-    public function __construct(RoleManagerInterface $roleManager)
-    {
-        $this->roleManager = $roleManager;
-    }
-
-    /**
-     * Handle the organisation "created" event.
-     *
-     * @param \App\Models\Service $service
-     */
-    public function created(Service $service)
-    {
-        UserRole::query()
-            ->with('user')
-            ->where('role_id', Role::organisationAdmin()->id)
-            ->where('organisation_id', $service->organisation_id)
-            ->get()
-            ->each(function (UserRole $userRole) use ($service) {
-                $this->roleManager->addRoles($userRole->user, [
-                    new UserRole([
-                        'role_id' => Role::serviceAdmin()->id,
-                        'service_id' => $service->id,
-                    ]),
-                ]);
-            });
-    }
-
-    /**
-     * Handle the organisation "updated" event.
+     * Handle the service "updated" event.
      *
      * @param \App\Models\Service $service
      */
     public function updated(Service $service)
     {
-        // Check if the organisation_id was updated.
-        if ($service->isDirty('organisation_id')) {
-            // Remove old service workers and service admins.
-            UserRole::query()
-                ->whereIn('role_id', [
-                    Role::serviceWorker()->id,
-                    Role::serviceAdmin()->id,
-                ])
-                ->where('service_id', $service->id)
-                ->delete();
-
-            // Add new service admins.
-            UserRole::query()
-                ->with('user')
-                ->where('role_id', '=', Role::organisationAdmin()->id)
-                ->where('organisation_id', '=', $service->organisation_id)
-                ->get()
-                ->each(function (UserRole $userRole) use ($service) {
-                    $this->roleManager->addRoles($userRole->user, [
-                        new UserRole([
-                            'role_id' => Role::serviceAdmin()->id,
-                            'service_id' => $service->id,
-                        ]),
-                    ]);
-                });
-        }
-
         // Check if the status was updated.
         if ($service->isDirty('status')) {
             // Check if the service was disabled and last modified over a year ago.
@@ -100,7 +33,7 @@ class ServiceObserver
     }
 
     /**
-     * Handle the organisation "deleting" event.
+     * Handle the service "deleting" event.
      *
      * @param \App\Models\Service $service
      */

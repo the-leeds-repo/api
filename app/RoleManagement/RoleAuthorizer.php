@@ -23,7 +23,7 @@ class RoleAuthorizer implements RoleAuthorizerInterface
      */
     public function __construct(
         array $invokingUserRoles,
-        array $subjectUserRoles
+        array $subjectUserRoles = []
     ) {
         $this->invokingUserRoles = $this->appendOrganisationIdToServiceRoles(
             $invokingUserRoles

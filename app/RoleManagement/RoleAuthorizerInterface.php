@@ -14,7 +14,7 @@ interface RoleAuthorizerInterface
      */
     public function __construct(
         array $invokingUserRoles,
-        array $subjectUserRoles
+        array $subjectUserRoles = []
     );
 
     /**

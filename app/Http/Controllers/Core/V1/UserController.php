@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Core\V1;
 
 use App\Events\EndpointHit;
 use App\Events\UserRolesUpdated;
-use App\Exceptions\CannotRevokeRoleException;
 use App\Http\Controllers\Controller;
 use App\Http\Filters\User\AtOrganisationFilter;
 use App\Http\Filters\User\AtServiceFilter;
@@ -17,9 +16,6 @@ use App\Http\Requests\User\StoreRequest;
 use App\Http\Requests\User\UpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Responses\ResourceDeleted;
-use App\Models\Organisation;
-use App\Models\Role;
-use App\Models\Service;
 use App\Models\User;
 use App\RoleManagement\RoleManagerInterface;
 use Illuminate\Database\Eloquent\Builder;
@@ -94,12 +90,11 @@ class UserController extends Controller
      * Store a newly created resource in storage.
      *
      * @param \App\Http\Requests\User\StoreRequest $request
-     * @param \App\RoleManagement\RoleManagerInterface $roleManager
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreRequest $request, RoleManagerInterface $roleManager)
+    public function store(StoreRequest $request)
     {
-        return DB::transaction(function () use ($request, $roleManager) {
+        return DB::transaction(function () use ($request) {
             /** @var \App\Models\User $user */
             $user = User::create([
                 'first_name' => $request->first_name,
@@ -109,7 +104,12 @@ class UserController extends Controller
                 'password' => bcrypt($request->password),
             ]);
 
-            $roleManager->updateRoles($user, $request->getUserRoles());
+            /** @var \App\RoleManagement\RoleManagerInterface $roleManager */
+            $roleManager = app()->make(RoleManagerInterface::class, [
+                'user' => $user,
+            ]);
+
+            $roleManager->updateRoles($request->getUserRoles());
 
             event(EndpointHit::onCreate($request, "Created user [{$user->id}]", $user));
 
@@ -164,12 +164,11 @@ class UserController extends Controller
      *
      * @param \App\Http\Requests\User\UpdateRequest $request
      * @param \App\Models\User $user
-     * @param \App\RoleManagement\RoleManagerInterface $roleManager
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateRequest $request, User $user, RoleManagerInterface $roleManager)
+    public function update(UpdateRequest $request, User $user)
     {
-        return DB::transaction(function () use ($request, $user, $roleManager) {
+        return DB::transaction(function () use ($request, $user) {
             // Store the original user roles in case they have been updated in the request (used for notification).
             $originalRoles = $user->userRoles;
 
@@ -186,8 +185,13 @@ class UserController extends Controller
                 $user->update(['password' => bcrypt($request->password)]);
             }
 
+            /** @var \App\RoleManagement\RoleManagerInterface $roleManager */
+            $roleManager = app()->make(RoleManagerInterface::class, [
+                'user' => $user,
+            ]);
+
             // Update the user roles.
-            $roleManager->updateRoles($user, $request->getUserRoles());
+            $roleManager->updateRoles($request->getUserRoles());
 
             // Refresh the user roles.
             $user->load('userRoles');

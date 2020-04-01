@@ -3,7 +3,7 @@
 namespace App\Http\Requests\User;
 
 use App\Models\Role;
-use App\Models\UserRole;
+use App\RoleManagement\RoleAuthorizerInterface;
 use App\Rules\CanAssignRoleToUser;
 use App\Rules\Password;
 use App\Rules\UkPhoneNumber;
@@ -31,6 +31,12 @@ class StoreRequest extends FormRequest
      */
     public function rules()
     {
+        $canAssignRoleToUserRule = new CanAssignRoleToUser(
+            app()->make(RoleAuthorizerInterface::class, [
+                'invokingUserRoles' => $this->user()->userRoles->all(),
+            ])
+        );
+
         return [
             'first_name' => ['required', 'string', 'min:1', 'max:255'],
             'last_name' => ['required', 'string', 'min:1', 'max:255'],
@@ -39,7 +45,7 @@ class StoreRequest extends FormRequest
             'password' => ['required', 'string', 'min:8', 'max:255', new Password()],
 
             'roles' => ['required', 'array'],
-            'roles.*' => ['required', 'array', new CanAssignRoleToUser($this->user()->load('userRoles'))],
+            'roles.*' => ['required', 'array', $canAssignRoleToUserRule],
             'roles.*.role' => ['required_with:roles.*', 'string', 'exists:roles,name'],
             'roles.*.organisation_id' => [
                 'required_if:roles.*.role,' . Role::NAME_ORGANISATION_ADMIN,
