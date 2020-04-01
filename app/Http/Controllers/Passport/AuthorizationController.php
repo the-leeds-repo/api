@@ -31,7 +31,7 @@ class AuthorizationController extends BaseAuthorizationController
             $scopes = $this->parseScopes($authRequest);
 
             $token = $tokens->findValidToken(
-                $user = $request->user('api'),
+                $user = $request->user(),
                 $client = $clients->find($authRequest->getClient()->getIdentifier())
             );
 
