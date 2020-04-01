@@ -34,7 +34,7 @@ class AuditsTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
 
         Passport::actingAs($user);
 
@@ -51,7 +51,7 @@ class AuditsTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceAdmin($service);
+        $this->makeServiceAdmin($user, $service);
 
         Passport::actingAs($user);
 
@@ -68,7 +68,7 @@ class AuditsTest extends TestCase
          */
         $organisation = factory(Organisation::class)->create();
         $user = factory(User::class)->create();
-        $user->makeOrganisationAdmin($organisation);
+        $this->makeOrganisationAdmin($user, $organisation);
 
         Passport::actingAs($user);
 
@@ -83,7 +83,7 @@ class AuditsTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         $audit = Audit::create([
             'action' => Audit::ACTION_READ,
             'description' => 'Someone viewed a resource',
@@ -118,7 +118,7 @@ class AuditsTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         $audit = Audit::create([
             'user_id' => $user->id,
             'action' => Audit::ACTION_READ,
@@ -166,7 +166,8 @@ class AuditsTest extends TestCase
     {
         $this->fakeEvents();
 
-        $user = factory(User::class)->create()->makeGlobalAdmin();
+        $user = factory(User::class)->create();
+        $this->makeGlobalAdmin($user);
         Passport::actingAs($user);
 
         $this->json('GET', '/core/v1/audits');
@@ -198,7 +199,7 @@ class AuditsTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
         $audit = factory(Audit::class)->create();
 
         Passport::actingAs($user);
@@ -216,7 +217,7 @@ class AuditsTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceAdmin($service);
+        $this->makeServiceAdmin($user, $service);
         $audit = factory(Audit::class)->create();
 
         Passport::actingAs($user);
@@ -234,7 +235,7 @@ class AuditsTest extends TestCase
          */
         $organisation = factory(Organisation::class)->create();
         $user = factory(User::class)->create();
-        $user->makeOrganisationAdmin($organisation);
+        $this->makeOrganisationAdmin($user, $organisation);
         $audit = factory(Audit::class)->create();
 
         Passport::actingAs($user);
@@ -250,7 +251,7 @@ class AuditsTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         $audit = Audit::create([
             'action' => Audit::ACTION_READ,
             'description' => 'Someone viewed a resource',
@@ -283,7 +284,8 @@ class AuditsTest extends TestCase
     {
         $this->fakeEvents();
 
-        $user = factory(User::class)->create()->makeGlobalAdmin();
+        $user = factory(User::class)->create();
+        $this->makeGlobalAdmin($user);
         Passport::actingAs($user);
 
         $audit = Audit::create([

@@ -15,7 +15,8 @@ class UpdateRequestObserverTest extends TestCase
     {
         Queue::fake();
 
-        $user = factory(User::class)->create()->makeSuperAdmin();
+        $user = factory(User::class)->create();
+        $this->makeSuperAdmin($user);
         $organisation = factory(Organisation::class)->create();
         $organisation->updateRequests()->create([
             'user_id' => $user->id,

@@ -22,7 +22,8 @@ class UserRolesUpdatedTest extends TestCase
         Queue::fake();
 
         $service = factory(Service::class)->create();
-        $user = factory(User::class)->create()->makeServiceAdmin($service);
+        $user = factory(User::class)->create();
+        $this->makeServiceAdmin($user, $service);
 
         Request::create('')->setUserResolver(function () {
             return factory(User::class)->create();

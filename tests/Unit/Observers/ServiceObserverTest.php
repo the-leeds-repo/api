@@ -18,7 +18,8 @@ class ServiceObserverTest extends TestCase
 
         $oldNow = Date::now()->subMonths(13);
 
-        $user = factory(User::class)->create()->makeGlobalAdmin();
+        $user = factory(User::class)->create();
+        $this->makeGlobalAdmin($user);
         Passport::actingAs($user);
 
         /** @var \App\Models\Service $service */

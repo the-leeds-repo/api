@@ -35,7 +35,7 @@ class PageFeedbacksTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
 
         Passport::actingAs($user);
 
@@ -52,7 +52,7 @@ class PageFeedbacksTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceAdmin($service);
+        $this->makeServiceAdmin($user, $service);
 
         Passport::actingAs($user);
 
@@ -69,7 +69,7 @@ class PageFeedbacksTest extends TestCase
          */
         $service = factory(Organisation::class)->create();
         $user = factory(User::class)->create();
-        $user->makeOrganisationAdmin($service);
+        $this->makeOrganisationAdmin($user, $service);
 
         Passport::actingAs($user);
 
@@ -84,7 +84,7 @@ class PageFeedbacksTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         $pageFeedback = PageFeedback::create([
             'url' => url('/test'),
             'feedback' => 'This page does not work',
@@ -121,7 +121,7 @@ class PageFeedbacksTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
 
         Passport::actingAs($user);
 
@@ -197,7 +197,7 @@ class PageFeedbacksTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
         $pageFeedback = PageFeedback::create([
             'url' => url('/test'),
             'feedback' => 'This page does not work',
@@ -220,7 +220,7 @@ class PageFeedbacksTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceAdmin($service);
+        $this->makeServiceAdmin($user, $service);
         $pageFeedback = PageFeedback::create([
             'url' => url('/test'),
             'feedback' => 'This page does not work',
@@ -243,7 +243,7 @@ class PageFeedbacksTest extends TestCase
          */
         $service = factory(Organisation::class)->create();
         $user = factory(User::class)->create();
-        $user->makeOrganisationAdmin($service);
+        $this->makeOrganisationAdmin($user, $service);
         $pageFeedback = PageFeedback::create([
             'url' => url('/test'),
             'feedback' => 'This page does not work',
@@ -264,7 +264,7 @@ class PageFeedbacksTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         $pageFeedback = PageFeedback::create([
             'url' => url('/test'),
             'feedback' => 'This page does not work',
@@ -301,7 +301,7 @@ class PageFeedbacksTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         $pageFeedback = PageFeedback::create([
             'url' => url('/test'),
             'feedback' => 'This page does not work',
