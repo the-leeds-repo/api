@@ -77,6 +77,8 @@ class RoleAuthorizer implements RoleAuthorizerInterface
      */
     public function canAssignRole(UserRole $userRole): bool
     {
+        $userRole = $this->appendOrganisationIdToServiceRoles([$userRole])[0];
+
         switch ($userRole->role_id) {
             case Role::serviceWorker()->id:
                 if (!$this->canAssignServiceWorker($userRole)) {
@@ -113,6 +115,8 @@ class RoleAuthorizer implements RoleAuthorizerInterface
      */
     public function canRevokeRole(UserRole $userRole): bool
     {
+        $userRole = $this->appendOrganisationIdToServiceRoles([$userRole])[0];
+
         // If the invoker is a super admin.
         if ($this->invokingUserIsSuperAdmin()) {
             return true;
