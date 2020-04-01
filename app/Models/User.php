@@ -310,16 +310,20 @@ class User extends Authenticatable implements Notifiable
         ]);
 
         if ($roleChecker->isGlobalAdmin()) {
-            $serviceIds = Service::query()->pluck('id')->toArray();
+            $serviceIds = Service::query()
+                ->pluck(table(Service::class, 'id'))
+                ->toArray();
         } else {
-            $organisationIds = $this->organisations()->pluck('id')->toArray();
+            $organisationIds = $this->organisations()
+                ->pluck(table(Organisation::class, 'id'))
+                ->toArray();
             $serviceIds = array_merge(
                 $this->services()
-                    ->pluck('id')
+                    ->pluck(table(Service::class, 'id'))
                     ->toArray(),
                 Service::query()
-                    ->whereIn('organisation_id', $organisationIds)
-                    ->pluck('id')
+                    ->whereIn(table(Service::class, 'organisation_id'), $organisationIds)
+                    ->pluck(table(Service::class, 'id'))
                     ->toArray()
             );
         }
@@ -338,9 +342,13 @@ class User extends Authenticatable implements Notifiable
         ]);
 
         if ($roleChecker->isGlobalAdmin()) {
-            $serviceIds = Service::query()->pluck('id')->toArray();
+            $serviceIds = Service::query()
+                ->pluck(table(Service::class, 'id'))
+                ->toArray();
         } else {
-            $organisationIds = $this->organisations()->pluck('id')->toArray();
+            $organisationIds = $this->organisations()
+                ->pluck(table(Organisation::class, 'id'))
+                ->toArray();
             $serviceIds = $this->services()
                 ->whereIn(table(Service::class, 'organisation_id'), $organisationIds)
                 ->orWherePivot('role_id', '=', Role::serviceAdmin()->id)
@@ -362,14 +370,16 @@ class User extends Authenticatable implements Notifiable
         ]);
 
         if ($roleChecker->isGlobalAdmin()) {
-            $organisationIds = Organisation::query()->pluck('id')->toArray();
+            $organisationIds = Organisation::query()
+                ->pluck(table(Organisation::class,'id'))
+                ->toArray();
         } else {
             $organisationIds = array_merge(
                 $this->organisations()
-                    ->pluck('id')
+                    ->pluck(table(Organisation::class, 'id'))
                     ->toArray(),
                 $this->services()
-                    ->pluck('organisation_id')
+                    ->pluck(table(Service::class, 'organisation_id'))
                     ->toArray()
             );
         }
