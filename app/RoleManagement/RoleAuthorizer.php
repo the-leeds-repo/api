@@ -169,11 +169,20 @@ class RoleAuthorizer implements RoleAuthorizerInterface
                     return false;
                 }
 
-                if ($existingUserRole->service_id !== $userRoleToCheck->service_id) {
+                if (
+                    in_array($userRoleToCheck->role_id, [
+                        Role::serviceWorker()->id,
+                        Role::serviceAdmin()->id,
+                    ])
+                    && $existingUserRole->service_id !== $userRoleToCheck->service_id
+                ) {
                     return false;
                 }
 
-                if ($existingUserRole->organisation_id !== $userRoleToCheck->organisation_id) {
+                if (
+                    $userRoleToCheck->role_id === Role::organisationAdmin()->id
+                    && $existingUserRole->organisation_id !== $userRoleToCheck->organisation_id
+                ) {
                     return false;
                 }
 

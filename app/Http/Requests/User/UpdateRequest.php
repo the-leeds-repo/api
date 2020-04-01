@@ -125,14 +125,14 @@ class UpdateRequest extends FormRequest
     {
         $canAssignRoleToUserRule = new CanAssignRoleToUser(
             app()->make(RoleAuthorizerInterface::class, [
-                'invokingUserRoles' => $this->user()->userRoles->all(),
+                'invokingUserRoles' => $this->user('api')->userRoles()->get()->all(),
             ]),
             $this->getNewRoles()
         );
         $canRevokeRoleToUserRule = new CanRevokeRoleFromUser(
             app()->make(RoleAuthorizerInterface::class, [
-                'invokingUserRoles' => $this->user()->userRoles->all(),
-                'subjectUserRoles' => $this->user->userRoles->all(),
+                'invokingUserRoles' => $this->user('api')->userRoles()->get()->all(),
+                'subjectUserRoles' => $this->user->userRoles()->get()->all(),
             ]),
             $this->getDeletedRoles()
         );
