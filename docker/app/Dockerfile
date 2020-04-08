@@ -32,8 +32,7 @@ RUN wget -q -O - https://packages.blackfire.io/gpg.key | apt-key add - \
     && echo "deb http://packages.blackfire.io/debian any main" | tee /etc/apt/sources.list.d/blackfire.list \
     && apt-get update \
     && apt-get install -y blackfire-agent blackfire-php \
-    && blackfire-agent --register --server-id="${BLACKFIRE_SERVER_ID}" --server-token="${BLACKFIRE_SERVER_TOKEN}" \
-    && /etc/init.d/blackfire-agent start
+    && blackfire-agent --register --server-id="${BLACKFIRE_SERVER_ID}" --server-token="${BLACKFIRE_SERVER_TOKEN}"
 
 # Cleanup.
 RUN apt-get remove -y --purge software-properties-common \
