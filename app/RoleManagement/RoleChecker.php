@@ -68,9 +68,9 @@ class RoleChecker implements RoleCheckerInterface
     public function isServiceWorker(UserRole $userRole): bool
     {
         return $this->hasRole(new UserRole([
-                'role_id' => Role::serviceWorker()->id,
-                'service_id' => $userRole->service_id,
-            ])) || $this->isServiceAdmin($userRole);
+            'role_id' => Role::serviceWorker()->id,
+            'service_id' => $userRole->service_id,
+        ])) || $this->isServiceAdmin($userRole);
     }
 
     /**
@@ -79,9 +79,9 @@ class RoleChecker implements RoleCheckerInterface
     public function isServiceAdmin(UserRole $userRole): bool
     {
         return $this->hasRole(new UserRole([
-                'role_id' => Role::serviceAdmin()->id,
-                'service_id' => $userRole->service_id,
-            ])) || $this->isOrganisationAdmin($userRole);
+            'role_id' => Role::serviceAdmin()->id,
+            'service_id' => $userRole->service_id,
+        ])) || $this->isOrganisationAdmin($userRole);
     }
 
     /**
@@ -90,9 +90,9 @@ class RoleChecker implements RoleCheckerInterface
     public function isOrganisationAdmin(UserRole $userRole): bool
     {
         return $this->hasRole(new UserRole([
-                'role_id' => Role::organisationAdmin()->id,
-                'organisation_id' => $userRole->organisation_id,
-            ])) || $this->isGlobalAdmin();
+            'role_id' => Role::organisationAdmin()->id,
+            'organisation_id' => $userRole->organisation_id,
+        ])) || $this->isGlobalAdmin();
     }
 
     /**
@@ -101,8 +101,8 @@ class RoleChecker implements RoleCheckerInterface
     public function isGlobalAdmin(): bool
     {
         return $this->hasRole(new UserRole([
-                'role_id' => Role::globalAdmin()->id,
-            ])) || $this->isSuperAdmin();
+            'role_id' => Role::globalAdmin()->id,
+        ])) || $this->isSuperAdmin();
     }
 
     /**

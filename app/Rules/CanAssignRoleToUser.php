@@ -9,7 +9,7 @@ use Illuminate\Contracts\Validation\Rule;
 
 class CanAssignRoleToUser implements Rule
 {
-    /** @var \App\RoleManagement\RoleAuthorizerInterface  */
+    /** @var \App\RoleManagement\RoleAuthorizerInterface */
     protected $roleAuthorizer;
 
     /** @var array|null */

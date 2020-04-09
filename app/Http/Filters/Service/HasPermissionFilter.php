@@ -3,7 +3,6 @@
 namespace App\Http\Filters\Service;
 
 use App\Models\Service;
-use App\RoleManagement\RoleCheckerInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Spatie\QueryBuilder\Filters\Filter;
 

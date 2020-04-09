@@ -371,7 +371,7 @@ class User extends Authenticatable implements Notifiable
 
         if ($roleChecker->isGlobalAdmin()) {
             $organisationIds = Organisation::query()
-                ->pluck(table(Organisation::class,'id'))
+                ->pluck(table(Organisation::class, 'id'))
                 ->toArray();
         } else {
             $organisationIds = array_merge(

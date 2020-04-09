@@ -3,7 +3,6 @@
 namespace App\Http\Filters\Organisation;
 
 use App\Models\Organisation;
-use App\Models\Service;
 use Illuminate\Database\Eloquent\Builder;
 use Spatie\QueryBuilder\Filters\Filter;
 

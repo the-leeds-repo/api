@@ -302,9 +302,9 @@ class RoleAuthorizer implements RoleAuthorizerInterface
     protected function subjectUserIsServiceWorker(UserRole $userRole): bool
     {
         return $this->invokingUserHasRole(new UserRole([
-                'role_id' => Role::serviceWorker()->id,
-                'service_id' => $userRole->service_id,
-            ])) || $this->subjectUserIsServiceAdmin($userRole);
+            'role_id' => Role::serviceWorker()->id,
+            'service_id' => $userRole->service_id,
+        ])) || $this->subjectUserIsServiceAdmin($userRole);
     }
 
     /**
@@ -314,9 +314,9 @@ class RoleAuthorizer implements RoleAuthorizerInterface
     protected function subjectUserIsServiceAdmin(UserRole $userRole): bool
     {
         return $this->invokingUserHasRole(new UserRole([
-                'role_id' => Role::serviceAdmin()->id,
-                'service_id' => $userRole->service_id,
-            ])) || $this->subjectUserIsOrganisationAdmin($userRole);
+            'role_id' => Role::serviceAdmin()->id,
+            'service_id' => $userRole->service_id,
+        ])) || $this->subjectUserIsOrganisationAdmin($userRole);
     }
 
     /**
@@ -326,9 +326,9 @@ class RoleAuthorizer implements RoleAuthorizerInterface
     protected function subjectUserIsOrganisationAdmin(UserRole $userRole): bool
     {
         return $this->invokingUserHasRole(new UserRole([
-                'role_id' => Role::organisationAdmin()->id,
-                'organisation_id' => $userRole->organisation_id,
-            ])) || $this->subjectUserIsGlobalAdmin();
+            'role_id' => Role::organisationAdmin()->id,
+            'organisation_id' => $userRole->organisation_id,
+        ])) || $this->subjectUserIsGlobalAdmin();
     }
 
     /**
@@ -337,8 +337,8 @@ class RoleAuthorizer implements RoleAuthorizerInterface
     protected function subjectUserIsGlobalAdmin(): bool
     {
         return $this->invokingUserHasRole(new UserRole([
-                'role_id' => Role::globalAdmin()->id,
-            ])) || $this->subjectUserIsSuperAdmin();
+            'role_id' => Role::globalAdmin()->id,
+        ])) || $this->subjectUserIsSuperAdmin();
     }
 
     /**
