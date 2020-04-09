@@ -1,3 +1,6 @@
+os: linux
+dist: xenial
+
 if: tag IS blank
 branches:
   only:
@@ -8,7 +11,6 @@ language: python
 python:
   - "2.7"
 
-sudo: required
 services:
   - docker
 
