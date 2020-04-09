@@ -7,7 +7,7 @@
 # $ENV_SECRET_ID = The ID of the .env file in AWS Secrets Manager (defaults to "env-api").
 # $PUBLIC_KEY_SECRET_ID = The ID of the OAuth public key file in AWS Secrets Manager (default to "oauth-public-key").
 # $PRIVATE_KEY_SECRET_ID = The ID of the OAuth private key file in AWS Secrets Manager (default to "oauth-private-key").
-# $GCLOUD_SERVICE_KEY = The JSON file contents of the GCP service account.
+# $GCLOUD_SERVICE_KEY = The base64 encoded JSON file contents of the GCP service account.
 # $BLACKFIRE_SERVER_ID = The Blackfire server ID.
 # $BLACKFIRE_SERVER_TOKEN = The Blackfire server token.
 
@@ -52,7 +52,7 @@ gcloud secrets versions access latest \
   --secret=${PRIVATE_KEY_SECRET_ID} > storage/oauth-private.key
 
 # Save the GCP service-account.json file.
-echo $GCLOUD_SERVICE_KEY > service-account.json
+echo $GCLOUD_SERVICE_KEY | base64 --decode > service-account.json
 
 # Build the Docker image with latest code.
 echo "Building Docker images..."
