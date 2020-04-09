@@ -19,7 +19,8 @@ class ServiceCreatedTest extends TestCase
         Queue::fake();
 
         $organisation = factory(Organisation::class)->create();
-        $user = factory(User::class)->create()->makeOrganisationAdmin($organisation);
+        $user = factory(User::class)->create();
+        $this->makeOrganisationAdmin($user, $organisation);
 
         $request = Request::create('')->setUserResolver(function () use ($user) {
             return $user;
@@ -31,7 +32,6 @@ class ServiceCreatedTest extends TestCase
         $listener = new ServiceCreated();
         $listener->handle($event);
 
-        Queue::assertPushedOn('notifications', NotifyGlobalAdminEmail::class);
         Queue::assertPushed(NotifyGlobalAdminEmail::class,
             function (NotifyGlobalAdminEmail $email) use ($service, $user) {
                 $this->assertEquals(config('tlr.global_admin.email'), $email->to);
@@ -54,7 +54,8 @@ class ServiceCreatedTest extends TestCase
         Queue::fake();
 
         $organisation = factory(Organisation::class)->create();
-        $user = factory(User::class)->create()->makeGlobalAdmin();
+        $user = factory(User::class)->create();
+        $this->makeGlobalAdmin($user);
 
         $request = Request::create('')->setUserResolver(function () use ($user) {
             return $user;

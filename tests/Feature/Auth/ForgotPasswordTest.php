@@ -13,13 +13,13 @@ class ForgotPasswordTest extends TestCase
     {
         Queue::fake();
 
-        $user = factory(User::class)->create()->makeSuperAdmin();
+        $user = factory(User::class)->create();
+        $this->makeSuperAdmin($user);
 
         $this->post(route('password.email'), [
             'email' => $user->email,
         ]);
 
-        Queue::assertPushedOn('notifications', UserEmail::class);
         Queue::assertPushed(UserEmail::class, function (UserEmail $email) use ($user) {
             $this->assertEquals($user->email, $email->to);
             $this->assertEquals(config('tlr.notifications_template_ids.password_reset.email'), $email->templateId);

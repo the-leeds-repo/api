@@ -92,7 +92,7 @@ class OrganisationsTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
 
         Passport::actingAs($user);
 
@@ -109,7 +109,7 @@ class OrganisationsTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceAdmin($service);
+        $this->makeServiceAdmin($user, $service);
 
         Passport::actingAs($user);
 
@@ -126,7 +126,7 @@ class OrganisationsTest extends TestCase
          */
         $organisation = factory(Organisation::class)->create();
         $user = factory(User::class)->create();
-        $user->makeOrganisationAdmin($organisation);
+        $this->makeOrganisationAdmin($user, $organisation);
 
         Passport::actingAs($user);
 
@@ -141,7 +141,7 @@ class OrganisationsTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         $payload = [
             'slug' => 'test-org',
             'name' => 'Test Org',
@@ -167,7 +167,7 @@ class OrganisationsTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
 
         Passport::actingAs($user);
 
@@ -267,7 +267,8 @@ class OrganisationsTest extends TestCase
     public function test_service_worker_cannot_update_one()
     {
         $service = factory(Service::class)->create();
-        $user = factory(User::class)->create()->makeServiceWorker($service);
+        $user = factory(User::class)->create();
+        $this->makeServiceWorker($user, $service);
         $organisation = factory(Organisation::class)->create();
 
         Passport::actingAs($user);
@@ -280,7 +281,8 @@ class OrganisationsTest extends TestCase
     public function test_service_admin_cannot_update_one()
     {
         $service = factory(Service::class)->create();
-        $user = factory(User::class)->create()->makeServiceAdmin($service);
+        $user = factory(User::class)->create();
+        $this->makeServiceAdmin($user, $service);
         $organisation = factory(Organisation::class)->create();
 
         Passport::actingAs($user);
@@ -293,7 +295,8 @@ class OrganisationsTest extends TestCase
     public function test_organisation_admin_can_update_one()
     {
         $organisation = factory(Organisation::class)->create();
-        $user = factory(User::class)->create()->makeOrganisationAdmin($organisation);
+        $user = factory(User::class)->create();
+        $this->makeOrganisationAdmin($user, $organisation);
         $payload = [
             'slug' => 'test-org',
             'name' => 'Test Org',
@@ -324,7 +327,8 @@ class OrganisationsTest extends TestCase
     public function test_only_partial_fields_can_be_updated()
     {
         $organisation = factory(Organisation::class)->create();
-        $user = factory(User::class)->create()->makeOrganisationAdmin($organisation);
+        $user = factory(User::class)->create();
+        $this->makeOrganisationAdmin($user, $organisation);
         $payload = [
             'slug' => 'test-org',
         ];
@@ -352,7 +356,8 @@ class OrganisationsTest extends TestCase
         $this->fakeEvents();
 
         $organisation = factory(Organisation::class)->create();
-        $user = factory(User::class)->create()->makeOrganisationAdmin($organisation);
+        $user = factory(User::class)->create();
+        $this->makeOrganisationAdmin($user, $organisation);
 
         Passport::actingAs($user);
 
@@ -375,7 +380,8 @@ class OrganisationsTest extends TestCase
     public function test_fields_removed_for_existing_update_requests()
     {
         $organisation = factory(Organisation::class)->create();
-        $user = factory(User::class)->create()->makeSuperAdmin();
+        $user = factory(User::class)->create();
+        $this->makeSuperAdmin($user);
 
         Passport::actingAs($user);
 
@@ -415,7 +421,8 @@ class OrganisationsTest extends TestCase
     public function test_service_worker_cannot_delete_one()
     {
         $service = factory(Service::class)->create();
-        $user = factory(User::class)->create()->makeServiceWorker($service);
+        $user = factory(User::class)->create();
+        $this->makeServiceWorker($user, $service);
         $organisation = factory(Organisation::class)->create();
 
         Passport::actingAs($user);
@@ -428,7 +435,8 @@ class OrganisationsTest extends TestCase
     public function test_service_admin_cannot_delete_one()
     {
         $service = factory(Service::class)->create();
-        $user = factory(User::class)->create()->makeServiceAdmin($service);
+        $user = factory(User::class)->create();
+        $this->makeServiceAdmin($user, $service);
         $organisation = factory(Organisation::class)->create();
 
         Passport::actingAs($user);
@@ -441,7 +449,8 @@ class OrganisationsTest extends TestCase
     public function test_organisation_admin_cannot_delete_one()
     {
         $organisation = factory(Organisation::class)->create();
-        $user = factory(User::class)->create()->makeOrganisationAdmin($organisation);
+        $user = factory(User::class)->create();
+        $this->makeOrganisationAdmin($user, $organisation);
 
         Passport::actingAs($user);
 
@@ -453,7 +462,8 @@ class OrganisationsTest extends TestCase
     public function test_global_admin_cannot_delete_one()
     {
         $organisation = factory(Organisation::class)->create();
-        $user = factory(User::class)->create()->makeGlobalAdmin();
+        $user = factory(User::class)->create();
+        $this->makeGlobalAdmin($user);
 
         Passport::actingAs($user);
 
@@ -465,7 +475,8 @@ class OrganisationsTest extends TestCase
     public function test_super_admin_can_delete_one()
     {
         $organisation = factory(Organisation::class)->create();
-        $user = factory(User::class)->create()->makeSuperAdmin();
+        $user = factory(User::class)->create();
+        $this->makeSuperAdmin($user);
 
         Passport::actingAs($user);
 
@@ -480,7 +491,8 @@ class OrganisationsTest extends TestCase
         $this->fakeEvents();
 
         $organisation = factory(Organisation::class)->create();
-        $user = factory(User::class)->create()->makeSuperAdmin();
+        $user = factory(User::class)->create();
+        $this->makeSuperAdmin($user);
 
         Passport::actingAs($user);
 
@@ -532,7 +544,7 @@ class OrganisationsTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         $image = Storage::disk('local')->get('/test-data/image.png');
 
         Passport::actingAs($user);
@@ -574,7 +586,7 @@ class OrganisationsTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         $organisation = factory(Organisation::class)->create([
             'logo_file_id' => factory(File::class)->create()->id,
         ]);

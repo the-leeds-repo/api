@@ -27,7 +27,6 @@ class ServiceLocationController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('throttle:60,1');
         $this->middleware('auth:api')->except('index', 'show');
     }
 
@@ -193,7 +192,7 @@ class ServiceLocationController extends Controller
             }
 
             $updateRequest = $serviceLocation->updateRequests()->create([
-                'user_id' => $request->user()->id,
+                'user_id' => $request->user('api')->id,
                 'data' => $data,
             ]);
 

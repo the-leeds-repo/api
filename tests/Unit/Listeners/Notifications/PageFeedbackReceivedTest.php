@@ -29,7 +29,6 @@ class PageFeedbackReceivedTest extends TestCase
         $listener = new PageFeedbackReceived();
         $listener->handle($event);
 
-        Queue::assertPushedOn('notifications', NotifyGlobalAdminEmail::class);
         Queue::assertPushed(NotifyGlobalAdminEmail::class,
             function (NotifyGlobalAdminEmail $email) use ($pageFeedback) {
                 $this->assertEquals(config('tlr.global_admin.email'), $email->to);

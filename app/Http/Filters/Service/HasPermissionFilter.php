@@ -16,9 +16,9 @@ class HasPermissionFilter implements Filter
      */
     public function __invoke(Builder $query, $value, string $property): Builder
     {
-        $serviceIds = request()->user('api')
-            ? request()->user('api')->services()->pluck(table(Service::class, 'id'))->toArray()
-            : [];
+        /** @var \App\Models\User|null $user */
+        $user = request()->user('api');
+        $serviceIds = $user ? $user->serviceIds() : [];
 
         return $query->whereIn(table(Service::class, 'id'), $serviceIds);
     }

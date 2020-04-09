@@ -25,7 +25,6 @@ class LocationController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('throttle:60,1');
         $this->middleware('auth:api')->except('index', 'show');
     }
 
@@ -149,7 +148,7 @@ class LocationController extends Controller
     {
         return DB::transaction(function () use ($request, $location) {
             $updateRequest = $location->updateRequests()->create([
-                'user_id' => $request->user()->id,
+                'user_id' => $request->user('api')->id,
                 'data' => array_filter_missing([
                     'address_line_1' => $request->missing('address_line_1'),
                     'address_line_2' => $request->missing('address_line_2'),

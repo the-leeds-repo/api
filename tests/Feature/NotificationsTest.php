@@ -36,7 +36,7 @@ class NotificationsTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
 
         Passport::actingAs($user);
 
@@ -53,7 +53,7 @@ class NotificationsTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceAdmin($service);
+        $this->makeServiceAdmin($user, $service);
 
         Passport::actingAs($user);
 
@@ -70,7 +70,7 @@ class NotificationsTest extends TestCase
          */
         $service = factory(Organisation::class)->create();
         $user = factory(User::class)->create();
-        $user->makeOrganisationAdmin($service);
+        $this->makeOrganisationAdmin($user, $service);
 
         Passport::actingAs($user);
 
@@ -85,7 +85,7 @@ class NotificationsTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         $notification = $user->notifications()->create([
             'channel' => Notification::CHANNEL_EMAIL,
             'recipient' => 'test@example.com',
@@ -117,7 +117,7 @@ class NotificationsTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         $notification = $user->notifications()->create([
             'channel' => Notification::CHANNEL_EMAIL,
             'recipient' => 'test@example.com',
@@ -148,7 +148,7 @@ class NotificationsTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         $referral = factory(Referral::class)->create();
         $notification = $referral->notifications()->create([
             'channel' => Notification::CHANNEL_EMAIL,
@@ -180,7 +180,7 @@ class NotificationsTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         $service = factory(Service::class)->create();
         $notification = $service->notifications()->create([
             'channel' => Notification::CHANNEL_EMAIL,
@@ -214,7 +214,7 @@ class NotificationsTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         $notification = $user->notifications()->create([
             'channel' => Notification::CHANNEL_EMAIL,
             'recipient' => 'test@example.com',
@@ -260,7 +260,7 @@ class NotificationsTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
         $notification = Notification::create([
             'channel' => Notification::CHANNEL_EMAIL,
             'recipient' => 'test@example.com',
@@ -284,7 +284,7 @@ class NotificationsTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceAdmin($service);
+        $this->makeServiceAdmin($user, $service);
         $notification = Notification::create([
             'channel' => Notification::CHANNEL_EMAIL,
             'recipient' => 'test@example.com',
@@ -308,7 +308,7 @@ class NotificationsTest extends TestCase
          */
         $organisation = factory(Organisation::class)->create();
         $user = factory(User::class)->create();
-        $user->makeOrganisationAdmin($organisation);
+        $this->makeOrganisationAdmin($user, $organisation);
         $notification = Notification::create([
             'channel' => Notification::CHANNEL_EMAIL,
             'recipient' => 'test@example.com',
@@ -330,7 +330,7 @@ class NotificationsTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         $notification = Notification::create([
             'channel' => Notification::CHANNEL_EMAIL,
             'recipient' => 'test@example.com',
@@ -364,7 +364,7 @@ class NotificationsTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         $notification = Notification::create([
             'channel' => Notification::CHANNEL_EMAIL,
             'recipient' => 'test@example.com',

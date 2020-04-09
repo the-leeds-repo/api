@@ -32,7 +32,6 @@ class ResourceController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('throttle:60,1');
         $this->middleware('auth:api')->except('index', 'show');
     }
 
@@ -161,7 +160,7 @@ class ResourceController extends Controller
             $updateRequest = new UpdateRequestModel([
                 'updateable_type' => 'resources',
                 'updateable_id' => $resource->id,
-                'user_id' => $request->user()->id,
+                'user_id' => $request->user('api')->id,
                 'data' => $data,
             ]);
 

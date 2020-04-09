@@ -2,33 +2,30 @@
 
 namespace App\Rules;
 
-use App\Models\Organisation;
 use App\Models\Role;
-use App\Models\Service;
-use App\Models\User;
+use App\Models\UserRole;
+use App\RoleManagement\RoleAuthorizerInterface;
 use Illuminate\Contracts\Validation\Rule;
 
 class CanAssignRoleToUser implements Rule
 {
-    /**
-     * @var \App\Models\User
-     */
-    protected $user;
+    /** @var \App\RoleManagement\RoleAuthorizerInterface */
+    protected $roleAuthorizer;
 
-    /**
-     * @var array|null
-     */
+    /** @var array|null */
     protected $newRoles;
 
     /**
      * CanAssignRoleToUser constructor.
      *
-     * @param \App\Models\User $user
+     * @param \App\RoleManagement\RoleAuthorizerInterface $roleAuthorizer
      * @param array|null $newRoles
      */
-    public function __construct(User $user, array $newRoles = null)
-    {
-        $this->user = $user;
+    public function __construct(
+        RoleAuthorizerInterface $roleAuthorizer,
+        array $newRoles = null
+    ) {
+        $this->roleAuthorizer = $roleAuthorizer;
         $this->newRoles = $newRoles;
     }
 
@@ -51,38 +48,9 @@ class CanAssignRoleToUser implements Rule
             return true;
         }
 
-        switch ($role['role']) {
-            case Role::NAME_SERVICE_WORKER:
-                $service = Service::findOrFail($role['service_id']);
-                if (!$this->user->canMakeServiceWorker($service)) {
-                    return false;
-                }
-                break;
-            case Role::NAME_SERVICE_ADMIN:
-                $service = Service::findOrFail($role['service_id']);
-                if (!$this->user->canMakeServiceAdmin($service)) {
-                    return false;
-                }
-                break;
-            case Role::NAME_ORGANISATION_ADMIN:
-                $organisation = Organisation::findOrFail($role['organisation_id']);
-                if (!$this->user->canMakeOrganisationAdmin($organisation)) {
-                    return false;
-                }
-                break;
-            case Role::NAME_GLOBAL_ADMIN:
-                if (!$this->user->canMakeGlobalAdmin()) {
-                    return false;
-                }
-                break;
-            case Role::NAME_SUPER_ADMIN:
-                if (!$this->user->canMakeSuperAdmin()) {
-                    return false;
-                }
-                break;
-        }
-
-        return true;
+        return $this->roleAuthorizer->canAssignRole(
+            $this->parseRole($role)
+        );
     }
 
     /**
@@ -142,8 +110,8 @@ class CanAssignRoleToUser implements Rule
             return false;
         }
 
-        $newRoles = $this->parseRoles($this->newRoles);
-        $role = $this->parseRoles($role);
+        $newRoles = $this->normalizeRoles($this->newRoles);
+        $role = $this->normalizeRoles($role);
 
         // If new role provided, and the role is in the array, then don't skip.
         foreach ($newRoles as $newRole) {
@@ -160,7 +128,7 @@ class CanAssignRoleToUser implements Rule
      * @param array $roles
      * @return array
      */
-    protected function parseRoles(array $roles): array
+    protected function normalizeRoles(array $roles): array
     {
         $rolesCopy = isset($roles['role']) ? [$roles] : $roles;
 
@@ -172,11 +140,43 @@ class CanAssignRoleToUser implements Rule
                 case Role::NAME_GLOBAL_ADMIN:
                 case Role::NAME_SUPER_ADMIN:
                     unset($role['service_id'], $role['organisation_id']);
-
                     break;
             }
         }
 
         return isset($roles['role']) ? $rolesCopy[0] : $rolesCopy;
+    }
+
+    /**
+     * @param array $role
+     * @return \App\Models\UserRole
+     */
+    protected function parseRole(array $role): UserRole
+    {
+        switch ($role['role']) {
+            case Role::NAME_SERVICE_WORKER:
+                return new UserRole([
+                    'role_id' => Role::serviceWorker()->id,
+                    'service_id' => $role['service_id'],
+                ]);
+            case Role::NAME_SERVICE_ADMIN:
+                return new UserRole([
+                    'role_id' => Role::serviceAdmin()->id,
+                    'service_id' => $role['service_id'],
+                ]);
+            case Role::NAME_ORGANISATION_ADMIN:
+                return new UserRole([
+                    'role_id' => Role::organisationAdmin()->id,
+                    'organisation_id' => $role['organisation_id'],
+                ]);
+            case Role::NAME_GLOBAL_ADMIN:
+                return new UserRole([
+                    'role_id' => Role::globalAdmin()->id,
+                ]);
+            case Role::NAME_SUPER_ADMIN:
+                return new UserRole([
+                    'role_id' => Role::superAdmin()->id,
+                ]);
+        }
     }
 }

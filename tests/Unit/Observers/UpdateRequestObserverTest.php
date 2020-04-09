@@ -15,7 +15,8 @@ class UpdateRequestObserverTest extends TestCase
     {
         Queue::fake();
 
-        $user = factory(User::class)->create()->makeSuperAdmin();
+        $user = factory(User::class)->create();
+        $this->makeSuperAdmin($user);
         $organisation = factory(Organisation::class)->create();
         $organisation->updateRequests()->create([
             'user_id' => $user->id,
@@ -29,7 +30,6 @@ class UpdateRequestObserverTest extends TestCase
             ],
         ]);
 
-        Queue::assertPushedOn('notifications', NotifySubmitterEmail::class);
         Queue::assertPushed(NotifySubmitterEmail::class, function (NotifySubmitterEmail $email) {
             $this->assertArrayHasKey('SUBMITTER_NAME', $email->values);
             $this->assertArrayHasKey('RESOURCE_NAME', $email->values);
@@ -37,7 +37,6 @@ class UpdateRequestObserverTest extends TestCase
             return true;
         });
 
-        Queue::assertPushedOn('notifications', NotifyGlobalAdminEmail::class);
         Queue::assertPushed(NotifyGlobalAdminEmail::class, function (NotifyGlobalAdminEmail $email) {
             $this->assertArrayHasKey('RESOURCE_NAME', $email->values);
             $this->assertArrayHasKey('RESOURCE_TYPE', $email->values);

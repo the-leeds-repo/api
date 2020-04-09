@@ -341,7 +341,7 @@ class ResourcesTest extends TestCase
     public function test_service_worker_cannot_create_one()
     {
         $service = factory(Service::class)->create();
-        $user = factory(User::class)->create()->makeServiceWorker($service);
+        $user = $this->makeServiceWorker(factory(User::class)->create(), $service);
 
         Passport::actingAs($user);
         $response = $this->json('POST', '/core/v1/resources');
@@ -352,7 +352,7 @@ class ResourcesTest extends TestCase
     public function test_service_admin_cannot_create_one()
     {
         $service = factory(Service::class)->create();
-        $user = factory(User::class)->create()->makeServiceWorker($service);
+        $user = $this->makeServiceWorker(factory(User::class)->create(), $service);
 
         Passport::actingAs($user);
         $response = $this->json('POST', '/core/v1/resources');
@@ -363,7 +363,7 @@ class ResourcesTest extends TestCase
     public function test_organisation_admin_cannot_create_one_under_different_organisation()
     {
         $organisation = factory(Organisation::class)->create();
-        $user = factory(User::class)->create()->makeOrganisationAdmin($organisation);
+        $user = $this->makeOrganisationAdmin(factory(User::class)->create(), $organisation);
 
         Passport::actingAs($user);
         $response = $this->json('POST', '/core/v1/resources', [
@@ -386,7 +386,7 @@ class ResourcesTest extends TestCase
     public function test_organisation_admin_can_create_one_under_own_organisation()
     {
         $organisation = factory(Organisation::class)->create();
-        $user = factory(User::class)->create()->makeOrganisationAdmin($organisation);
+        $user = $this->makeOrganisationAdmin(factory(User::class)->create(), $organisation);
 
         Passport::actingAs($user);
         $response = $this->json('POST', '/core/v1/resources', [
@@ -420,7 +420,7 @@ class ResourcesTest extends TestCase
     public function test_global_admin_can_create_one()
     {
         $organisation = factory(Organisation::class)->create();
-        $user = factory(User::class)->create()->makeGlobalAdmin();
+        $user = $this->makeGlobalAdmin(factory(User::class)->create());
 
         Passport::actingAs($user);
         $response = $this->json('POST', '/core/v1/resources', [
@@ -454,7 +454,7 @@ class ResourcesTest extends TestCase
     public function test_super_admin_can_create_one()
     {
         $organisation = factory(Organisation::class)->create();
-        $user = factory(User::class)->create()->makeSuperAdmin();
+        $user = $this->makeSuperAdmin(factory(User::class)->create());
 
         Passport::actingAs($user);
         $response = $this->json('POST', '/core/v1/resources', [
@@ -490,7 +490,7 @@ class ResourcesTest extends TestCase
         $this->fakeEvents();
 
         $organisation = factory(Organisation::class)->create();
-        $user = factory(User::class)->create()->makeSuperAdmin();
+        $user = $this->makeSuperAdmin(factory(User::class)->create());
 
         Passport::actingAs($user);
         $response = $this->json('POST', '/core/v1/resources', [
@@ -652,9 +652,7 @@ class ResourcesTest extends TestCase
         $service = factory(Service::class)->create([
             'organisation_id' => $resource->organisation->id,
         ]);
-        $user = factory(User::class)
-            ->create()
-            ->makeServiceWorker($service);
+        $user = $this->makeServiceWorker(factory(User::class)->create(), $service);
 
         Passport::actingAs($user);
         $response = $this->json('PUT', "/core/v1/resources/{$resource->id}");
@@ -668,9 +666,7 @@ class ResourcesTest extends TestCase
         $service = factory(Service::class)->create([
             'organisation_id' => $resource->organisation->id,
         ]);
-        $user = factory(User::class)
-            ->create()
-            ->makeServiceAdmin($service);
+        $user = $this->makeServiceAdmin(factory(User::class)->create(), $service);
 
         Passport::actingAs($user);
         $response = $this->json('PUT', "/core/v1/resources/{$resource->id}");
@@ -681,7 +677,8 @@ class ResourcesTest extends TestCase
     public function test_organisation_admin_cannot_update_one_under_different_organisation()
     {
         $resource = factory(Resource::class)->create();
-        $user = factory(User::class)->create()->makeOrganisationAdmin(
+        $user = $this->makeOrganisationAdmin(
+            factory(User::class)->create(),
             factory(Organisation::class)->create()
         );
 
@@ -696,7 +693,7 @@ class ResourcesTest extends TestCase
     public function test_organisation_admin_can_update_one_under_own_organisation()
     {
         $resource = factory(Resource::class)->create();
-        $user = factory(User::class)->create()->makeOrganisationAdmin($resource->organisation);
+        $user = $this->makeOrganisationAdmin(factory(User::class)->create(), $resource->organisation);
 
         Passport::actingAs($user);
         $response = $this->json('PUT', "/core/v1/resources/{$resource->id}", [
@@ -714,7 +711,7 @@ class ResourcesTest extends TestCase
     public function test_global_admin_can_update_one()
     {
         $resource = factory(Resource::class)->create();
-        $user = factory(User::class)->create()->makeGlobalAdmin();
+        $user = $this->makeGlobalAdmin(factory(User::class)->create());
 
         Passport::actingAs($user);
         $response = $this->json('PUT', "/core/v1/resources/{$resource->id}", [
@@ -732,7 +729,7 @@ class ResourcesTest extends TestCase
     public function test_super_admin_can_update_one()
     {
         $resource = factory(Resource::class)->create();
-        $user = factory(User::class)->create()->makeSuperAdmin();
+        $user = $this->makeSuperAdmin(factory(User::class)->create());
 
         Passport::actingAs($user);
         $response = $this->json('PUT', "/core/v1/resources/{$resource->id}", [
@@ -752,7 +749,7 @@ class ResourcesTest extends TestCase
         $this->fakeEvents();
 
         $resource = factory(Resource::class)->create();
-        $user = factory(User::class)->create()->makeOrganisationAdmin($resource->organisation);
+        $user = $this->makeOrganisationAdmin(factory(User::class)->create(), $resource->organisation);
 
         Passport::actingAs($user);
         $response = $this->json('PUT', "/core/v1/resources/{$resource->id}", [
@@ -789,7 +786,7 @@ class ResourcesTest extends TestCase
         $service = factory(Service::class)->create([
             'organisation_id' => $resource->organisation->id,
         ]);
-        $user = factory(User::class)->create()->makeServiceWorker($service);
+        $user = $this->makeServiceWorker(factory(User::class)->create(), $service);
 
         Passport::actingAs($user);
 
@@ -804,7 +801,7 @@ class ResourcesTest extends TestCase
         $service = factory(Service::class)->create([
             'organisation_id' => $resource->organisation->id,
         ]);
-        $user = factory(User::class)->create()->makeServiceAdmin($service);
+        $user = $this->makeServiceAdmin(factory(User::class)->create(), $service);
 
         Passport::actingAs($user);
 
@@ -816,7 +813,8 @@ class ResourcesTest extends TestCase
     public function test_organisation_admin_cannot_delete_one_under_different_organisation()
     {
         $resource = factory(Resource::class)->create();
-        $user = factory(User::class)->create()->makeOrganisationAdmin(
+        $user = $this->makeOrganisationAdmin(
+            factory(User::class)->create(),
             factory(Organisation::class)->create()
         );
 
@@ -830,7 +828,7 @@ class ResourcesTest extends TestCase
     public function test_organisation_admin_can_delete_one_under_own_organisation()
     {
         $resource = factory(Resource::class)->create();
-        $user = factory(User::class)->create()->makeOrganisationAdmin($resource->organisation);
+        $user = $this->makeOrganisationAdmin(factory(User::class)->create(), $resource->organisation);
 
         Passport::actingAs($user);
 
@@ -843,7 +841,7 @@ class ResourcesTest extends TestCase
     public function test_global_admin_can_delete_one()
     {
         $resource = factory(Resource::class)->create();
-        $user = factory(User::class)->create()->makeGlobalAdmin();
+        $user = $this->makeGlobalAdmin(factory(User::class)->create());
 
         Passport::actingAs($user);
 
@@ -856,7 +854,7 @@ class ResourcesTest extends TestCase
     public function test_super_admin_can_delete_one()
     {
         $resource = factory(Resource::class)->create();
-        $user = factory(User::class)->create()->makeSuperAdmin();
+        $user = $this->makeSuperAdmin(factory(User::class)->create());
 
         Passport::actingAs($user);
 
@@ -871,7 +869,7 @@ class ResourcesTest extends TestCase
         $this->fakeEvents();
 
         $resource = factory(Resource::class)->create();
-        $user = factory(User::class)->create()->makeSuperAdmin();
+        $user = $this->makeSuperAdmin(factory(User::class)->create());
 
         Passport::actingAs($user);
 

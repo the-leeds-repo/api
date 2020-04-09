@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Core\v1;
+namespace App\Http\Controllers\Core\V1;
 
 use App\Events\EndpointHit;
 use App\Http\Controllers\Controller;
@@ -38,7 +38,6 @@ class ServiceController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('throttle:60,1');
         $this->middleware('auth:api')->except('index', 'show');
     }
 
@@ -357,7 +356,7 @@ class ServiceController extends Controller
             $updateRequest = new UpdateRequestModel([
                 'updateable_type' => 'services',
                 'updateable_id' => $service->id,
-                'user_id' => $request->user()->id,
+                'user_id' => $request->user('api')->id,
                 'data' => $data,
             ]);
 

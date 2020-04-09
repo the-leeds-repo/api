@@ -3,8 +3,13 @@
 namespace Tests;
 
 use App\Models\Collection;
+use App\Models\Organisation;
+use App\Models\Role;
 use App\Models\Service;
 use App\Models\Taxonomy;
+use App\Models\User;
+use App\Models\UserRole;
+use App\RoleManagement\RoleManagerInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
@@ -202,5 +207,111 @@ abstract class TestCase extends BaseTestCase
         $initialDispatcher = Event::getFacadeRoot();
         Event::fake();
         Model::setEventDispatcher($initialDispatcher);
+    }
+
+    /**
+     * @param \App\Models\User $user
+     * @param \App\Models\Service $service
+     * @return \App\Models\User
+     */
+    public function makeServiceWorker(User $user, Service $service): User
+    {
+        /** @var \App\RoleManagement\RoleManagerInterface $roleManager */
+        $roleManager = app()->make(RoleManagerInterface::class, [
+            'user' => $user,
+        ]);
+
+        $roleManager->updateRoles(array_merge($user->userRoles->all(), [
+            new UserRole([
+                'role_id' => Role::serviceWorker()->id,
+                'service_id' => $service->id,
+            ]),
+        ]));
+
+        return $user;
+    }
+
+    /**
+     * @param \App\Models\User $user
+     * @param \App\Models\Service $service
+     * @return \App\Models\User
+     */
+    public function makeServiceAdmin(User $user, Service $service): User
+    {
+        /** @var \App\RoleManagement\RoleManagerInterface $roleManager */
+        $roleManager = app()->make(RoleManagerInterface::class, [
+            'user' => $user,
+        ]);
+
+        $roleManager->updateRoles(array_merge($user->userRoles->all(), [
+            new UserRole([
+                'role_id' => Role::serviceAdmin()->id,
+                'service_id' => $service->id,
+            ]),
+        ]));
+
+        return $user;
+    }
+
+    /**
+     * @param \App\Models\User $user
+     * @param \Tests\Organisation $organisation
+     * @return \App\Models\User
+     */
+    public function makeOrganisationAdmin(User $user, Organisation $organisation): User
+    {
+        /** @var \App\RoleManagement\RoleManagerInterface $roleManager */
+        $roleManager = app()->make(RoleManagerInterface::class, [
+            'user' => $user,
+        ]);
+
+        $roleManager->updateRoles(array_merge($user->userRoles->all(), [
+            new UserRole([
+                'role_id' => Role::organisationAdmin()->id,
+                'organisation_id' => $organisation->id,
+            ]),
+        ]));
+
+        return $user;
+    }
+
+    /**
+     * @param \App\Models\User $user
+     * @return \App\Models\User
+     */
+    public function makeGlobalAdmin(User $user): User
+    {
+        /** @var \App\RoleManagement\RoleManagerInterface $roleManager */
+        $roleManager = app()->make(RoleManagerInterface::class, [
+            'user' => $user,
+        ]);
+
+        $roleManager->updateRoles([
+            new UserRole([
+                'role_id' => Role::globalAdmin()->id,
+            ]),
+        ]);
+
+        return $user;
+    }
+
+    /**
+     * @param \App\Models\User $user
+     * @return \App\Models\User
+     */
+    public function makeSuperAdmin(User $user): User
+    {
+        /** @var \App\RoleManagement\RoleManagerInterface $roleManager */
+        $roleManager = app()->make(RoleManagerInterface::class, [
+            'user' => $user,
+        ]);
+
+        $roleManager->updateRoles([
+            new UserRole([
+                'role_id' => Role::superAdmin()->id,
+            ]),
+        ]);
+
+        return $user;
     }
 }

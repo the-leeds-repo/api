@@ -8,18 +8,18 @@
 # Bail out on first error.
 set -e
 
-# Login to the ECR.
-echo "Logging in to ECR..."
-$(aws ecr get-login --no-include-email)
+# Configure Docker for GDP.
+echo "Configuring Docker for GCP..."
+gcloud auth configure-docker --quiet
 
-# Push the Docker image to ECR.
-echo "Pushing images to ECR..."
+# Push the Docker image to GCP.
+echo "Pushing images to GCP..."
 docker push ${REPO_URI}:latest
 # docker push ${REPO_URI}:${TRAVIS_COMMIT}
 
 # Update the service.
-echo "Updating the ECS service..."
-aws ecs update-service \
-    --cluster ${CLUSTER} \
-    --service ${SERVICE} \
-    --force-new-deployment
+echo "Updating the GCP Docker service..."
+#aws ecs update-service \
+#    --cluster ${CLUSTER} \
+#    --service ${SERVICE} \
+#    --force-new-deployment
