@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\RoleManagement\RoleAuthorizer;
+use App\RoleManagement\RoleAuthorizerInterface;
+use App\RoleManagement\RoleChecker;
+use App\RoleManagement\RoleCheckerInterface;
+use App\RoleManagement\RoleManager;
+use App\RoleManagement\RoleManagerInterface;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\ServiceProvider;
@@ -65,6 +71,10 @@ class AppServiceProvider extends ServiceProvider
                 $this->app->singleton(\App\Contracts\SmsSender::class, \App\SmsSenders\LogSmsSender::class);
                 break;
         }
+
+        $this->app->bind(RoleAuthorizerInterface::class, RoleAuthorizer::class);
+        $this->app->bind(RoleCheckerInterface::class, RoleChecker::class);
+        $this->app->bind(RoleManagerInterface::class, RoleManager::class);
     }
 
     /**

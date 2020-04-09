@@ -48,9 +48,8 @@ class ReferralController extends Controller
 
         // Constrain the user to only show services that they are a service worker for.
         $userServiceIds = $request
-            ->user()
-            ->services()
-            ->pluck(table(Service::class, 'id'));
+            ->user('api')
+            ->serviceIds();
 
         $baseQuery = Referral::query()
             ->select('*')
@@ -177,7 +176,7 @@ class ReferralController extends Controller
     {
         return DB::transaction(function () use ($request, $referral) {
             $referral->updateStatus(
-                $request->user(),
+                $request->user('api'),
                 $request->status,
                 $request->comments
             );

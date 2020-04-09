@@ -37,7 +37,6 @@ class UpdateRequestApprovedTest extends TestCase
         $listener = new UpdateRequestApproved();
         $listener->handle($event);
 
-        Queue::assertPushedOn('notifications', NotifySubmitterEmail::class);
         Queue::assertPushed(NotifySubmitterEmail::class, function (NotifySubmitterEmail $email) {
             $this->assertArrayHasKey('SUBMITTER_NAME', $email->values);
             $this->assertArrayHasKey('RESOURCE_NAME', $email->values);

@@ -42,7 +42,7 @@ class ThesaurusTest extends TestCase
     public function test_service_worker_cannot_view_thesaurus()
     {
         $service = factory(Service::class)->create();
-        $user = factory(User::class)->create()->makeServiceWorker($service);
+        $user = $this->makeServiceWorker(factory(User::class)->create(), $service);
 
         Passport::actingAs($user);
 
@@ -54,7 +54,7 @@ class ThesaurusTest extends TestCase
     public function test_service_admin_cannot_view_thesaurus()
     {
         $service = factory(Service::class)->create();
-        $user = factory(User::class)->create()->makeServiceAdmin($service);
+        $user = $this->makeServiceAdmin(factory(User::class)->create(), $service);
 
         Passport::actingAs($user);
 
@@ -66,7 +66,7 @@ class ThesaurusTest extends TestCase
     public function test_organisation_admin_cannot_view_thesaurus()
     {
         $organisation = factory(Organisation::class)->create();
-        $user = factory(User::class)->create()->makeOrganisationAdmin($organisation);
+        $user = $this->makeOrganisationAdmin(factory(User::class)->create(), $organisation);
 
         Passport::actingAs($user);
 
@@ -77,7 +77,7 @@ class ThesaurusTest extends TestCase
 
     public function test_global_admin_can_view_thesaurus()
     {
-        $user = factory(User::class)->create()->makeGlobalAdmin();
+        $user = $this->makeGlobalAdmin(factory(User::class)->create());
 
         Passport::actingAs($user);
         $response = $this->json('GET', '/core/v1/thesaurus');
@@ -106,7 +106,7 @@ class ThesaurusTest extends TestCase
     public function test_service_worker_cannot_update_thesaurus()
     {
         $service = factory(Service::class)->create();
-        $user = factory(User::class)->create()->makeServiceWorker($service);
+        $user = $this->makeServiceWorker(factory(User::class)->create(), $service);
 
         Passport::actingAs($user);
 
@@ -118,7 +118,7 @@ class ThesaurusTest extends TestCase
     public function test_service_admin_cannot_update_thesaurus()
     {
         $service = factory(Service::class)->create();
-        $user = factory(User::class)->create()->makeServiceAdmin($service);
+        $user = $this->makeServiceAdmin(factory(User::class)->create(), $service);
 
         Passport::actingAs($user);
 
@@ -130,7 +130,7 @@ class ThesaurusTest extends TestCase
     public function test_organisation_admin_cannot_update_thesaurus()
     {
         $organisation = factory(Organisation::class)->create();
-        $user = factory(User::class)->create()->makeOrganisationAdmin($organisation);
+        $user = $this->makeOrganisationAdmin(factory(User::class)->create(), $organisation);
 
         Passport::actingAs($user);
 
@@ -141,7 +141,7 @@ class ThesaurusTest extends TestCase
 
     public function test_global_admin_can_update_thesaurus()
     {
-        $user = factory(User::class)->create()->makeGlobalAdmin();
+        $user = $this->makeGlobalAdmin(factory(User::class)->create());
 
         Passport::actingAs($user);
         $response = $this->json('PUT', '/core/v1/thesaurus', [
@@ -163,7 +163,7 @@ class ThesaurusTest extends TestCase
         $service = factory(Service::class)->create([
             'name' => 'Helping People',
         ]);
-        $user = factory(User::class)->create()->makeGlobalAdmin();
+        $user = $this->makeGlobalAdmin(factory(User::class)->create());
 
         Passport::actingAs($user);
         $updateResponse = $this->json('PUT', '/core/v1/thesaurus', [
@@ -188,7 +188,7 @@ class ThesaurusTest extends TestCase
 
     public function test_invalid_multi_word_upload_fails()
     {
-        $user = factory(User::class)->create()->makeGlobalAdmin();
+        $user = $this->makeGlobalAdmin(factory(User::class)->create());
 
         Passport::actingAs($user);
         $response = $this->json('PUT', '/core/v1/thesaurus', [
@@ -205,7 +205,7 @@ class ThesaurusTest extends TestCase
         $service = factory(Service::class)->create([
             'name' => 'People Not Drinking Enough',
         ]);
-        $user = factory(User::class)->create()->makeGlobalAdmin();
+        $user = $this->makeGlobalAdmin(factory(User::class)->create());
 
         Passport::actingAs($user);
         $updateResponse = $this->json('PUT', '/core/v1/thesaurus', [
@@ -238,7 +238,7 @@ class ThesaurusTest extends TestCase
         $service = factory(Service::class)->create([
             'name' => 'People Not Drinking Enough',
         ]);
-        $user = factory(User::class)->create()->makeGlobalAdmin();
+        $user = $this->makeGlobalAdmin(factory(User::class)->create());
 
         Passport::actingAs($user);
         $updateResponse = $this->json('PUT', '/core/v1/thesaurus', [

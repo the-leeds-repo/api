@@ -2,23 +2,17 @@
 
 namespace App\Rules;
 
-use App\Models\Organisation;
 use App\Models\Role;
-use App\Models\Service;
-use App\Models\User;
+use App\Models\UserRole;
+use App\RoleManagement\RoleAuthorizerInterface;
 use Illuminate\Contracts\Validation\Rule;
 
 class CanRevokeRoleFromUser implements Rule
 {
     /**
-     * @var \App\Models\User
+     * @var \App\RoleManagement\RoleAuthorizerInterface
      */
-    protected $user;
-
-    /**
-     * @var \App\Models\User
-     */
-    protected $subject;
+    protected $roleAuthorizer;
 
     /**
      * @var array|null
@@ -28,14 +22,12 @@ class CanRevokeRoleFromUser implements Rule
     /**
      * CanAssignRoleToUser constructor.
      *
-     * @param \App\Models\User $user
-     * @param \App\Models\User $subject
+     * @param \App\RoleManagement\RoleAuthorizerInterface $roleAuthorizer
      * @param array|null $revokedRoles
      */
-    public function __construct(User $user, User $subject, array $revokedRoles = null)
+    public function __construct(RoleAuthorizerInterface $roleAuthorizer, array $revokedRoles = null)
     {
-        $this->user = $user;
-        $this->subject = $subject;
+        $this->roleAuthorizer = $roleAuthorizer;
         $this->revokedRoles = $revokedRoles;
     }
 
@@ -58,38 +50,9 @@ class CanRevokeRoleFromUser implements Rule
             return true;
         }
 
-        switch ($role['role']) {
-            case Role::NAME_SERVICE_WORKER:
-                $service = Service::query()->findOrFail($role['service_id']);
-                if (!$this->user->canRevokeServiceWorker($this->subject, $service)) {
-                    return false;
-                }
-                break;
-            case Role::NAME_SERVICE_ADMIN:
-                $service = Service::query()->findOrFail($role['service_id']);
-                if (!$this->user->canRevokeServiceAdmin($this->subject, $service)) {
-                    return false;
-                }
-                break;
-            case Role::NAME_ORGANISATION_ADMIN:
-                $organisation = Organisation::query()->findOrFail($role['organisation_id']);
-                if (!$this->user->canRevokeOrganisationAdmin($this->subject, $organisation)) {
-                    return false;
-                }
-                break;
-            case Role::NAME_GLOBAL_ADMIN:
-                if (!$this->user->canRevokeGlobalAdmin($this->subject)) {
-                    return false;
-                }
-                break;
-            case Role::NAME_SUPER_ADMIN:
-                if (!$this->user->canRevokeSuperAdmin($this->subject)) {
-                    return false;
-                }
-                break;
-        }
-
-        return true;
+        return $this->roleAuthorizer->canRevokeRole(
+            $this->parseRole($role)
+        );
     }
 
     /**
@@ -149,8 +112,8 @@ class CanRevokeRoleFromUser implements Rule
             return false;
         }
 
-        $revokedRoles = $this->parseRoles($this->revokedRoles);
-        $role = $this->parseRoles($role);
+        $revokedRoles = $this->normalizeRoles($this->revokedRoles);
+        $role = $this->normalizeRoles($role);
 
         // If revoked role provided, and the role is in the array, then don't skip.
         foreach ($revokedRoles as $revokedRole) {
@@ -167,7 +130,7 @@ class CanRevokeRoleFromUser implements Rule
      * @param array $roles
      * @return array
      */
-    protected function parseRoles(array $roles): array
+    protected function normalizeRoles(array $roles): array
     {
         $rolesCopy = isset($roles['role']) ? [$roles] : $roles;
 
@@ -185,5 +148,38 @@ class CanRevokeRoleFromUser implements Rule
         }
 
         return isset($roles['role']) ? $rolesCopy[0] : $rolesCopy;
+    }
+
+    /**
+     * @param array $role
+     * @return \App\Models\UserRole
+     */
+    protected function parseRole(array $role): UserRole
+    {
+        switch ($role['role']) {
+            case Role::NAME_SERVICE_WORKER:
+                return new UserRole([
+                    'role_id' => Role::serviceWorker()->id,
+                    'service_id' => $role['service_id'],
+                ]);
+            case Role::NAME_SERVICE_ADMIN:
+                return new UserRole([
+                    'role_id' => Role::serviceAdmin()->id,
+                    'service_id' => $role['service_id'],
+                ]);
+            case Role::NAME_ORGANISATION_ADMIN:
+                return new UserRole([
+                    'role_id' => Role::organisationAdmin()->id,
+                    'organisation_id' => $role['organisation_id'],
+                ]);
+            case Role::NAME_GLOBAL_ADMIN:
+                return new UserRole([
+                    'role_id' => Role::globalAdmin()->id,
+                ]);
+            case Role::NAME_SUPER_ADMIN:
+                return new UserRole([
+                    'role_id' => Role::superAdmin()->id,
+                ]);
+        }
     }
 }

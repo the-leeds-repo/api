@@ -33,7 +33,6 @@ class CreateScheduledReportsCommandTest extends TestCase
             'ends_at' => Date::now()->subWeek()->endOfWeek()->toDateString(),
         ]);
 
-        Queue::assertPushedOn('notifications', NotifyGlobalAdminEmail::class);
         Queue::assertPushed(NotifyGlobalAdminEmail::class, function (NotifyGlobalAdminEmail $email) {
             $this->assertArrayHasKey('REPORT_FREQUENCY', $email->values);
             $this->assertArrayHasKey('REPORT_TYPE', $email->values);
@@ -60,7 +59,6 @@ class CreateScheduledReportsCommandTest extends TestCase
             'ends_at' => Date::now()->subMonth()->endOfMonth()->toDateString(),
         ]);
 
-        Queue::assertPushedOn('notifications', NotifyGlobalAdminEmail::class);
         Queue::assertPushed(NotifyGlobalAdminEmail::class, function (NotifyGlobalAdminEmail $email) {
             $this->assertArrayHasKey('REPORT_FREQUENCY', $email->values);
             $this->assertArrayHasKey('REPORT_TYPE', $email->values);

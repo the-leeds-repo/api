@@ -4,16 +4,18 @@ namespace App\Http\Requests\User;
 
 use App\Models\Role;
 use App\Models\UserRole;
+use App\RoleManagement\RoleAuthorizerInterface;
 use App\Rules\CanAssignRoleToUser;
 use App\Rules\CanRevokeRoleFromUser;
 use App\Rules\Password;
 use App\Rules\UkPhoneNumber;
 use App\Rules\UserEmailNotTaken;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Arr;
 
 class UpdateRequest extends FormRequest
 {
+    use UserRoleHelpers;
+
     /**
      * Cache the existing roles to prevent multiple database queries.
      *
@@ -80,7 +82,6 @@ class UpdateRequest extends FormRequest
                 case Role::NAME_GLOBAL_ADMIN:
                 case Role::NAME_SUPER_ADMIN:
                     unset($role['service_id'], $role['organisation_id']);
-
                     break;
             }
         }
@@ -105,32 +106,6 @@ class UpdateRequest extends FormRequest
     }
 
     /**
-     * Orders the roles array with the highest first.
-     *
-     * @param array $roles
-     * @return array
-     */
-    public function orderRoles(array $roles): array
-    {
-        return Arr::sort($roles, function (array $role) {
-            switch ($role['role']) {
-                case Role::NAME_SUPER_ADMIN:
-                    return 1;
-                case Role::NAME_GLOBAL_ADMIN:
-                    return 2;
-                case Role::NAME_ORGANISATION_ADMIN:
-                    return 3;
-                case Role::NAME_SERVICE_ADMIN:
-                    return 4;
-                case Role::NAME_SERVICE_WORKER:
-                    return 5;
-                default:
-                    return 6;
-            }
-        });
-    }
-
-    /**
      * @return bool
      */
     public function rolesHaveBeenUpdated(): bool
@@ -148,6 +123,20 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
+        $canAssignRoleToUserRule = new CanAssignRoleToUser(
+            app()->make(RoleAuthorizerInterface::class, [
+                'invokingUserRoles' => $this->user('api')->userRoles()->get()->all(),
+            ]),
+            $this->getNewRoles()
+        );
+        $canRevokeRoleToUserRule = new CanRevokeRoleFromUser(
+            app()->make(RoleAuthorizerInterface::class, [
+                'invokingUserRoles' => $this->user('api')->userRoles()->get()->all(),
+                'subjectUserRoles' => $this->user->userRoles()->get()->all(),
+            ]),
+            $this->getDeletedRoles()
+        );
+
         return [
             'first_name' => ['required', 'string', 'min:1', 'max:255'],
             'last_name' => ['required', 'string', 'min:1', 'max:255'],
@@ -159,8 +148,8 @@ class UpdateRequest extends FormRequest
             'roles.*' => [
                 'required',
                 'array',
-                new CanAssignRoleToUser($this->user()->load('userRoles'), $this->getNewRoles()),
-                new CanRevokeRoleFromUser($this->user()->load('userRoles'), $this->user->load('userRoles'), $this->getDeletedRoles()),
+                $canAssignRoleToUserRule,
+                $canRevokeRoleToUserRule,
             ],
             'roles.*.role' => ['required_with:roles.*', 'string', 'exists:roles,name'],
             'roles.*.organisation_id' => [

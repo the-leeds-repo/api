@@ -36,7 +36,7 @@ class ReferralsTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
         $anotherService = factory(Service::class)->create();
 
         Passport::actingAs($user);
@@ -55,7 +55,7 @@ class ReferralsTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
         $referral = factory(Referral::class)->create([
             'service_id' => $service->id,
             'email' => $this->faker->safeEmail,
@@ -104,7 +104,7 @@ class ReferralsTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
         $referral = factory(Referral::class)->create([
             'service_id' => $service->id,
             'email' => $this->faker->safeEmail,
@@ -136,7 +136,7 @@ class ReferralsTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
 
         Passport::actingAs($user);
 
@@ -194,7 +194,7 @@ class ReferralsTest extends TestCase
 
         /** @var \App\Models\User $user */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         Passport::actingAs($user);
 
         $response = $this->json('GET', "/core/v1/referrals?filter[organisation_name]={$organisationOne->name}");
@@ -238,7 +238,7 @@ class ReferralsTest extends TestCase
 
         /** @var \App\Models\User $user */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         Passport::actingAs($user);
 
         $response = $this->json('GET', "/core/v1/referrals?filter[service_name]={$serviceOne->name}");
@@ -294,7 +294,7 @@ class ReferralsTest extends TestCase
 
         /** @var \App\Models\User $user */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         Passport::actingAs($user);
 
         $response = $this->json('GET', '/core/v1/referrals?sort=-organisation_name');
@@ -339,7 +339,7 @@ class ReferralsTest extends TestCase
 
         /** @var \App\Models\User $user */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         Passport::actingAs($user);
 
         $response = $this->json('GET', '/core/v1/referrals?sort=-service_name');
@@ -480,7 +480,7 @@ class ReferralsTest extends TestCase
     {
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
         $referral = factory(Referral::class)->create();
 
         Passport::actingAs($user);
@@ -494,7 +494,7 @@ class ReferralsTest extends TestCase
     {
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
         $referral = factory(Referral::class)->create([
             'service_id' => $service->id,
             'referral_consented_at' => $this->now,
@@ -535,7 +535,7 @@ class ReferralsTest extends TestCase
 
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
         $referral = factory(Referral::class)->create([
             'service_id' => $service->id,
             'referral_consented_at' => $this->now,
@@ -569,7 +569,7 @@ class ReferralsTest extends TestCase
     {
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
         $referral = factory(Referral::class)->create();
 
         Passport::actingAs($user);
@@ -586,7 +586,7 @@ class ReferralsTest extends TestCase
     {
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
         $referral = factory(Referral::class)->create([
             'service_id' => $service->id,
             'referral_consented_at' => $this->now,
@@ -636,7 +636,7 @@ class ReferralsTest extends TestCase
 
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
         $referral = factory(Referral::class)->create([
             'service_id' => $service->id,
             'referral_consented_at' => $this->now,
@@ -673,7 +673,7 @@ class ReferralsTest extends TestCase
     {
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
         $referral = factory(Referral::class)->create();
 
         Passport::actingAs($user);
@@ -687,7 +687,7 @@ class ReferralsTest extends TestCase
     {
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceAdmin($service);
+        $this->makeServiceAdmin($user, $service);
         $referral = factory(Referral::class)->create();
 
         Passport::actingAs($user);
@@ -701,7 +701,7 @@ class ReferralsTest extends TestCase
     {
         $organisation = factory(Organisation::class)->create();
         $user = factory(User::class)->create();
-        $user->makeOrganisationAdmin($organisation);
+        $this->makeOrganisationAdmin($user, $organisation);
         $referral = factory(Referral::class)->create();
 
         Passport::actingAs($user);
@@ -714,7 +714,7 @@ class ReferralsTest extends TestCase
     public function test_global_admin_cannot_delete_one()
     {
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         $referral = factory(Referral::class)->create();
 
         Passport::actingAs($user);
@@ -727,7 +727,7 @@ class ReferralsTest extends TestCase
     public function test_super_admin_cannot_delete_one()
     {
         $user = factory(User::class)->create();
-        $user->makeSuperAdmin();
+        $this->makeSuperAdmin($user);
         $referral = factory(Referral::class)->create();
 
         Passport::actingAs($user);

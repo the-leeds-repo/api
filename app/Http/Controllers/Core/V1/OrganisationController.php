@@ -123,7 +123,7 @@ class OrganisationController extends Controller
         return DB::transaction(function () use ($request, $organisation) {
             /** @var \App\Models\UpdateRequest $updateRequest */
             $updateRequest = $organisation->updateRequests()->create([
-                'user_id' => $request->user()->id,
+                'user_id' => $request->user('api')->id,
                 'data' => array_filter_missing([
                     'slug' => $request->missing('slug'),
                     'name' => $request->missing('name'),

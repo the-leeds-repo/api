@@ -25,7 +25,6 @@ class UserCreatedTest extends TestCase
         $listener = new UserCreated();
         $listener->handle($event);
 
-        Queue::assertPushedOn('notifications', NotifyUserEmail::class);
         Queue::assertPushed(NotifyUserEmail::class, function (NotifyUserEmail $email) {
             $this->assertArrayHasKey('NAME', $email->values);
             $this->assertArrayHasKey('PERMISSIONS', $email->values);

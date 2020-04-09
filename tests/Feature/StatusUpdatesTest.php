@@ -30,7 +30,7 @@ class StatusUpdatesTest extends TestCase
     public function test_service_worker_can_list_them()
     {
         $service = factory(Service::class)->create();
-        $user = factory(User::class)->create()->makeServiceWorker($service);
+        $user = $this->makeServiceWorker(factory(User::class)->create(), $service);
         $referral = factory(Referral::class)->create(['service_id' => $service->id]);
         $referral->statusUpdates()->create([
             'user_id' => $user->id,
@@ -58,7 +58,7 @@ class StatusUpdatesTest extends TestCase
         $this->fakeEvents();
 
         $service = factory(Service::class)->create();
-        $user = factory(User::class)->create()->makeServiceWorker($service);
+        $user = $this->makeServiceWorker(factory(User::class)->create(), $service);
         $referral = factory(Referral::class)->create(['service_id' => $service->id]);
 
         Passport::actingAs($user);

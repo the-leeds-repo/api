@@ -95,7 +95,7 @@ class CollectionSnomedTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
 
         Passport::actingAs($user);
 
@@ -112,7 +112,7 @@ class CollectionSnomedTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceAdmin($service);
+        $this->makeServiceAdmin($user, $service);
 
         Passport::actingAs($user);
 
@@ -129,7 +129,7 @@ class CollectionSnomedTest extends TestCase
          */
         $organisation = factory(Organisation::class)->create();
         $user = factory(User::class)->create();
-        $user->makeOrganisationAdmin($organisation);
+        $this->makeOrganisationAdmin($user, $organisation);
 
         Passport::actingAs($user);
 
@@ -144,7 +144,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
 
         Passport::actingAs($user);
 
@@ -159,7 +159,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeSuperAdmin();
+        $this->makeSuperAdmin($user);
         $randomCategory = Taxonomy::category()->children()->inRandomOrder()->firstOrFail();
 
         Passport::actingAs($user);
@@ -208,7 +208,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeSuperAdmin();
+        $this->makeSuperAdmin($user);
         $first = Collection::create([
             'type' => Collection::TYPE_SNOMED,
             'name' => '001',
@@ -259,7 +259,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeSuperAdmin();
+        $this->makeSuperAdmin($user);
         $first = Collection::create([
             'type' => Collection::TYPE_SNOMED,
             'name' => '001',
@@ -310,7 +310,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeSuperAdmin();
+        $this->makeSuperAdmin($user);
         $first = Collection::create([
             'type' => Collection::TYPE_SNOMED,
             'name' => '001',
@@ -361,7 +361,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeSuperAdmin();
+        $this->makeSuperAdmin($user);
 
         Passport::actingAs($user);
 
@@ -384,7 +384,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeSuperAdmin();
+        $this->makeSuperAdmin($user);
         Collection::create([
             'type' => Collection::TYPE_SNOMED,
             'name' => '001',
@@ -424,7 +424,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeSuperAdmin();
+        $this->makeSuperAdmin($user);
         $randomCategory = Taxonomy::category()->children()->inRandomOrder()->firstOrFail();
 
         Passport::actingAs($user);
@@ -516,7 +516,7 @@ class CollectionSnomedTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
         $snomed = Collection::snomed()->inRandomOrder()->firstOrFail();
 
         Passport::actingAs($user);
@@ -534,7 +534,7 @@ class CollectionSnomedTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceAdmin($service);
+        $this->makeServiceAdmin($user, $service);
         $snomed = Collection::snomed()->inRandomOrder()->firstOrFail();
 
         Passport::actingAs($user);
@@ -552,7 +552,7 @@ class CollectionSnomedTest extends TestCase
          */
         $organisation = factory(Organisation::class)->create();
         $user = factory(User::class)->create();
-        $user->makeOrganisationAdmin($organisation);
+        $this->makeOrganisationAdmin($user, $organisation);
         $snomed = Collection::snomed()->inRandomOrder()->firstOrFail();
 
         Passport::actingAs($user);
@@ -568,7 +568,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         $snomed = Collection::snomed()->inRandomOrder()->firstOrFail();
         $taxonomy = Taxonomy::category()->children()->inRandomOrder()->firstOrFail();
 
@@ -618,7 +618,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeSuperAdmin();
+        $this->makeSuperAdmin($user);
         $first = Collection::create([
             'type' => Collection::TYPE_SNOMED,
             'name' => '001',
@@ -668,7 +668,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeSuperAdmin();
+        $this->makeSuperAdmin($user);
         $first = Collection::create([
             'type' => Collection::TYPE_SNOMED,
             'name' => '001',
@@ -718,7 +718,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeSuperAdmin();
+        $this->makeSuperAdmin($user);
         $first = Collection::create([
             'type' => Collection::TYPE_SNOMED,
             'name' => '001',
@@ -768,7 +768,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeSuperAdmin();
+        $this->makeSuperAdmin($user);
         $snomed = Collection::create([
             'type' => Collection::TYPE_SNOMED,
             'name' => '001',
@@ -799,7 +799,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeSuperAdmin();
+        $this->makeSuperAdmin($user);
         $snomed = Collection::create([
             'type' => Collection::TYPE_SNOMED,
             'name' => '001',
@@ -829,7 +829,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeSuperAdmin();
+        $this->makeSuperAdmin($user);
         $snomed = Collection::snomed()->inRandomOrder()->firstOrFail();
         $taxonomy = Taxonomy::category()->children()->inRandomOrder()->firstOrFail();
 
@@ -870,7 +870,7 @@ class CollectionSnomedTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceWorker($service);
+        $this->makeServiceWorker($user, $service);
         $snomed = Collection::snomed()->inRandomOrder()->firstOrFail();
 
         Passport::actingAs($user);
@@ -888,7 +888,7 @@ class CollectionSnomedTest extends TestCase
          */
         $service = factory(Service::class)->create();
         $user = factory(User::class)->create();
-        $user->makeServiceAdmin($service);
+        $this->makeServiceAdmin($user, $service);
         $snomed = Collection::snomed()->inRandomOrder()->firstOrFail();
 
         Passport::actingAs($user);
@@ -906,7 +906,7 @@ class CollectionSnomedTest extends TestCase
          */
         $organisation = factory(Organisation::class)->create();
         $user = factory(User::class)->create();
-        $user->makeOrganisationAdmin($organisation);
+        $this->makeOrganisationAdmin($user, $organisation);
         $snomed = Collection::snomed()->inRandomOrder()->firstOrFail();
 
         Passport::actingAs($user);
@@ -922,7 +922,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeGlobalAdmin();
+        $this->makeGlobalAdmin($user);
         $snomed = Collection::snomed()->inRandomOrder()->firstOrFail();
 
         Passport::actingAs($user);
@@ -938,7 +938,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeSuperAdmin();
+        $this->makeSuperAdmin($user);
         $snomed = Collection::snomed()->inRandomOrder()->firstOrFail();
 
         Passport::actingAs($user);
@@ -959,7 +959,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeSuperAdmin();
+        $this->makeSuperAdmin($user);
         $first = Collection::create([
             'type' => Collection::TYPE_SNOMED,
             'name' => '001',
@@ -1004,7 +1004,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeSuperAdmin();
+        $this->makeSuperAdmin($user);
         $first = Collection::create([
             'type' => Collection::TYPE_SNOMED,
             'name' => '001',
@@ -1049,7 +1049,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeSuperAdmin();
+        $this->makeSuperAdmin($user);
         $first = Collection::create([
             'type' => Collection::TYPE_SNOMED,
             'name' => '001',
@@ -1093,7 +1093,7 @@ class CollectionSnomedTest extends TestCase
          * @var \App\Models\User $user
          */
         $user = factory(User::class)->create();
-        $user->makeSuperAdmin();
+        $this->makeSuperAdmin($user);
         $snomed = Collection::snomed()->inRandomOrder()->firstOrFail();
 
         Passport::actingAs($user);
