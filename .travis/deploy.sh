@@ -11,7 +11,7 @@
 set -e
 
 # Declare the configuration variables for the deployment.
-echo "Setting deployment configuration for ${DEPLOYMENT}..."
+echo "Setting deployment configuration..."
 export ENV_SECRET_ID="env-api"
 export PUBLIC_KEY_SECRET_ID="oauth-public-key"
 export PRIVATE_KEY_SECRET_ID="oauth-private-key"
