@@ -24,7 +24,7 @@ class TaxonomyIdFilter implements Filter
                 $query->whereIn('taxonomies.id', $taxonomyIds);
             },
             '=',
-            count((array)$taxonomyIds)
+            count($taxonomyIds)
         );
     }
 }

@@ -67,8 +67,12 @@ EOT
                     )
                     ->style(FilterParameter::STYLE_SIMPLE),
                 FilterParameter::create(null, 'taxonomy_name')
-                    ->description('Taxonomy name to filter by (partial matching)')
-                    ->schema(Schema::string()),
+                    ->description('Taxonomy name to filter by')
+                    ->schema(
+                        Schema::array()->items(
+                            Schema::string()
+                        )
+                    ),
                 FilterParameter::create(null, 'snomed_code')
                     ->description('SNOMED code to filter by')
                     ->schema(

@@ -10,20 +10,21 @@ class TaxonomyNameFilter implements Filter
 {
     /**
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $taxonomyName
+     * @param string|string[] $taxonomyNames
      * @param string $property
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function __invoke(Builder $query, $taxonomyName, string $property): Builder
+    public function __invoke(Builder $query, $taxonomyNames, string $property): Builder
     {
-        // Don't treat comma's as an array separator.
-        $taxonomyName = implode(',', Arr::wrap($taxonomyName));
+        $taxonomyNames = Arr::wrap($taxonomyNames);
 
         return $query->whereHas(
             'taxonomies',
-            function (Builder $query) use ($taxonomyName) {
-                $query->where('taxonomies.name', 'LIKE', "%{$taxonomyName}%");
-            }
+            function (Builder $query) use ($taxonomyNames) {
+                $query->whereIn('taxonomies.name', $taxonomyNames);
+            },
+            '>=',
+            count($taxonomyNames)
         );
     }
 }
