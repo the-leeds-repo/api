@@ -22,7 +22,9 @@ class TaxonomyIdFilter implements Filter
             'taxonomies',
             function (Builder $query) use ($taxonomyIds) {
                 $query->whereIn('taxonomies.id', $taxonomyIds);
-            }
+            },
+            '=',
+            count((array)$taxonomyIds)
         );
     }
 }
