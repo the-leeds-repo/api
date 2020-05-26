@@ -184,6 +184,42 @@ class ResourcesTest extends TestCase
         $response->assertJsonMissing(['id' => $resourceTwo->id]);
     }
 
+    public function test_guest_can_filter_by_multiple_taxonomy_ids()
+    {
+        /** @var \App\Models\Resource $resourceOne */
+        $resourceOne = factory(Resource::class)->create();
+
+        /** @var \App\Models\Taxonomy $taxonomyOne */
+        $taxonomyOne = Taxonomy::category()->children()->firstOrFail();
+
+        /** @var \App\Models\Taxonomy $taxonomyOne */
+        $taxonomyTwo = Taxonomy::category()
+            ->children()
+            ->skip(1)
+            ->take(1)
+            ->firstOrFail();
+
+        $resourceOne->syncResourceTaxonomies(
+            new Collection([$taxonomyOne, $taxonomyTwo])
+        );
+
+        /** @var \App\Models\Resource $resourceTwo */
+        $resourceTwo = factory(Resource::class)->create();
+
+        $resourceTwo->syncResourceTaxonomies(
+            new Collection([$taxonomyOne])
+        );
+
+        $response = $this->json(
+            'GET',
+            "/core/v1/resources?filter[taxonomy_id]={$taxonomyOne->id},{$taxonomyTwo->id}"
+        );
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonFragment(['id' => $resourceOne->id]);
+        $response->assertJsonMissing(['id' => $resourceTwo->id]);
+    }
+
     public function test_guest_can_filter_by_taxonomy_name()
     {
         /** @var \App\Models\Resource $resourceOne */

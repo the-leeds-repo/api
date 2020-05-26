@@ -209,6 +209,42 @@ class ServicesTest extends TestCase
         $response->assertJsonMissing(['id' => $serviceTwo->id]);
     }
 
+    public function test_guest_can_filter_by_multiple_taxonomy_ids()
+    {
+        /** @var \App\Models\Service $serviceOne */
+        $serviceOne = factory(Service::class)->create();
+
+        /** @var \App\Models\Taxonomy $taxonomyOne */
+        $taxonomyOne = Taxonomy::category()->children()->firstOrFail();
+
+        /** @var \App\Models\Taxonomy $taxonomyOne */
+        $taxonomyTwo = Taxonomy::category()
+            ->children()
+            ->skip(1)
+            ->take(1)
+            ->firstOrFail();
+
+        $serviceOne->syncServiceTaxonomies(
+            new Collection([$taxonomyOne, $taxonomyTwo])
+        );
+
+        /** @var \App\Models\Service $serviceTwo */
+        $serviceTwo = factory(Service::class)->create();
+
+        $serviceTwo->syncServiceTaxonomies(
+            new Collection([$taxonomyOne])
+        );
+
+        $response = $this->json(
+            'GET',
+            "/core/v1/services?filter[taxonomy_id]={$taxonomyOne->id},{$taxonomyTwo->id}"
+        );
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonFragment(['id' => $serviceOne->id]);
+        $response->assertJsonMissing(['id' => $serviceTwo->id]);
+    }
+
     public function test_guest_can_filter_by_taxonomy_name()
     {
         /** @var \App\Models\Service $serviceOne */
