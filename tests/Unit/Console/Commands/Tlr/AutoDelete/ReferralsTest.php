@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Console\Commands\Tlr;
+namespace Tests\Unit\Console\Commands\Tlr\AutoDelete;
 
 use App\Console\Commands\Tlr\AutoDelete\ReferralsCommand;
 use App\Models\Referral;
