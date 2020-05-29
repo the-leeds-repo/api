@@ -52,8 +52,8 @@ class CanUpdateServiceCategoryTaxonomies implements Rule
             }
         }
 
-        // Allow changing of taxonomies if global admin.
-        if ($this->user->isGlobalAdmin()) {
+        // Allow changing of taxonomies if service admin.
+        if ($this->user->isServiceAdmin($this->service)) {
             return true;
         }
 
