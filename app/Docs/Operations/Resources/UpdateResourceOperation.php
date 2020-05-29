@@ -32,12 +32,7 @@ class UpdateResourceOperation extends Operation
             ->action(static::ACTION_PUT)
             ->tags(ResourcesTag::create())
             ->summary('Update a specific resource')
-            ->description(
-                <<<'EOT'
-**Permission:** `Global Admin`
-- Can update taxonomies
-EOT
-            )
+            ->description('**Permission:** `Organisation Admin`')
             ->requestBody(
                 RequestBody::create()
                     ->required()

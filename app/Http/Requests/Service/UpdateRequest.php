@@ -303,8 +303,8 @@ class UpdateRequest extends FormRequest
      */
     protected function categoryTaxonomiesRules(): array
     {
-        // If global admin and above.
-        if ($this->user()->isGlobalAdmin()) {
+        // If service admin and above.
+        if ($this->user()->isServiceAdmin($this->service)) {
             return [
                 Rule::requiredIf(function () {
                     // Only required if the service currently has no taxonomies.

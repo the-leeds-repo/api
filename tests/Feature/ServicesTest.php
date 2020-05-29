@@ -449,6 +449,7 @@ class ServicesTest extends TestCase
 
     public function test_organisation_admin_can_create_an_inactive_one()
     {
+        $taxonomy = Taxonomy::category()->children()->firstOrFail();
         $organisation = factory(Organisation::class)->create();
         $user = $this->makeOrganisationAdmin(factory(User::class)->create(), $organisation);
 
@@ -508,9 +509,21 @@ class ServicesTest extends TestCase
                 ],
             ],
             'gallery_items' => [],
-            'category_taxonomies' => [],
+            'category_taxonomies' => [
+                $taxonomy->id,
+            ],
         ];
         $response = $this->json('POST', '/core/v1/services', $payload);
+
+        $payload['category_taxonomies'] = [
+            [
+                'id' => $taxonomy->id,
+                'parent_id' => $taxonomy->parent_id,
+                'name' => $taxonomy->name,
+                'created_at' => $taxonomy->created_at->format(CarbonImmutable::ISO8601),
+                'updated_at' => $taxonomy->updated_at->format(CarbonImmutable::ISO8601),
+            ],
+        ];
 
         $response->assertStatus(Response::HTTP_CREATED);
         $response->assertJsonFragment($payload);
@@ -1648,7 +1661,7 @@ class ServicesTest extends TestCase
             ->where('id', '!=', $taxonomy->id)
             ->firstOrFail();
         $payload = [
-            'slug' => 'test-service',
+            'slug' => $service->slug,
             'name' => 'Test Service',
             'type' => Service::TYPE_SERVICE,
             'status' => Service::STATUS_ACTIVE,
@@ -1665,9 +1678,9 @@ class ServicesTest extends TestCase
             'contact_phone' => random_uk_phone(),
             'contact_email' => $this->faker->safeEmail,
             'show_referral_disclaimer' => true,
-            'referral_method' => Service::REFERRAL_METHOD_INTERNAL,
+            'referral_method' => $service->referral_method,
             'referral_button_text' => null,
-            'referral_email' => $this->faker->safeEmail,
+            'referral_email' => $service->referral_email,
             'referral_url' => null,
             'ends_at' => null,
             'criteria' => [

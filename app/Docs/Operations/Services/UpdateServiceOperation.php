@@ -32,15 +32,7 @@ class UpdateServiceOperation extends Operation
             ->action(static::ACTION_PUT)
             ->tags(ServicesTag::create())
             ->summary('Update a specific service')
-            ->description(
-                <<<'EOT'
-**Permission:** `Service Admin`
-- Can update a service location but not it's taxonomies
-
-**Permission:** `Global Admin`
-- Can update a service location
-EOT
-            )
+            ->description('**Permission:** `Service Admin`')
             ->requestBody(
                 RequestBody::create()
                     ->required()

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Service;
 
 use App\Models\File;
+use App\Models\Organisation;
 use App\Models\Role;
 use App\Models\Service;
 use App\Models\SocialMedia;
@@ -223,8 +224,11 @@ class StoreRequest extends FormRequest
      */
     protected function categoryTaxonomiesRules(): array
     {
-        // If global admin and above.
-        if ($this->user()->isGlobalAdmin()) {
+        /** @var \App\Models\Organisation|null $organisation */
+        $organisation = Organisation::find($this->organisation_id);
+
+        // If organisation admin and above.
+        if ($this->user()->isOrganisationAdmin($organisation)) {
             return ['required', 'array'];
         }
 
