@@ -62,6 +62,8 @@ class OrganisationController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request) {
             // Create the organisation.
             $organisation = Organisation::create([
@@ -119,6 +121,8 @@ class OrganisationController extends Controller
      */
     public function update(UpdateRequest $request, Organisation $organisation)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request, $organisation) {
             /** @var \App\Models\UpdateRequest $updateRequest */
             $updateRequest = $organisation->updateRequests()->create([

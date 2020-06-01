@@ -59,6 +59,8 @@ class CollectionPersonaController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request) {
             // Parse the sideboxes.
             $sideboxes = array_map(function (array $sidebox): array {
@@ -127,6 +129,8 @@ class CollectionPersonaController extends Controller
      */
     public function update(UpdateRequest $request, Collection $collection)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request, $collection) {
             // Parse the sideboxes.
             $sideboxes = array_map(function (array $sidebox): array {

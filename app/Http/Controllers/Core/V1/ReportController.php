@@ -57,6 +57,8 @@ class ReportController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request) {
             $reportType = ReportType::where('name', $request->report_type)->firstOrFail();
             $startsAt = $request->filled('starts_at')

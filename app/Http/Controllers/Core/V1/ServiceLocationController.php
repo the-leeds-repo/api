@@ -63,6 +63,8 @@ class ServiceLocationController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request) {
             // Create the service location.
             $serviceLocation = ServiceLocation::create([
@@ -150,6 +152,8 @@ class ServiceLocationController extends Controller
      */
     public function update(UpdateRequest $request, ServiceLocation $serviceLocation)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request, $serviceLocation) {
             // Initialise the data array.
             $data = array_filter_missing([

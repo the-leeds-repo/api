@@ -82,6 +82,8 @@ class LocationController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request) {
             // Create a location instance.
             $location = new Location([
@@ -146,6 +148,8 @@ class LocationController extends Controller
      */
     public function update(UpdateRequest $request, Location $location)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request, $location) {
             $updateRequest = $location->updateRequests()->create([
                 'user_id' => $request->user('api')->id,

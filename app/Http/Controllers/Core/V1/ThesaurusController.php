@@ -73,6 +73,8 @@ class ThesaurusController extends Controller
      */
     public function update(UpdateRequest $request)
     {
+        $this->validateOnlyResponse($request);
+
         $synonyms = $request->synonyms;
 
         // Get the highest number of synonyms.

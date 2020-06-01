@@ -36,6 +36,8 @@ class SettingController extends Controller
      */
     public function update(UpdateRequest $request)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request) {
             Setting::cms()
                 ->update([

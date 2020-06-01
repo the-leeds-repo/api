@@ -76,6 +76,8 @@ class ResourceController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request) {
             // Create the resource record.
             /** @var \App\Models\Resource $resource */
@@ -142,6 +144,8 @@ class ResourceController extends Controller
      */
     public function update(UpdateRequest $request, Resource $resource)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request, $resource) {
             // Initialise the data array.
             $data = array_filter_missing([
