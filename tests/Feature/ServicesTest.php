@@ -418,7 +418,7 @@ class ServicesTest extends TestCase
             'last_modified_at' => '2020-01-01 13:00:00'
         ]);
         $serviceTwo = factory(Service::class)->create([
-            'last_modified_at' => '2020-01-01 13:00:00'
+            'last_modified_at' => '2020-01-01 20:00:00'
         ]);
 
         $response = $this->json('GET', '/core/v1/services?sort=-last_modified_at');
