@@ -412,6 +412,22 @@ class ServicesTest extends TestCase
         $this->assertEquals($serviceTwo->organisation_id, $data['data'][0]['organisation_id']);
     }
 
+    public function test_guest_can_sort_by_last_modified_at()
+    {
+        $serviceOne = factory(Service::class)->create([
+            'last_modified_at' => '2020-01-01 13:00:00'
+        ]);
+        $serviceTwo = factory(Service::class)->create([
+            'last_modified_at' => '2020-01-01 20:00:00'
+        ]);
+
+        $response = $this->json('GET', '/core/v1/services?sort=-last_modified_at');
+        $data = $this->getResponseContent($response);
+
+        $this->assertEquals($serviceOne->organisation_id, $data['data'][1]['organisation_id']);
+        $this->assertEquals($serviceTwo->organisation_id, $data['data'][0]['organisation_id']);
+    }
+
     /*
      * Create a service.
      */

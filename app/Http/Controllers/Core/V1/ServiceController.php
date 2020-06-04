@@ -82,6 +82,7 @@ class ServiceController extends Controller
                 Sort::custom('organisation_name', OrganisationNameSort::class),
                 'status',
                 'referral_method',
+                'last_modified_at',
             ])
             ->defaultSort('name')
             ->paginate(per_page($request->per_page));
