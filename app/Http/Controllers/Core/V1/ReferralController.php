@@ -97,6 +97,8 @@ class ReferralController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request) {
             $referral = new Referral([
                 'service_id' => $request->service_id,
@@ -173,6 +175,8 @@ class ReferralController extends Controller
      */
     public function update(UpdateRequest $request, Referral $referral)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request, $referral) {
             $referral->updateStatus(
                 $request->user('api'),

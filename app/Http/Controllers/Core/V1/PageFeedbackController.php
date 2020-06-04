@@ -59,6 +59,8 @@ class PageFeedbackController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request) {
             $pageFeedback = PageFeedback::create([
                 'url' => $request->url,

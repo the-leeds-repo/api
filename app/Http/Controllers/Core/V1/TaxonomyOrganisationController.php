@@ -53,6 +53,8 @@ class TaxonomyOrganisationController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request) {
             $organisation = Taxonomy::organisation()->children()->create([
                 'name' => $request->name,
@@ -94,6 +96,8 @@ class TaxonomyOrganisationController extends Controller
      */
     public function update(UpdateRequest $request, Taxonomy $taxonomy)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request, $taxonomy) {
             $taxonomy->update([
                 'name' => $request->name,

@@ -58,6 +58,8 @@ class CollectionSnomedController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request) {
             // Create the collection record.
             /** @var \App\Models\Collection $snomedCollection */
@@ -124,6 +126,8 @@ class CollectionSnomedController extends Controller
      */
     public function update(UpdateRequest $request, Collection $collection)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request, $collection) {
             // Update the collection record.
             $collection->update([

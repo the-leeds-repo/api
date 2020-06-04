@@ -58,6 +58,8 @@ class StopWordsController extends Controller
      */
     public function update(UpdateRequest $request)
     {
+        $this->validateOnlyResponse($request);
+
         $stopWords = array_map(function (string $stopWord) {
             return mb_strtolower($stopWord);
         }, $request->stop_words);

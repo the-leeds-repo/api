@@ -27,6 +27,8 @@ class FileController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request) {
             /** @var \App\Models\File $file */
             $file = File::create([

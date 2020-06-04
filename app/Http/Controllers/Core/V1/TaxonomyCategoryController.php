@@ -54,6 +54,8 @@ class TaxonomyCategoryController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request) {
             $category = Taxonomy::create([
                 'parent_id' => $request->parent_id ?? Taxonomy::category()->id,
@@ -96,6 +98,8 @@ class TaxonomyCategoryController extends Controller
      */
     public function update(UpdateRequest $request, Taxonomy $taxonomy)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request, $taxonomy) {
             $taxonomy->update([
                 'parent_id' => $request->parent_id ?? Taxonomy::category()->id,

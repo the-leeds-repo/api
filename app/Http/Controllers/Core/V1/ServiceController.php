@@ -99,6 +99,8 @@ class ServiceController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request) {
             // Create the service record.
             /** @var \App\Models\Service $service */
@@ -251,6 +253,8 @@ class ServiceController extends Controller
      */
     public function update(UpdateRequest $request, Service $service)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request, $service) {
             // Initialise the data array.
             $data = array_filter_missing([

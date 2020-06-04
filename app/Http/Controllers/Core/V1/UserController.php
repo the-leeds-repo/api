@@ -93,6 +93,8 @@ class UserController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request) {
             /** @var \App\Models\User $user */
             $user = User::create([
@@ -167,6 +169,8 @@ class UserController extends Controller
      */
     public function update(UpdateRequest $request, User $user)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request, $user) {
             // Store the original user roles in case they have been updated in the request (used for notification).
             $originalRoles = $user->userRoles;

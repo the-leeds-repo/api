@@ -57,6 +57,8 @@ class ReportScheduleController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request) {
             $reportSchedule = ReportSchedule::create([
                 'report_type_id' => ReportType::where('name', $request->report_type)->firstOrFail()->id,
@@ -98,6 +100,8 @@ class ReportScheduleController extends Controller
      */
     public function update(UpdateRequest $request, ReportSchedule $reportSchedule)
     {
+        $this->validateOnlyResponse($request);
+
         return DB::transaction(function () use ($request, $reportSchedule) {
             $reportSchedule->update([
                 'report_type_id' => ReportType::where('name', $request->report_type)->firstOrFail()->id,
