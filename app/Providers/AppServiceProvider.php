@@ -51,6 +51,9 @@ class AppServiceProvider extends ServiceProvider
             case 'gov':
                 $this->app->singleton(\App\Contracts\EmailSender::class, \App\EmailSenders\GovNotifyEmailSender::class);
                 break;
+            case 'mailgun':
+                $this->app->singleton(\App\Contracts\EmailSender::class, \App\EmailSenders\MailgunEmailSender::class);
+                break;
             case 'null':
                 $this->app->singleton(\App\Contracts\EmailSender::class, \App\EmailSenders\NullEmailSender::class);
                 break;

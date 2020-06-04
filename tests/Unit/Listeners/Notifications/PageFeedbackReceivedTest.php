@@ -36,7 +36,6 @@ class PageFeedbackReceivedTest extends TestCase
                     $email->templateId);
                 $this->assertArrayHasKey('FEEDBACK_URL', $email->values);
                 $this->assertArrayHasKey('FEEDBACK_CONTENT', $email->values);
-                $this->assertArrayHasKey('CONTACT_DETAILS_PROVIDED', $email->values);
                 return true;
             });
     }

@@ -17,7 +17,7 @@ class TwilioSmsSender implements SmsSender
         /** @var \App\Contracts\VariableSubstituter $variableSubstituter */
         $variableSubstituter = resolve(VariableSubstituter::class);
 
-        $body = $variableSubstituter->substitute(
+        $content = $variableSubstituter->substitute(
             $sms->getContent(),
             $sms->values
         );
@@ -26,11 +26,11 @@ class TwilioSmsSender implements SmsSender
         $client = resolve(Client::class);
 
         $message = $client->messages->create($sms->to, [
-            'from' => $sms->senderId,
-            'body' => $body,
+            'from' => config('tlr.twilio.from'),
+            'body' => $content,
         ]);
 
-        $sms->notification->update(['message' => $body]);
+        $sms->notification->update(['message' => $content]);
 
         if (config('app.debug')) {
             logger()->debug('SMS sent', $message->toArray());

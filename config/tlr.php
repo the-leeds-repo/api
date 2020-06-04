@@ -23,7 +23,7 @@ return [
     'google_api_key' => env('GOOGLE_API_KEY'),
 
     /*
-     * Available drivers: 'log', 'null', 'gov'
+     * Available drivers: 'log', 'null', 'gov', 'mailgun'
      */
     'email_driver' => env('EMAIL_DRIVER', 'log'),
 
@@ -43,7 +43,7 @@ return [
     'twilio' => [
         'sid' => env('TWILIO_SID'),
         'token' => env('TWILIO_TOKEN'),
-        'from' => env('TWILIO_FROM', 'HLP'),
+        'from' => env('TWILIO_FROM', 'LOOP'),
     ],
 
     /*
