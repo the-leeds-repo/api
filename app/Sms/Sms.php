@@ -64,19 +64,28 @@ abstract class Sms implements ShouldQueue
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    abstract protected function getTemplateId(): string;
+    protected function getTemplateId(): ?string
+    {
+        return null;
+    }
 
     /**
      * @return string|null
      */
-    abstract protected function getReference(): ?string;
+    protected function getReference(): ?string
+    {
+        return null;
+    }
 
     /**
      * @return string|null
      */
-    abstract protected function getSenderId(): ?string;
+    protected function getSenderId(): ?string
+    {
+        return config('tlr.twilio.from');
+    }
 
     /**
      * @return string

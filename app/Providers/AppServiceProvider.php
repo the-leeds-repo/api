@@ -2,12 +2,14 @@
 
 namespace App\Providers;
 
+use App\Contracts\VariableSubstituter;
 use App\RoleManagement\RoleAuthorizer;
 use App\RoleManagement\RoleAuthorizerInterface;
 use App\RoleManagement\RoleChecker;
 use App\RoleManagement\RoleCheckerInterface;
 use App\RoleManagement\RoleManager;
 use App\RoleManagement\RoleManagerInterface;
+use App\VariableSubstitution\DoubleParenthesisVariableSubstituter;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\ServiceProvider;
@@ -63,6 +65,9 @@ class AppServiceProvider extends ServiceProvider
             case 'gov':
                 $this->app->singleton(\App\Contracts\SmsSender::class, \App\SmsSenders\GovNotifySmsSender::class);
                 break;
+            case 'twilio':
+                $this->app->singleton(\App\Contracts\SmsSender::class, \App\SmsSenders\TwilioSmsSender::class);
+                break;
             case 'null':
                 $this->app->singleton(\App\Contracts\SmsSender::class, \App\SmsSenders\NullSmsSender::class);
                 break;
@@ -71,6 +76,9 @@ class AppServiceProvider extends ServiceProvider
                 $this->app->singleton(\App\Contracts\SmsSender::class, \App\SmsSenders\LogSmsSender::class);
                 break;
         }
+
+        // Variable substitution.
+        $this->app->bind(VariableSubstituter::class, DoubleParenthesisVariableSubstituter::class);
 
         $this->app->bind(RoleAuthorizerInterface::class, RoleAuthorizer::class);
         $this->app->bind(RoleCheckerInterface::class, RoleChecker::class);

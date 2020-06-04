@@ -28,7 +28,7 @@ return [
     'email_driver' => env('EMAIL_DRIVER', 'log'),
 
     /*
-     * Available drivers: 'log', 'null', 'gov'
+     * Available drivers: 'log', 'null', 'gov', 'twilio'
      */
     'sms_driver' => env('SMS_DRIVER', 'log'),
 
@@ -36,6 +36,15 @@ return [
      * The GOV.UK Notify API key.
      */
     'gov_notify_api_key' => env('GOV_NOTIFY_API_KEY'),
+
+    /*
+     * Twilio credentials.
+     */
+    'twilio' => [
+        'sid' => env('TWILIO_SID'),
+        'token' => env('TWILIO_TOKEN'),
+        'from' => env('TWILIO_FROM', 'HLP'),
+    ],
 
     /*
      * The contact details for the global admin team.

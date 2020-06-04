@@ -179,6 +179,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\ScoutElasticServiceProvider::class,
         App\Providers\TestingServiceProvider::class,
+        App\Providers\TwilioServiceProvider::class,
 
     ],
 
