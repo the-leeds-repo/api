@@ -15,26 +15,29 @@ class NotifyGlobalAdminEmail extends Email
     }
 
     /**
-     * @return string|null
-     */
-    protected function getReference(): ?string
-    {
-        return null;
-    }
-
-    /**
-     * @return string|null
-     */
-    protected function getReplyTo(): ?string
-    {
-        return null;
-    }
-
-    /**
-     * @return string
+     * @inheritDoc
      */
     public function getContent(): string
     {
-        return 'Pending to be sent. Content will be filled once sent.';
+        return <<<'EOT'
+Hello,
+
+An update request has been created for the ((RESOURCE_TYPE)) with the ID: ((RESOURCE_ID)).
+
+Please review the request below before approving/rejecting:
+((REQUEST_URL))
+
+Regards,
+
+Connected Together.
+EOT;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSubject(): string
+    {
+        return 'Update Request Submitted';
     }
 }

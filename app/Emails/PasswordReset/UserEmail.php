@@ -15,26 +15,27 @@ class UserEmail extends Email
     }
 
     /**
-     * @return string|null
-     */
-    protected function getReference(): ?string
-    {
-        return null;
-    }
-
-    /**
-     * @return string|null
-     */
-    protected function getReplyTo(): ?string
-    {
-        return null;
-    }
-
-    /**
-     * @return string
+     * @inheritDoc
      */
     public function getContent(): string
     {
-        return 'Pending to be sent. Content will be filled once sent.';
+        return <<<'EOT'
+Hello,
+
+We have received a request to reset your password. Please follow this link:
+((PASSWORD_RESET_LINK))
+
+If this is not you, please ignore this message.
+
+If you need any further help please contact info@connectedtogether.org.uk
+EOT;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSubject(): string
+    {
+        return 'Reset forgotten password';
     }
 }
