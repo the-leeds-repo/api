@@ -15,26 +15,12 @@ class NotifyClientSms extends Sms
     }
 
     /**
-     * @return string|null
-     */
-    protected function getReference(): ?string
-    {
-        return null;
-    }
-
-    /**
-     * @return string|null
-     */
-    protected function getSenderId(): ?string
-    {
-        return null;
-    }
-
-    /**
      * @return string
      */
     public function getContent(): string
     {
-        return 'Pending to be sent. Content will be filled once sent.';
+        return <<<'EOT'
+LOOP: You've made a connection on LOOP ((REFERRAL_ID)). The service should contact you within 10 working days. Any feedback contact info@connectedtogether.org.uk
+EOT;
     }
 }
