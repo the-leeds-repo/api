@@ -237,7 +237,11 @@ class Service extends Model implements AppliesUpdateRequests, Notifiable
                 ? $data['logo_file_id']
                 : $this->logo_file_id,
             'ends_at' => array_key_exists('ends_at', $data)
-                ? Date::createFromFormat(CarbonImmutable::ISO8601, $data['ends_at'])
+                ? (
+                    $data['ends_at'] === null
+                        ? null
+                        : Date::createFromFormat(CarbonImmutable::ISO8601, $data['ends_at'])
+                )
                 : $this->ends_at,
             // This must always be updated regardless of the fields changed.
             'last_modified_at' => Date::now(),
