@@ -6,9 +6,6 @@ services:
     build:
       context: ./docker/app
       dockerfile: Dockerfile
-      args:
-        BLACKFIRE_SERVER_ID: "${BLACKFIRE_SERVER_ID}"
-        BLACKFIRE_SERVER_TOKEN: "${BLACKFIRE_SERVER_TOKEN}"
     volumes:
       - .:/var/www/html
     networks:
