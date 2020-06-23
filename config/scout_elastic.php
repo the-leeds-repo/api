@@ -3,7 +3,13 @@
 return [
     'client' => [
         'hosts' => [
-            env('SCOUT_ELASTIC_HOST', 'elasticsearch:9200'),
+            [
+                'host' => env('SCOUT_ELASTIC_HOST', 'elasticsearch'),
+                'port' => env('SCOUT_ELASTIC_PORT', '9200'),
+                'scheme' => env('SCOUT_ELASTIC_SCHEME', 'http'),
+                'user' => env('SCOUT_ELASTIC_USERNAME'),
+                'pass' => env('SCOUT_ELASTIC_PASSWORD'),
+            ],
         ],
     ],
     'update_mapping' => env('SCOUT_ELASTIC_UPDATE_MAPPING', true),
