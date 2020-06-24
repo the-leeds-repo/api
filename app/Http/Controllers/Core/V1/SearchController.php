@@ -29,6 +29,18 @@ class SearchController extends Controller
             $search->applyPersona($request->persona);
         }
 
+        if ($request->has('category_taxonomy.id')) {
+            // If taxonomy ID given then filter by taxonomy ID.
+            $search->applyCategoryTaxonomyId(
+                $request->input('category_taxonomy.id')
+            );
+        } elseif ($request->has('category_taxonomy.name')) {
+            // Otherwise, if taxonomy name given then filter by taxonomy name.
+            $search->applyCategoryTaxonomyName(
+                $request->input('category_taxonomy.name')
+            );
+        }
+
         // Apply filter on `wait_time` field.
         if ($request->has('wait_time')) {
             $search->applyWaitTime($request->wait_time);

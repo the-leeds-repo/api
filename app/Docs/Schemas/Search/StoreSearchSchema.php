@@ -25,6 +25,12 @@ class StoreSearchSchema extends Schema
                 Schema::string('query'),
                 Schema::string('category'),
                 Schema::string('persona'),
+                Schema::object('category_taxonomy')
+                    ->properties(
+                        Schema::string('id')
+                            ->format(Schema::FORMAT_UUID),
+                        Schema::string('name')
+                    ),
                 Schema::string('wait_time')
                     ->enum(
                         Service::WAIT_TIME_ONE_WEEK,

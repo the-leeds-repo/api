@@ -29,6 +29,18 @@ interface Search
     public function applyPersona(string $persona): Search;
 
     /**
+     * @param string $id
+     * @return \App\Contracts\Search
+     */
+    public function applyCategoryTaxonomyId(string $id): Search;
+
+    /**
+     * @param string $name
+     * @return \App\Contracts\Search
+     */
+    public function applyCategoryTaxonomyName(string $name): Search;
+
+    /**
      * @param string $waitTime
      * @return \App\Contracts\Search
      */

@@ -109,9 +109,15 @@ class Service extends Model implements AppliesUpdateRequests, Notifiable
                 ],
             ],
             'taxonomy_categories' => [
-                'type' => 'text',
-                'fields' => [
-                    'keyword' => ['type' => 'keyword'],
+                'type' => 'nested',
+                'properties' => [
+                    'id' => ['type' => 'keyword'],
+                    'name' => [
+                        'type' => 'text',
+                        'fields' => [
+                            'keyword' => ['type' => 'keyword'],
+                        ],
+                    ],
                 ],
             ],
             'collection_categories' => ['type' => 'keyword'],
@@ -150,7 +156,15 @@ class Service extends Model implements AppliesUpdateRequests, Notifiable
             'is_free' => $this->is_free,
             'status' => $this->status,
             'organisation_name' => $this->organisation->name,
-            'taxonomy_categories' => $this->taxonomies()->pluck('name')->toArray(),
+            'taxonomy_categories' => $this->taxonomies()
+                ->get()
+                ->map(function (Taxonomy $taxonomy) {
+                    return [
+                        'id' => $taxonomy->id,
+                        'name' => $taxonomy->name,
+                    ];
+                })
+                ->toArray(),
             'collection_categories' => static::collections($this)->where('type', Collection::TYPE_CATEGORY)->pluck('name')->toArray(),
             'collection_personas' => static::collections($this)->where('type', Collection::TYPE_PERSONA)->pluck('name')->toArray(),
             'service_locations' => $this->serviceLocations()
@@ -164,7 +178,8 @@ class Service extends Model implements AppliesUpdateRequests, Notifiable
                             'lon' => $serviceLocation->location->lon,
                         ],
                     ];
-                })->toArray(),
+                })
+                ->toArray(),
         ];
     }
 

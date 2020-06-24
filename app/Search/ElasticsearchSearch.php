@@ -69,18 +69,16 @@ class ElasticsearchSearch implements Search
     }
 
     /**
-     * @param string $term
-     * @return \App\Search\ElasticsearchSearch
+     * @inheritDoc
      */
     public function applyQuery(string $term): Search
     {
         $should = &$this->query['query']['bool']['must']['bool']['should'];
 
-        $should[] = $this->match('name', $term, 4);
-        $should[] = $this->match('intro', $term, 3);
-        $should[] = $this->matchPhrase('description', $term, 3);
-        $should[] = $this->match('taxonomy_categories', $term, 2);
-        $should[] = $this->match('organisation_name', $term);
+        $should[] = $this->match('name', $term, 3);
+        $should[] = $this->match('intro', $term, 2);
+        $should[] = $this->matchPhrase('description', $term, 2);
+        $should[] = $this->match('organisation_name', $term, 1);
 
         return $this;
     }
@@ -122,8 +120,7 @@ class ElasticsearchSearch implements Search
     }
 
     /**
-     * @param string $category
-     * @return \App\Search\ElasticsearchSearch
+     * @inheritDoc
      */
     public function applyCategory(string $category): Search
     {
@@ -136,7 +133,22 @@ class ElasticsearchSearch implements Search
         $should = &$this->query['query']['bool']['must']['bool']['should'];
 
         foreach ($categoryModel->taxonomies as $taxonomy) {
-            $should[] = $this->match('taxonomy_categories', $taxonomy->name);
+            $should[] = [
+                'nested' => [
+                    'path' => 'taxonomy_categories',
+                    'query' => [
+                        'bool' => [
+                            'must' => [
+                                [
+                                    'term' => [
+                                        'taxonomy_categories.id' => $taxonomy->id,
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ];
         }
 
         $this->query['query']['bool']['filter']['bool']['must'][] = [
@@ -149,8 +161,7 @@ class ElasticsearchSearch implements Search
     }
 
     /**
-     * @param string $persona
-     * @return \App\Search\ElasticsearchSearch
+     * @inheritDoc
      */
     public function applyPersona(string $persona): Search
     {
@@ -163,7 +174,22 @@ class ElasticsearchSearch implements Search
         $should = &$this->query['query']['bool']['must']['bool']['should'];
 
         foreach ($categoryModel->taxonomies as $taxonomy) {
-            $should[] = $this->match('taxonomy_categories', $taxonomy->name);
+            $should[] = [
+                'nested' => [
+                    'path' => 'taxonomy_categories',
+                    'query' => [
+                        'bool' => [
+                            'must' => [
+                                [
+                                    'term' => [
+                                        'taxonomy_categories.id' => $taxonomy->id,
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ];
         }
 
         $this->query['query']['bool']['filter']['bool']['must'][] = [
@@ -176,8 +202,57 @@ class ElasticsearchSearch implements Search
     }
 
     /**
-     * @param string $waitTime
-     * @return \App\Contracts\Search
+     * @inheritDoc
+     */
+    public function applyCategoryTaxonomyId(string $id): Search
+    {
+        $this->query['query']['bool']['filter']['bool']['must'][] = [
+            'nested' => [
+                'path' => 'taxonomy_categories',
+                'query' => [
+                    'bool' => [
+                        'must' => [
+                            [
+                                'term' => [
+                                    'taxonomy_categories.id' => $id,
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function applyCategoryTaxonomyName(string $name): Search
+    {
+        $this->query['query']['bool']['filter']['bool']['must'][] = [
+            'nested' => [
+                'path' => 'taxonomy_categories',
+                'query' => [
+                    'bool' => [
+                        'must' => [
+                            [
+                                'match' => [
+                                    'taxonomy_categories.name' => $name,
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
      */
     public function applyWaitTime(string $waitTime): Search
     {
@@ -221,8 +296,7 @@ class ElasticsearchSearch implements Search
     }
 
     /**
-     * @param bool $isFree
-     * @return \App\Contracts\Search
+     * @inheritDoc
      */
     public function applyIsFree(bool $isFree): Search
     {
@@ -236,9 +310,7 @@ class ElasticsearchSearch implements Search
     }
 
     /**
-     * @param string $order
-     * @param \App\Support\Coordinate|null $location
-     * @return \App\Search\ElasticsearchSearch
+     * @inheritDoc
      */
     public function applyOrder(string $order, Coordinate $location = null): Search
     {
@@ -257,9 +329,7 @@ class ElasticsearchSearch implements Search
     }
 
     /**
-     * @param \App\Support\Coordinate $location
-     * @param int $radius
-     * @return \App\Contracts\Search
+     * @inheritDoc
      */
     public function applyRadius(Coordinate $location, int $radius): Search
     {
@@ -289,9 +359,7 @@ class ElasticsearchSearch implements Search
     }
 
     /**
-     * Returns the underlying query. Only intended for use in testing.
-     *
-     * @return array
+     * @inheritDoc
      */
     public function getQuery(): array
     {
@@ -299,9 +367,7 @@ class ElasticsearchSearch implements Search
     }
 
     /**
-     * @param int|null $page
-     * @param int|null $perPage
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @inheritDoc
      */
     public function paginate(int $page = null, int $perPage = null): AnonymousResourceCollection
     {
@@ -318,8 +384,7 @@ class ElasticsearchSearch implements Search
     }
 
     /**
-     * @param int|null $perPage
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @inheritDoc
      */
     public function get(int $perPage = null): AnonymousResourceCollection
     {

@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 use Tests\UsesElasticsearch;
 
+/**
+ * @group search
+ */
 class SearchTest extends TestCase implements UsesElasticsearch
 {
     /**
@@ -67,34 +70,6 @@ class SearchTest extends TestCase implements UsesElasticsearch
         $response->assertJsonFragment([
             'id' => $service->id,
         ]);
-    }
-
-    public function test_query_matches_taxonomy_name()
-    {
-        $service = factory(Service::class)->create();
-        $taxonomy = Taxonomy::category()->children()->create(['name' => 'PHPUnit Taxonomy', 'order' => 1]);
-        $service->serviceTaxonomies()->create(['taxonomy_id' => $taxonomy->id]);
-
-        $response = $this->json('POST', '/core/v1/search', [
-            'query' => $taxonomy->name,
-        ]);
-
-        $response->assertStatus(Response::HTTP_OK);
-        $response->assertJsonFragment(['id' => $service->id]);
-    }
-
-    public function test_query_matches_partial_taxonomy_name()
-    {
-        $service = factory(Service::class)->create();
-        $taxonomy = Taxonomy::category()->children()->create(['name' => 'PHPUnit Taxonomy', 'order' => 1]);
-        $service->serviceTaxonomies()->create(['taxonomy_id' => $taxonomy->id]);
-
-        $response = $this->json('POST', '/core/v1/search', [
-            'query' => 'PHPUnit',
-        ]);
-
-        $response->assertStatus(Response::HTTP_OK);
-        $response->assertJsonFragment(['id' => $service->id]);
     }
 
     public function test_query_matches_organisation_name()
@@ -209,6 +184,40 @@ class SearchTest extends TestCase implements UsesElasticsearch
 
         $response = $this->json('POST', '/core/v1/search', [
             'persona' => $collection->name,
+        ]);
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonFragment(['id' => $service->id]);
+    }
+
+    public function test_filter_by_category_taxonomy_id_works()
+    {
+        $service = factory(Service::class)->create();
+        $taxonomy = Taxonomy::category()->children()->create(['name' => 'PHPUnit Taxonomy', 'order' => 1]);
+        $service->serviceTaxonomies()->create(['taxonomy_id' => $taxonomy->id]);
+        $service->save();
+
+        $response = $this->json('POST', '/core/v1/search', [
+            'category_taxonomy' => [
+                'id' => $taxonomy->id,
+            ],
+        ]);
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonFragment(['id' => $service->id]);
+    }
+
+    public function test_filter_by_category_taxonomy_name_works()
+    {
+        $service = factory(Service::class)->create();
+        $taxonomy = Taxonomy::category()->children()->create(['name' => 'PHPUnit Taxonomy', 'order' => 1]);
+        $service->serviceTaxonomies()->create(['taxonomy_id' => $taxonomy->id]);
+        $service->save();
+
+        $response = $this->json('POST', '/core/v1/search', [
+            'category_taxonomy' => [
+                'name' => 'PHPUnit Taxonomy',
+            ],
         ]);
 
         $response->assertStatus(Response::HTTP_OK);
