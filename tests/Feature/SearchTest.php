@@ -218,6 +218,40 @@ class SearchTest extends TestCase implements UsesElasticsearch
         $response->assertJsonFragment(['id' => $service->id]);
     }
 
+    public function test_filter_by_category_taxonomy_id_works()
+    {
+        $service = factory(Service::class)->create();
+        $taxonomy = Taxonomy::category()->children()->create(['name' => 'PHPUnit Taxonomy', 'order' => 1]);
+        $service->serviceTaxonomies()->create(['taxonomy_id' => $taxonomy->id]);
+        $service->save();
+
+        $response = $this->json('POST', '/core/v1/search', [
+            'category_taxonomy' => [
+                'id' => $taxonomy->id,
+            ],
+        ]);
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonFragment(['id' => $service->id]);
+    }
+
+    public function test_filter_by_category_taxonomy_name_works()
+    {
+        $service = factory(Service::class)->create();
+        $taxonomy = Taxonomy::category()->children()->create(['name' => 'PHPUnit Taxonomy', 'order' => 1]);
+        $service->serviceTaxonomies()->create(['taxonomy_id' => $taxonomy->id]);
+        $service->save();
+
+        $response = $this->json('POST', '/core/v1/search', [
+            'category_taxonomy' => [
+                'name' => 'PHPUnit Taxonomy',
+            ],
+        ]);
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonFragment(['id' => $service->id]);
+    }
+
     public function test_filter_by_wait_time_works()
     {
         $oneMonthWaitTimeService = factory(Service::class)->create(['wait_time' => Service::WAIT_TIME_MONTH]);

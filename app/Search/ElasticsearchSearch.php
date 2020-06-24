@@ -69,8 +69,7 @@ class ElasticsearchSearch implements Search
     }
 
     /**
-     * @param string $term
-     * @return \App\Search\ElasticsearchSearch
+     * @inheritDoc
      */
     public function applyQuery(string $term): Search
     {
@@ -140,8 +139,7 @@ class ElasticsearchSearch implements Search
     }
 
     /**
-     * @param string $category
-     * @return \App\Search\ElasticsearchSearch
+     * @inheritDoc
      */
     public function applyCategory(string $category): Search
     {
@@ -167,8 +165,7 @@ class ElasticsearchSearch implements Search
     }
 
     /**
-     * @param string $persona
-     * @return \App\Search\ElasticsearchSearch
+     * @inheritDoc
      */
     public function applyPersona(string $persona): Search
     {
@@ -194,8 +191,35 @@ class ElasticsearchSearch implements Search
     }
 
     /**
-     * @param string $waitTime
-     * @return \App\Contracts\Search
+     * @inheritDoc
+     */
+    public function applyCategoryTaxonomyId(string $id): Search
+    {
+        $this->query['query']['bool']['filter']['bool']['must'][] = [
+            'term' => [
+                'taxonomy_categories.id' => $id,
+            ],
+        ];
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function applyCategoryTaxonomyName(string $name): Search
+    {
+        $this->query['query']['bool']['filter']['bool']['must'][] = [
+            'match' => [
+                'taxonomy_categories.name' => $name,
+            ],
+        ];
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
      */
     public function applyWaitTime(string $waitTime): Search
     {
@@ -239,8 +263,7 @@ class ElasticsearchSearch implements Search
     }
 
     /**
-     * @param bool $isFree
-     * @return \App\Contracts\Search
+     * @inheritDoc
      */
     public function applyIsFree(bool $isFree): Search
     {
@@ -254,9 +277,7 @@ class ElasticsearchSearch implements Search
     }
 
     /**
-     * @param string $order
-     * @param \App\Support\Coordinate|null $location
-     * @return \App\Search\ElasticsearchSearch
+     * @inheritDoc
      */
     public function applyOrder(string $order, Coordinate $location = null): Search
     {
@@ -275,9 +296,7 @@ class ElasticsearchSearch implements Search
     }
 
     /**
-     * @param \App\Support\Coordinate $location
-     * @param int $radius
-     * @return \App\Contracts\Search
+     * @inheritDoc
      */
     public function applyRadius(Coordinate $location, int $radius): Search
     {
@@ -307,9 +326,7 @@ class ElasticsearchSearch implements Search
     }
 
     /**
-     * Returns the underlying query. Only intended for use in testing.
-     *
-     * @return array
+     * @inheritDoc
      */
     public function getQuery(): array
     {
@@ -317,9 +334,7 @@ class ElasticsearchSearch implements Search
     }
 
     /**
-     * @param int|null $page
-     * @param int|null $perPage
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @inheritDoc
      */
     public function paginate(int $page = null, int $perPage = null): AnonymousResourceCollection
     {
@@ -336,8 +351,7 @@ class ElasticsearchSearch implements Search
     }
 
     /**
-     * @param int|null $perPage
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @inheritDoc
      */
     public function get(int $perPage = null): AnonymousResourceCollection
     {
