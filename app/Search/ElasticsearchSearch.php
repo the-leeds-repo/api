@@ -109,6 +109,24 @@ class ElasticsearchSearch implements Search
      * @param int $boost
      * @return array
      */
+    protected function term(string $field, string $term, int $boost = 1): array
+    {
+        return [
+            'term' => [
+                $field => [
+                    'value' => $term,
+                    'boost' => $boost,
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @param string $field
+     * @param string $term
+     * @param int $boost
+     * @return array
+     */
     protected function matchPhrase(string $field, string $term, int $boost = 1): array
     {
         return [
@@ -136,7 +154,7 @@ class ElasticsearchSearch implements Search
         $should = &$this->query['query']['bool']['must']['bool']['should'];
 
         foreach ($categoryModel->taxonomies as $taxonomy) {
-            $should[] = $this->match('taxonomy_categories.name', $taxonomy->name);
+            $should[] = $this->term('taxonomy_categories.id', $taxonomy->id);
         }
 
         $this->query['query']['bool']['filter']['bool']['must'][] = [
@@ -163,7 +181,7 @@ class ElasticsearchSearch implements Search
         $should = &$this->query['query']['bool']['must']['bool']['should'];
 
         foreach ($categoryModel->taxonomies as $taxonomy) {
-            $should[] = $this->match('taxonomy_categories.name', $taxonomy->name);
+            $should[] = $this->term('taxonomy_categories.id', $taxonomy->id);
         }
 
         $this->query['query']['bool']['filter']['bool']['must'][] = [

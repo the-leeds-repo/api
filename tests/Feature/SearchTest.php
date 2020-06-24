@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 use Tests\UsesElasticsearch;
 
+/**
+ * @group search
+ */
 class SearchTest extends TestCase implements UsesElasticsearch
 {
     /**
