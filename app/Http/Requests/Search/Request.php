@@ -30,6 +30,9 @@ class Request extends FormRequest
             'query' => ['required_without_all:category,persona,wait_time,is_free,location', 'string', 'min:3', 'max:255'],
             'category' => ['required_without_all:query,persona,wait_time,is_free,location', 'string', 'min:1', 'max:255'],
             'persona' => ['required_without_all:query,category,wait_time,is_free,location', 'string', 'min:1', 'max:255'],
+            'category_taxonomy' => ['array'],
+            'category_taxonomy.id' => ['string', 'size:36'],
+            'category_taxonomy.name' => ['string', 'min:1', 'max:255'],
             'wait_time' => ['required_without_all:query,category,is_free,persona,location', Rule::in([
                 Service::WAIT_TIME_ONE_WEEK,
                 Service::WAIT_TIME_TWO_WEEKS,
