@@ -72,34 +72,6 @@ class SearchTest extends TestCase implements UsesElasticsearch
         ]);
     }
 
-    public function test_query_matches_taxonomy_name()
-    {
-        $service = factory(Service::class)->create();
-        $taxonomy = Taxonomy::category()->children()->create(['name' => 'PHPUnit Taxonomy', 'order' => 1]);
-        $service->serviceTaxonomies()->create(['taxonomy_id' => $taxonomy->id]);
-
-        $response = $this->json('POST', '/core/v1/search', [
-            'query' => $taxonomy->name,
-        ]);
-
-        $response->assertStatus(Response::HTTP_OK);
-        $response->assertJsonFragment(['id' => $service->id]);
-    }
-
-    public function test_query_matches_partial_taxonomy_name()
-    {
-        $service = factory(Service::class)->create();
-        $taxonomy = Taxonomy::category()->children()->create(['name' => 'PHPUnit Taxonomy', 'order' => 1]);
-        $service->serviceTaxonomies()->create(['taxonomy_id' => $taxonomy->id]);
-
-        $response = $this->json('POST', '/core/v1/search', [
-            'query' => 'PHPUnit',
-        ]);
-
-        $response->assertStatus(Response::HTTP_OK);
-        $response->assertJsonFragment(['id' => $service->id]);
-    }
-
     public function test_query_matches_organisation_name()
     {
         $service = factory(Service::class)->create();
