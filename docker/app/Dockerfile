@@ -4,10 +4,6 @@ FROM ubuntu:18.04
 # Set maintainer to Ayup Digital.
 LABEL maintainer="Ayup Digital"
 
-# Specify environment variables needed for building.
-ARG BLACKFIRE_SERVER_ID
-ARG BLACKFIRE_SERVER_TOKEN
-
 # Set needed environment variables before installing PHP.
 ENV DEBIAN_FRONTEND noninteractive
 ENV LANG en_GB.UTF-8
@@ -26,13 +22,6 @@ RUN apt-add-repository -y ppa:ondrej/php \
        php7.2-imap php7.2-mbstring php7.2-xml php7.2-curl php7.2-zip \
     && php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer \
     && mkdir /run/php
-
-# Install Blackfire.
-RUN wget -q -O - https://packages.blackfire.io/gpg.key | apt-key add - \
-    && echo "deb http://packages.blackfire.io/debian any main" | tee /etc/apt/sources.list.d/blackfire.list \
-    && apt-get update \
-    && apt-get install -y blackfire-agent blackfire-php \
-    && blackfire-agent --register --server-id="${BLACKFIRE_SERVER_ID}" --server-token="${BLACKFIRE_SERVER_TOKEN}"
 
 # Cleanup.
 RUN apt-get remove -y --purge software-properties-common \

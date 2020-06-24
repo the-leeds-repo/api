@@ -6,9 +6,6 @@ services:
     build:
       context: ./docker/app
       dockerfile: Dockerfile
-      args:
-        BLACKFIRE_SERVER_ID: "${BLACKFIRE_SERVER_ID}"
-        BLACKFIRE_SERVER_TOKEN: "${BLACKFIRE_SERVER_TOKEN}"
     volumes:
       - .:/var/www/html
     networks:
@@ -69,6 +66,8 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.3.2
     environment:
       discovery-type: single-node
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
     networks:
       - app-net
     ports:
@@ -80,4 +79,6 @@ networks:
 
 volumes:
   mysql-data:
+    driver: local
+  elasticsearch-data:
     driver: local
