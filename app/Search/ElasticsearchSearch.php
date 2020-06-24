@@ -107,24 +107,6 @@ class ElasticsearchSearch implements Search
      * @param int $boost
      * @return array
      */
-    protected function term(string $field, string $term, int $boost = 1): array
-    {
-        return [
-            'term' => [
-                $field => [
-                    'value' => $term,
-                    'boost' => $boost,
-                ],
-            ],
-        ];
-    }
-
-    /**
-     * @param string $field
-     * @param string $term
-     * @param int $boost
-     * @return array
-     */
     protected function matchPhrase(string $field, string $term, int $boost = 1): array
     {
         return [
@@ -142,17 +124,32 @@ class ElasticsearchSearch implements Search
      */
     public function applyCategory(string $category): Search
     {
-        // $categoryModel = CollectionModel::query()
-        //     ->with('taxonomies')
-        //     ->categories()
-        //     ->where('name', $category)
-        //     ->firstOrFail();
-        //
-        // $should = &$this->query['query']['bool']['must']['bool']['should'];
-        //
-        // foreach ($categoryModel->taxonomies as $taxonomy) {
-        //     $should[] = $this->term('taxonomy_categories.id', $taxonomy->id);
-        // }
+        $categoryModel = CollectionModel::query()
+            ->with('taxonomies')
+            ->categories()
+            ->where('name', $category)
+            ->firstOrFail();
+
+        $should = &$this->query['query']['bool']['must']['bool']['should'];
+
+        foreach ($categoryModel->taxonomies as $taxonomy) {
+            $should[] = [
+                'nested' => [
+                    'path' => 'taxonomy_categories',
+                    'query' => [
+                        'bool' => [
+                            'must' => [
+                                [
+                                    'term' => [
+                                        'taxonomy_categories.id' => $taxonomy->id,
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ];
+        }
 
         $this->query['query']['bool']['filter']['bool']['must'][] = [
             'term' => [
@@ -168,17 +165,32 @@ class ElasticsearchSearch implements Search
      */
     public function applyPersona(string $persona): Search
     {
-        // $categoryModel = CollectionModel::query()
-        //     ->with('taxonomies')
-        //     ->personas()
-        //     ->where('name', $persona)
-        //     ->firstOrFail();
-        //
-        // $should = &$this->query['query']['bool']['must']['bool']['should'];
-        //
-        // foreach ($categoryModel->taxonomies as $taxonomy) {
-        //     $should[] = $this->term('taxonomy_categories.id', $taxonomy->id);
-        // }
+        $categoryModel = CollectionModel::query()
+            ->with('taxonomies')
+            ->personas()
+            ->where('name', $persona)
+            ->firstOrFail();
+
+        $should = &$this->query['query']['bool']['must']['bool']['should'];
+
+        foreach ($categoryModel->taxonomies as $taxonomy) {
+            $should[] = [
+                'nested' => [
+                    'path' => 'taxonomy_categories',
+                    'query' => [
+                        'bool' => [
+                            'must' => [
+                                [
+                                    'term' => [
+                                        'taxonomy_categories.id' => $taxonomy->id,
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ];
+        }
 
         $this->query['query']['bool']['filter']['bool']['must'][] = [
             'term' => [
