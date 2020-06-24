@@ -79,7 +79,7 @@ class ElasticsearchSearch implements Search
         $should[] = $this->match('name', $term, 4);
         $should[] = $this->match('intro', $term, 3);
         $should[] = $this->matchPhrase('description', $term, 3);
-        $should[] = $this->match('taxonomy_categories', $term, 2);
+        $should[] = $this->match('taxonomy_categories.name', $term, 2);
         $should[] = $this->match('organisation_name', $term);
 
         return $this;
@@ -136,7 +136,7 @@ class ElasticsearchSearch implements Search
         $should = &$this->query['query']['bool']['must']['bool']['should'];
 
         foreach ($categoryModel->taxonomies as $taxonomy) {
-            $should[] = $this->match('taxonomy_categories', $taxonomy->name);
+            $should[] = $this->match('taxonomy_categories.name', $taxonomy->name);
         }
 
         $this->query['query']['bool']['filter']['bool']['must'][] = [
@@ -163,7 +163,7 @@ class ElasticsearchSearch implements Search
         $should = &$this->query['query']['bool']['must']['bool']['should'];
 
         foreach ($categoryModel->taxonomies as $taxonomy) {
-            $should[] = $this->match('taxonomy_categories', $taxonomy->name);
+            $should[] = $this->match('taxonomy_categories.name', $taxonomy->name);
         }
 
         $this->query['query']['bool']['filter']['bool']['must'][] = [
