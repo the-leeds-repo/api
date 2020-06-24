@@ -195,8 +195,19 @@ class ElasticsearchSearch implements Search
     public function applyCategoryTaxonomyId(string $id): Search
     {
         $this->query['query']['bool']['filter']['bool']['must'][] = [
-            'term' => [
-                'taxonomy_categories.id' => $id,
+            'nested' => [
+                'path' => 'taxonomy_categories',
+                'query' => [
+                    'bool' => [
+                        'must' => [
+                            [
+                                'term' => [
+                                    'taxonomy_categories.id' => $id,
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ],
         ];
 
@@ -209,8 +220,19 @@ class ElasticsearchSearch implements Search
     public function applyCategoryTaxonomyName(string $name): Search
     {
         $this->query['query']['bool']['filter']['bool']['must'][] = [
-            'match' => [
-                'taxonomy_categories.name' => $name,
+            'nested' => [
+                'path' => 'taxonomy_categories',
+                'query' => [
+                    'bool' => [
+                        'must' => [
+                            [
+                                'match' => [
+                                    'taxonomy_categories.name' => $name,
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ],
         ];
 

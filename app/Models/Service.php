@@ -109,6 +109,7 @@ class Service extends Model implements AppliesUpdateRequests, Notifiable
                 ],
             ],
             'taxonomy_categories' => [
+                'type' => 'nested',
                 'properties' => [
                     'id' => ['type' => 'keyword'],
                     'name' => [
