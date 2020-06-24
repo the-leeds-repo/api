@@ -142,17 +142,17 @@ class ElasticsearchSearch implements Search
      */
     public function applyCategory(string $category): Search
     {
-        $categoryModel = CollectionModel::query()
-            ->with('taxonomies')
-            ->categories()
-            ->where('name', $category)
-            ->firstOrFail();
-
-        $should = &$this->query['query']['bool']['must']['bool']['should'];
-
-        foreach ($categoryModel->taxonomies as $taxonomy) {
-            $should[] = $this->term('taxonomy_categories.id', $taxonomy->id);
-        }
+        // $categoryModel = CollectionModel::query()
+        //     ->with('taxonomies')
+        //     ->categories()
+        //     ->where('name', $category)
+        //     ->firstOrFail();
+        //
+        // $should = &$this->query['query']['bool']['must']['bool']['should'];
+        //
+        // foreach ($categoryModel->taxonomies as $taxonomy) {
+        //     $should[] = $this->term('taxonomy_categories.id', $taxonomy->id);
+        // }
 
         $this->query['query']['bool']['filter']['bool']['must'][] = [
             'term' => [
@@ -168,17 +168,17 @@ class ElasticsearchSearch implements Search
      */
     public function applyPersona(string $persona): Search
     {
-        $categoryModel = CollectionModel::query()
-            ->with('taxonomies')
-            ->personas()
-            ->where('name', $persona)
-            ->firstOrFail();
-
-        $should = &$this->query['query']['bool']['must']['bool']['should'];
-
-        foreach ($categoryModel->taxonomies as $taxonomy) {
-            $should[] = $this->term('taxonomy_categories.id', $taxonomy->id);
-        }
+        // $categoryModel = CollectionModel::query()
+        //     ->with('taxonomies')
+        //     ->personas()
+        //     ->where('name', $persona)
+        //     ->firstOrFail();
+        //
+        // $should = &$this->query['query']['bool']['must']['bool']['should'];
+        //
+        // foreach ($categoryModel->taxonomies as $taxonomy) {
+        //     $should[] = $this->term('taxonomy_categories.id', $taxonomy->id);
+        // }
 
         $this->query['query']['bool']['filter']['bool']['must'][] = [
             'term' => [
