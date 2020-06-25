@@ -8,7 +8,6 @@ use App\Models\Resource;
 use App\Models\Service;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Throwable;
 
