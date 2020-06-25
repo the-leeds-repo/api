@@ -97,6 +97,7 @@ Route::prefix('core/v1')->namespace('Core\\V1')->name('core.v1.')->group(functio
 
     // Search.
     Route::post('/search', 'SearchController')->name('search');
+    Route::post('/search/resources', 'Search\\ResourceController')->name('search.resources');
 
     // Service Locations.
     Route::match(['GET', 'POST'], '/service-locations/index', 'ServiceLocationController@index');

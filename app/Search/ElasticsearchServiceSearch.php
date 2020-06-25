@@ -2,7 +2,7 @@
 
 namespace App\Search;
 
-use App\Contracts\Search;
+use App\Contracts\ServiceSearch;
 use App\Http\Resources\ServiceResource;
 use App\Models\Collection as CollectionModel;
 use App\Models\SearchHistory;
@@ -15,7 +15,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use InvalidArgumentException;
 
-class ElasticsearchSearch implements Search
+class ElasticsearchServiceSearch implements ServiceSearch
 {
     const MILES = 'mi';
     const YARDS = 'yd';
@@ -33,7 +33,7 @@ class ElasticsearchSearch implements Search
     protected $query;
 
     /**
-     * Search constructor.
+     * ElasticsearchServiceSearch constructor.
      */
     public function __construct()
     {
@@ -51,16 +51,12 @@ class ElasticsearchSearch implements Search
                                     ],
                                 ],
                             ],
-                            'should' => [
-                                //
-                            ],
+                            'should' => [],
                         ],
                     ],
                     'must' => [
                         'bool' => [
-                            'should' => [
-                                //
-                            ],
+                            'should' => [],
                         ],
                     ],
                 ],
@@ -71,7 +67,7 @@ class ElasticsearchSearch implements Search
     /**
      * @inheritDoc
      */
-    public function applyQuery(string $term): Search
+    public function applyQuery(string $term): ServiceSearch
     {
         $should = &$this->query['query']['bool']['must']['bool']['should'];
 
@@ -122,7 +118,7 @@ class ElasticsearchSearch implements Search
     /**
      * @inheritDoc
      */
-    public function applyCategory(string $category): Search
+    public function applyCategory(string $category): ServiceSearch
     {
         $categoryModel = CollectionModel::query()
             ->with('taxonomies')
@@ -163,7 +159,7 @@ class ElasticsearchSearch implements Search
     /**
      * @inheritDoc
      */
-    public function applyPersona(string $persona): Search
+    public function applyPersona(string $persona): ServiceSearch
     {
         $categoryModel = CollectionModel::query()
             ->with('taxonomies')
@@ -204,7 +200,7 @@ class ElasticsearchSearch implements Search
     /**
      * @inheritDoc
      */
-    public function applyCategoryTaxonomyId(string $id): Search
+    public function applyCategoryTaxonomyId(string $id): ServiceSearch
     {
         $this->query['query']['bool']['filter']['bool']['must'][] = [
             'nested' => [
@@ -229,7 +225,7 @@ class ElasticsearchSearch implements Search
     /**
      * @inheritDoc
      */
-    public function applyCategoryTaxonomyName(string $name): Search
+    public function applyCategoryTaxonomyName(string $name): ServiceSearch
     {
         $this->query['query']['bool']['filter']['bool']['must'][] = [
             'nested' => [
@@ -254,7 +250,7 @@ class ElasticsearchSearch implements Search
     /**
      * @inheritDoc
      */
-    public function applyWaitTime(string $waitTime): Search
+    public function applyWaitTime(string $waitTime): ServiceSearch
     {
         if (!Service::waitTimeIsValid($waitTime)) {
             throw new InvalidArgumentException("The wait time [$waitTime] is not valid");
@@ -298,7 +294,7 @@ class ElasticsearchSearch implements Search
     /**
      * @inheritDoc
      */
-    public function applyIsFree(bool $isFree): Search
+    public function applyIsFree(bool $isFree): ServiceSearch
     {
         $this->query['query']['bool']['filter']['bool']['must'][] = [
             'term' => [
@@ -312,7 +308,7 @@ class ElasticsearchSearch implements Search
     /**
      * @inheritDoc
      */
-    public function applyOrder(string $order, Coordinate $location = null): Search
+    public function applyOrder(string $order, Coordinate $location = null): ServiceSearch
     {
         if ($order === static::ORDER_DISTANCE) {
             $this->query['sort'] = [
@@ -331,7 +327,7 @@ class ElasticsearchSearch implements Search
     /**
      * @inheritDoc
      */
-    public function applyRadius(Coordinate $location, int $radius): Search
+    public function applyRadius(Coordinate $location, int $radius): ServiceSearch
     {
         $this->query['query']['bool']['filter']['bool']['must'][] = [
             'nested' => [
@@ -446,9 +442,9 @@ class ElasticsearchSearch implements Search
 
     /**
      * @param array $response
-     * @return \App\Search\ElasticsearchSearch
+     * @return \App\Search\ElasticsearchServiceSearch
      */
-    protected function logMetrics(array $response): Search
+    protected function logMetrics(array $response): ServiceSearch
     {
         SearchHistory::create([
             'query' => $this->query,

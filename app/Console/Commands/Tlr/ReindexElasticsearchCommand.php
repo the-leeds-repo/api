@@ -2,10 +2,13 @@
 
 namespace App\Console\Commands\Tlr;
 
+use App\Models\IndexConfigurators\ResourcesIndexConfigurator;
 use App\Models\IndexConfigurators\ServicesIndexConfigurator;
+use App\Models\Resource;
 use App\Models\Service;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Schema;
 use Throwable;
 
 class ReindexElasticsearchCommand extends Command
@@ -35,21 +38,32 @@ class ReindexElasticsearchCommand extends Command
             return;
         }
 
+        if (Schema::hasTable((new Service())->getTable())) {
+            $this->reindex(ServicesIndexConfigurator::class, Service::class);
+        }
+
+        if (Schema::hasTable((new Resource())->getTable())) {
+            $this->reindex(ResourcesIndexConfigurator::class, Resource::class);
+        }
+    }
+
+    protected function reindex(string $indexConfigurator, string $model): void
+    {
         try {
-            $this->line('Dropping index...');
-            $this->call('elastic:drop-index', ['index-configurator' => ServicesIndexConfigurator::class]);
+            $this->line("Dropping index for [{$model}]...");
+            $this->call('elastic:drop-index', ['index-configurator' => $indexConfigurator]);
         } catch (Throwable $exception) {
             // If the index already does not exist then do nothing.
             $this->warn('Could not drop index, this is most likely due to the index not already existing.');
         }
 
-        $this->line('Creating index...');
-        $this->call('elastic:create-index', ['index-configurator' => ServicesIndexConfigurator::class]);
+        $this->line("Creating index for [{$model}]...");
+        $this->call('elastic:create-index', ['index-configurator' => $indexConfigurator]);
 
-        $this->line('Updating index mapping...');
-        $this->call('elastic:update-mapping', ['model' => Service::class]);
+        $this->line("Updating index mapping for [{$model}]...");
+        $this->call('elastic:update-mapping', ['model' => $model]);
 
-        $this->line('Importing models...');
-        $this->call('tlr:scout-import', ['model' => Service::class]);
+        $this->line("Importing documents for [{$model}]...");
+        $this->call('tlr:scout-import', ['model' => $model]);
     }
 }
