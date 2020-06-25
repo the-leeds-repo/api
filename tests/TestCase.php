@@ -4,6 +4,7 @@ namespace Tests;
 
 use App\Models\Collection;
 use App\Models\Organisation;
+use App\Models\Resource;
 use App\Models\Role;
 use App\Models\Service;
 use App\Models\Taxonomy;
@@ -145,9 +146,11 @@ abstract class TestCase extends BaseTestCase
     {
         if (!$this instanceof UsesElasticsearch) {
             Service::disableSearchSyncing();
+            Resource::disableSearchSyncing();
             return;
         } else {
             Service::enableSearchSyncing();
+            Resource::enableSearchSyncing();
         }
 
         if (!static::$elasticsearchInitialised) {
@@ -163,13 +166,16 @@ abstract class TestCase extends BaseTestCase
     {
         if (!$this instanceof UsesElasticsearch) {
             Service::disableSearchSyncing();
+            Resource::disableSearchSyncing();
             return;
         } else {
             Service::enableSearchSyncing();
+            Resource::enableSearchSyncing();
         }
 
         try {
             $this->artisan('scout:flush', ['model' => Service::class]);
+            $this->artisan('scout:flush', ['model' => Resource::class]);
         } catch (\Exception $exception) {
             // Do nothing.
         }
