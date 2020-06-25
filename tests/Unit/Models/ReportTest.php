@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Models;
 
-use App\Contracts\Search;
+use App\Contracts\ServiceSearch;
 use App\Models\Audit;
 use App\Models\Location;
 use App\Models\Organisation;
@@ -634,8 +634,8 @@ class ReportTest extends TestCase
 
     public function test_search_histories_export_works()
     {
-        /** @var \App\Contracts\Search $search */
-        $search = resolve(Search::class)->applyQuery('Health and Social');
+        /** @var \App\Contracts\ServiceSearch $search */
+        $search = resolve(ServiceSearch::class)->applyQuery('Health and Social');
 
         // Create a single search history.
         $searchHistory = SearchHistory::create([
@@ -671,10 +671,10 @@ class ReportTest extends TestCase
 
     public function test_search_histories_export_works_with_location()
     {
-        /** @var \App\Contracts\Search $search */
-        $search = resolve(Search::class)
+        /** @var \App\Contracts\ServiceSearch $search */
+        $search = resolve(ServiceSearch::class)
             ->applyQuery('Health and Social')
-            ->applyOrder(Search::ORDER_DISTANCE, new Coordinate(0, 0));
+            ->applyOrder(ServiceSearch::ORDER_DISTANCE, new Coordinate(0, 0));
 
         // Create a single search history.
         $searchHistory = SearchHistory::create([
@@ -710,8 +710,8 @@ class ReportTest extends TestCase
 
     public function test_search_histories_export_works_with_date_range()
     {
-        /** @var \App\Contracts\Search $search */
-        $search = resolve(Search::class)->applyQuery('Health and Social');
+        /** @var \App\Contracts\ServiceSearch $search */
+        $search = resolve(ServiceSearch::class)->applyQuery('Health and Social');
 
         // Create a single search history.
         $searchHistoryWithinRange = SearchHistory::create([
@@ -756,8 +756,8 @@ class ReportTest extends TestCase
 
     public function test_search_histories_without_query_are_omitted()
     {
-        /** @var \App\Contracts\Search $search */
-        $search = resolve(Search::class)->applyCategory('Self Help');
+        /** @var \App\Contracts\ServiceSearch $search */
+        $search = resolve(ServiceSearch::class)->applyCategory('Self Help');
 
         // Create a single search history.
         SearchHistory::create([

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Core\V1;
 
-use App\Contracts\Search;
+use App\Contracts\ServiceSearch;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Search\Request;
 use App\Support\Coordinate;
@@ -10,11 +10,11 @@ use App\Support\Coordinate;
 class SearchController extends Controller
 {
     /**
-     * @param \App\Contracts\Search $search
+     * @param \App\Contracts\ServiceSearch $search
      * @param \App\Http\Requests\Search\Request $request
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function __invoke(Search $search, Request $request)
+    public function __invoke(ServiceSearch $search, Request $request)
     {
         // Apply query.
         if ($request->has('query')) {

@@ -42,7 +42,7 @@ class AppServiceProvider extends ServiceProvider
         switch (config('scout.driver')) {
             case 'elastic':
             default:
-                $this->app->singleton(\App\Contracts\Search::class, \App\Search\ElasticsearchSearch::class);
+                $this->app->singleton(\App\Contracts\ServiceSearch::class, \App\Search\ElasticsearchServiceSearch::class);
                 break;
         }
 
