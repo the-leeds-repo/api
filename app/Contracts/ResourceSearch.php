@@ -2,6 +2,8 @@
 
 namespace App\Contracts;
 
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+
 interface ResourceSearch
 {
     /**
@@ -33,4 +35,24 @@ interface ResourceSearch
      * @return \App\Contracts\ResourceSearch
      */
     public function applyCategoryTaxonomyName(string $name): ResourceSearch;
+
+    /**
+     * Returns the underlying query. Only intended for use in testing.
+     *
+     * @return array
+     */
+    public function getQuery(): array;
+
+    /**
+     * @param int|null $page
+     * @param int|null $perPage
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    public function paginate(int $page = null, int $perPage = null): AnonymousResourceCollection;
+
+    /**
+     * @param int|null $perPage
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    public function get(int $perPage = null): AnonymousResourceCollection;
 }

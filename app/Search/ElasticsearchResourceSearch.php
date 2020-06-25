@@ -3,7 +3,13 @@
 namespace App\Search;
 
 use App\Contracts\ResourceSearch;
+use App\Http\Resources\ResourceResource;
 use App\Models\Collection as CollectionModel;
+use App\Models\Resource;
+use App\Models\SearchHistory;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class ElasticsearchResourceSearch implements ResourceSearch
 {
@@ -187,6 +193,101 @@ class ElasticsearchResourceSearch implements ResourceSearch
                 ],
             ],
         ];
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getQuery(): array
+    {
+        return $this->query;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function paginate(
+        int $page = null,
+        int $perPage = null
+    ): AnonymousResourceCollection {
+        $page = page($page);
+        $perPage = per_page($perPage);
+
+        $this->query['from'] = ($page - 1) * $perPage;
+        $this->query['size'] = $perPage;
+
+        $response = Resource::searchRaw($this->query);
+        $this->logMetrics($response);
+
+        return $this->toResource($response, true, $page);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function get(int $perPage = null): AnonymousResourceCollection
+    {
+        $this->query['size'] = per_page($perPage);
+
+        $response = Resource::searchRaw($this->query);
+        $this->logMetrics($response);
+
+        return $this->toResource($response, false);
+    }
+
+    /**
+     * @param array $response
+     * @param bool $paginate
+     * @param int|null $page
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    protected function toResource(
+        array $response,
+        bool $paginate = true,
+        int $page = null
+    ): AnonymousResourceCollection {
+        // Extract the hits from the array.
+        $hits = $response['hits']['hits'];
+
+        // Get all of the ID's for the resources from the hits.
+        $resourceIds = collect($hits)->map->_id->toArray();
+
+        // Implode the resource ID's so we can sort by them in database.
+        $resourceIdsImploded = implode("','", $resourceIds);
+        $resourceIdsImploded = "'$resourceIdsImploded'";
+
+        // Create the query to get the resources, and keep ordering from Elasticsearch.
+        $resources = Resource::query()
+            ->whereIn('id', $resourceIds)
+            ->orderByRaw("FIELD(id,$resourceIdsImploded)")
+            ->get();
+
+        // If paginated, then create a new pagination instance.
+        if ($paginate) {
+            $resources = new LengthAwarePaginator(
+                $resources,
+                $response['hits']['total'],
+                config('tlr.pagination_results'),
+                $page,
+                ['path' => Paginator::resolveCurrentPath()]
+            );
+        }
+
+        return ResourceResource::collection($resources);
+    }
+
+    /**
+     * @param array $response
+     * @return \App\Search\ElasticsearchResourceSearch
+     */
+    protected function logMetrics(array $response): ResourceSearch
+    {
+        SearchHistory::create([
+            'query' => $this->query,
+            'count' => $response['hits']['total'],
+        ]);
 
         return $this;
     }
