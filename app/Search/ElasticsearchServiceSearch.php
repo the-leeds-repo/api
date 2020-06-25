@@ -51,16 +51,12 @@ class ElasticsearchServiceSearch implements ServiceSearch
                                     ],
                                 ],
                             ],
-                            'should' => [
-                                //
-                            ],
+                            'should' => [],
                         ],
                     ],
                     'must' => [
                         'bool' => [
-                            'should' => [
-                                //
-                            ],
+                            'should' => [],
                         ],
                     ],
                 ],

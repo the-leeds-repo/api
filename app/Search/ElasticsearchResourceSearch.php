@@ -30,21 +30,12 @@ class ElasticsearchResourceSearch implements ResourceSearch
                 'bool' => [
                     'filter' => [
                         'bool' => [
-                            'must' => [
-                                [
-                                    'term' => [
-                                        // TODO: Delete
-                                        'status' => Service::STATUS_ACTIVE,
-                                    ],
-                                ],
-                            ],
+                            'must' => [],
                         ],
                     ],
                     'must' => [
                         'bool' => [
-                            'should' => [
-                                //
-                            ],
+                            'should' => [],
                         ],
                     ],
                 ],
