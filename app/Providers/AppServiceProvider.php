@@ -43,6 +43,7 @@ class AppServiceProvider extends ServiceProvider
             case 'elastic':
             default:
                 $this->app->singleton(\App\Contracts\ServiceSearch::class, \App\Search\ElasticsearchServiceSearch::class);
+                $this->app->singleton(\App\Contracts\ResourceSearch::class, \App\Search\ElasticsearchResourceSearch::class);
                 break;
         }
 
