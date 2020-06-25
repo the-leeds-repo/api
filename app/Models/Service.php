@@ -165,8 +165,14 @@ class Service extends Model implements AppliesUpdateRequests, Notifiable
                     ];
                 })
                 ->toArray(),
-            'collection_categories' => static::collections($this)->where('type', Collection::TYPE_CATEGORY)->pluck('name')->toArray(),
-            'collection_personas' => static::collections($this)->where('type', Collection::TYPE_PERSONA)->pluck('name')->toArray(),
+            'collection_categories' => static::collections($this)
+                ->where('type', Collection::TYPE_CATEGORY)
+                ->pluck('name')
+                ->toArray(),
+            'collection_personas' => static::collections($this)
+                ->where('type', Collection::TYPE_PERSONA)
+                ->pluck('name')
+                ->toArray(),
             'service_locations' => $this->serviceLocations()
                 ->with('location')
                 ->get()

@@ -33,7 +33,7 @@ class ElasticsearchServiceSearch implements ServiceSearch
     protected $query;
 
     /**
-     * Search constructor.
+     * ElasticsearchServiceSearch constructor.
      */
     public function __construct()
     {

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Requests\Resource\UpdateRequest as UpdateResourceRequest;
+use App\Models\IndexConfigurators\ResourcesIndexConfigurator;
 use App\Models\Mutators\ResourceMutators;
 use App\Models\Relationships\ResourceRelationships;
 use App\Models\Scopes\ResourceScopes;
@@ -11,6 +12,7 @@ use App\UpdateRequest\UpdateRequests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\Validator as ValidatorFacade;
+use ScoutElastic\Searchable;
 
 class Resource extends Model implements AppliesUpdateRequests
 {
@@ -18,6 +20,7 @@ class Resource extends Model implements AppliesUpdateRequests
     use ResourceRelationships;
     use ResourceScopes;
     use UpdateRequests;
+    use Searchable;
 
     /**
      * The attributes that should be cast to native types.
@@ -30,6 +33,93 @@ class Resource extends Model implements AppliesUpdateRequests
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    /**
+     * The Elasticsearch index configuration class.
+     *
+     * @var string
+     */
+    protected $indexConfigurator = ResourcesIndexConfigurator::class;
+
+    /**
+     * Allows you to set different search algorithms.
+     *
+     * @var array
+     */
+    protected $searchRules = [
+        //
+    ];
+
+    /**
+     * The mapping for the fields.
+     *
+     * @var array
+     */
+    protected $mapping = [
+        'properties' => [
+            'id' => ['type' => 'keyword'],
+            'name' => [
+                'type' => 'text',
+                'fields' => [
+                    'keyword' => ['type' => 'keyword'],
+                ],
+            ],
+            'description' => ['type' => 'text'],
+            'taxonomy_categories' => [
+                'type' => 'nested',
+                'properties' => [
+                    'id' => ['type' => 'keyword'],
+                    'name' => [
+                        'type' => 'text',
+                        'fields' => [
+                            'keyword' => ['type' => 'keyword'],
+                        ],
+                    ],
+                ],
+            ],
+            'collection_categories' => ['type' => 'keyword'],
+            'collection_personas' => ['type' => 'keyword'],
+        ],
+    ];
+
+    /**
+     * Overridden to always boot searchable.
+     */
+    public static function bootSearchable()
+    {
+        self::sourceBootSearchable();
+    }
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array
+     */
+    public function toSearchableArray()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'description' => $this->description,
+            'taxonomy_categories' => $this->taxonomies()
+                ->get()
+                ->map(function (Taxonomy $taxonomy) {
+                    return [
+                        'id' => $taxonomy->id,
+                        'name' => $taxonomy->name,
+                    ];
+                })
+                ->toArray(),
+            'collection_categories' => static::collections($this)
+                ->where('type', Collection::TYPE_CATEGORY)
+                ->pluck('name')
+                ->toArray(),
+            'collection_personas' => static::collections($this)
+                ->where('type', Collection::TYPE_PERSONA)
+                ->pluck('name')
+                ->toArray(),
+        ];
+    }
 
     /**
      * Check if the update request is valid.
