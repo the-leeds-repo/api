@@ -2557,7 +2557,21 @@ class ServicesTest extends TestCase
         ]);
     }
 
-    public function test_service_worker_without_token_can_refresh()
+    public function test_service_worker_without_token_cannot_refresh()
+    {
+        $service = factory(Service::class)->create();
+
+        Passport::actingAs($this->makeServiceWorker(
+            factory(User::class)->create(),
+            $service
+        ));
+
+        $response = $this->putJson("/core/v1/services/{$service->id}/refresh");
+
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function test_service_admin_without_token_can_refresh()
     {
         $now = Date::now();
         Date::setTestNow($now);
@@ -2566,7 +2580,7 @@ class ServicesTest extends TestCase
             'last_modified_at' => Date::now()->subMonths(6),
         ]);
 
-        Passport::actingAs($this->makeServiceWorker(
+        Passport::actingAs($this->makeServiceAdmin(
             factory(User::class)->create(),
             $service
         ));
