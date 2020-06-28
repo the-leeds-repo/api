@@ -2557,6 +2557,28 @@ class ServicesTest extends TestCase
         ]);
     }
 
+    public function test_service_worker_without_token_can_refresh()
+    {
+        $now = Date::now();
+        Date::setTestNow($now);
+
+        $service = factory(Service::class)->create([
+            'last_modified_at' => Date::now()->subMonths(6),
+        ]);
+
+        Passport::actingAs($this->makeServiceWorker(
+            factory(User::class)->create(),
+            $service
+        ));
+
+        $response = $this->putJson("/core/v1/services/{$service->id}/refresh");
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonFragment([
+            'last_modified_at' => $now->format(CarbonImmutable::ISO8601),
+        ]);
+    }
+
     /*
      * List all the related services.
      */
