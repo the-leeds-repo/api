@@ -2936,7 +2936,7 @@ class ServicesTest extends TestCase
 
     public function test_guest_cannot_disable_stale()
     {
-        $response = $this->putJson('/core/v1/services/disabled-stale', [
+        $response = $this->putJson('/core/v1/services/disable-stale', [
             'last_modified_at' => Date::today()->toDateString(),
         ]);
 
@@ -2958,7 +2958,7 @@ class ServicesTest extends TestCase
             )
         );
 
-        $response = $this->putJson('/core/v1/services/disabled-stale', [
+        $response = $this->putJson('/core/v1/services/disable-stale', [
             'last_modified_at' => '2020-03-01',
         ]);
 
