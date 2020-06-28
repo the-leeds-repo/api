@@ -197,7 +197,7 @@ class ReportTest extends TestCase
             $service->status,
             $service->serviceLocations->map(function (ServiceLocation $serviceLocation) {
                 return $serviceLocation->location->full_address;
-            })->implode('|'),
+            })->implode(';'),
         ], $csv[1]);
     }
 
