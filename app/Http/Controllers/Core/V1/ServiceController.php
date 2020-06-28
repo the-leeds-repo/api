@@ -6,6 +6,7 @@ use App\Events\EndpointHit;
 use App\Http\Controllers\Controller;
 use App\Http\Filters\Service\HasPermissionFilter;
 use App\Http\Filters\Service\OrganisationNameFilter;
+use App\Http\Filters\Service\PostcodeFilter;
 use App\Http\Filters\Service\SnomedCodeFilter;
 use App\Http\Filters\Service\TaxonomyIdFilter;
 use App\Http\Filters\Service\TaxonomyNameFilter;
@@ -75,6 +76,7 @@ class ServiceController extends Controller
                 Filter::custom('taxonomy_id', TaxonomyIdFilter::class),
                 Filter::custom('taxonomy_name', TaxonomyNameFilter::class),
                 Filter::custom('snomed_code', SnomedCodeFilter::class),
+                Filter::custom('postcode', PostcodeFilter::class),
             ])
             ->allowedIncludes(['organisation'])
             ->allowedSorts([
