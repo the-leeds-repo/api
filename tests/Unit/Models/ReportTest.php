@@ -14,6 +14,7 @@ use App\Models\Role;
 use App\Models\SearchHistory;
 use App\Models\Service;
 use App\Models\ServiceLocation;
+use App\Models\Taxonomy;
 use App\Models\User;
 use App\Support\Coordinate;
 use Carbon\CarbonImmutable;
@@ -179,6 +180,9 @@ class ReportTest extends TestCase
             'Referral Contact',
             'Status',
             'Locations Delivered At',
+            'Date Created',
+            'Freshness',
+            'Taxonomy Topics',
         ], $csv[0]);
 
         // Assert created service exported.
@@ -197,6 +201,11 @@ class ReportTest extends TestCase
             $service->status,
             $service->serviceLocations->map(function (ServiceLocation $serviceLocation) {
                 return $serviceLocation->location->full_address;
+            })->implode(';'),
+            optional($service->created_at)->format(CarbonImmutable::ISO8601),
+            $service->freshness(),
+            $service->taxonomies->map(function (Taxonomy $taxonomy): string {
+                return $taxonomy->name;
             })->implode(';'),
         ], $csv[1]);
     }
