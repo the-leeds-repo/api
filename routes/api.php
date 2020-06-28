@@ -106,6 +106,7 @@ Route::prefix('core/v1')->namespace('Core\\V1')->name('core.v1.')->group(functio
 
     // Services.
     Route::match(['GET', 'POST'], '/services/index', 'ServiceController@index');
+    Route::put('/services/disable-stale', 'Service\\DisableStaleController')->name('services.disable-stale');
     Route::apiResource('/services', 'ServiceController');
     Route::put('/services/{service}/refresh', 'Service\\RefreshController')->name('services.refresh');
     Route::get('/services/{service}/related', 'Service\\RelatedController')->name('services.related');
