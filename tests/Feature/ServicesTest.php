@@ -2522,7 +2522,7 @@ class ServicesTest extends TestCase
 
         $response = $this->putJson("/core/v1/services/{$service->id}/refresh");
 
-        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     public function test_guest_with_invalid_token_cannot_refresh()
