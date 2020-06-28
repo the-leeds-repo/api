@@ -23,7 +23,7 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
-        if (optional($this->user())->isServiceAdmin()) {
+        if (optional($this->user('api'))->isServiceAdmin($this->service)) {
             return [];
         }
 
