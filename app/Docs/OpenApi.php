@@ -71,6 +71,7 @@ class OpenApi extends BaseOpenApi implements Responsable
                 Paths\ServiceLocations\ServiceLocationsImagePath::create(),
                 Paths\Services\ServicesRootPath::create(),
                 Paths\Services\ServicesIndexPath::create(),
+                Paths\Services\ServicesDisableStalePath::create(),
                 Paths\Services\ServicesNestedPath::create(),
                 Paths\Services\ServicesRefreshPath::create(),
                 Paths\Services\ServicesRelatedPath::create(),
