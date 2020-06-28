@@ -35,7 +35,7 @@ class PostcodeFilter implements Filter
     protected function normalisePostcodes(array $postcodes): array
     {
         return array_map(function (string $postcode): string {
-            return str_replace(' ', '', strtolower($postcode));
+            return str_replace(' ', '', mb_strtolower($postcode));
         }, $postcodes);
     }
 }
