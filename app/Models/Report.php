@@ -169,12 +169,15 @@ class Report extends Model
             'Referral Contact',
             'Status',
             'Locations Delivered At',
+            'Date Created',
+            'Freshness',
+            'Taxonomy Topics',
         ];
 
         $data = [$headings];
 
         Service::query()
-            ->with('organisation', 'serviceLocations.location')
+            ->with('organisation', 'serviceLocations.location', 'taxonomies')
             ->chunk(200, function (Collection $services) use (&$data) {
                 // Loop through each service in the chunk.
                 $services->each(function (Service $service) use (&$data) {
@@ -192,9 +195,14 @@ class Report extends Model
                         $service->referral_method,
                         $service->referral_email,
                         $service->status,
-                        $service->serviceLocations->map(function (ServiceLocation $serviceLocation) {
+                        $service->serviceLocations->map(function (ServiceLocation $serviceLocation): string {
                             return $serviceLocation->location->full_address;
-                        })->implode('|'),
+                        })->implode(';'),
+                        optional($service->created_at)->format(CarbonImmutable::ISO8601),
+                        $service->freshness(),
+                        $service->taxonomies->map(function (Taxonomy $taxonomy): string {
+                            return $taxonomy->name;
+                        })->implode(';'),
                     ];
                 });
             });

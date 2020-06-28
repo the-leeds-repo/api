@@ -53,6 +53,10 @@ class Service extends Model implements AppliesUpdateRequests, Notifiable
     const REFERRAL_METHOD_EXTERNAL = 'external';
     const REFERRAL_METHOD_NONE = 'none';
 
+    const FRESHNESS_FRESH = 'fresh';
+    const FRESHNESS_STALE = 'stale';
+    const FRESHNESS_OLD = 'old';
+
     /**
      * The attributes that should be cast to native types.
      *
@@ -473,5 +477,21 @@ class Service extends Model implements AppliesUpdateRequests, Notifiable
             Response::HTTP_OK,
             ['Content-Type' => File::MIME_TYPE_PNG]
         );
+    }
+
+    /**
+     * @return string
+     */
+    public function freshness(): string
+    {
+        if ($this->last_modified_at->lessThanOrEqualTo(Date::today()->subMonths(6))) {
+            return static::FRESHNESS_OLD;
+        }
+
+        if ($this->last_modified_at->lessThanOrEqualTo(Date::today()->subMonths(3))) {
+            return static::FRESHNESS_STALE;
+        }
+
+        return self::FRESHNESS_FRESH;
     }
 }
