@@ -2522,7 +2522,7 @@ class ServicesTest extends TestCase
 
         $response = $this->putJson("/core/v1/services/{$service->id}/refresh");
 
-        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     public function test_guest_with_invalid_token_cannot_refresh()
@@ -2550,6 +2550,42 @@ class ServicesTest extends TestCase
                 'service_id' => $service->id,
             ])->id,
         ]);
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonFragment([
+            'last_modified_at' => $now->format(CarbonImmutable::ISO8601),
+        ]);
+    }
+
+    public function test_service_worker_without_token_cannot_refresh()
+    {
+        $service = factory(Service::class)->create();
+
+        Passport::actingAs($this->makeServiceWorker(
+            factory(User::class)->create(),
+            $service
+        ));
+
+        $response = $this->putJson("/core/v1/services/{$service->id}/refresh");
+
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function test_service_admin_without_token_can_refresh()
+    {
+        $now = Date::now();
+        Date::setTestNow($now);
+
+        $service = factory(Service::class)->create([
+            'last_modified_at' => Date::now()->subMonths(6),
+        ]);
+
+        Passport::actingAs($this->makeServiceAdmin(
+            factory(User::class)->create(),
+            $service
+        ));
+
+        $response = $this->putJson("/core/v1/services/{$service->id}/refresh");
 
         $response->assertStatus(Response::HTTP_OK);
         $response->assertJsonFragment([

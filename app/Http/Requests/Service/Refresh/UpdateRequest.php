@@ -23,8 +23,12 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
+        if (optional($this->user('api'))->isServiceAdmin($this->service)) {
+            return [];
+        }
+
         return [
-            'token' => ['exists:service_refresh_tokens,id'],
+            'token' => ['required', 'exists:service_refresh_tokens,id'],
         ];
     }
 }

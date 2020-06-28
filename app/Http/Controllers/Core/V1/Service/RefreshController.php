@@ -27,7 +27,9 @@ class RefreshController extends Controller
             $service->update(['last_modified_at' => Date::now()]);
 
             // Delete the token used.
-            ServiceRefreshToken::query()->findOrFail($request->token)->delete();
+            if ($request->has('token')) {
+                ServiceRefreshToken::query()->findOrFail($request->token)->delete();
+            }
 
             event(EndpointHit::onUpdate($request, "Refreshed service [{$service->id}]", $service));
 

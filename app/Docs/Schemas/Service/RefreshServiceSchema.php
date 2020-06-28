@@ -20,7 +20,7 @@ class RefreshServiceSchema extends Schema
             ->properties(
                 Schema::string('token')
                     ->format(Schema::FORMAT_UUID)
-                    ->description('A unique one-time token needed to invoke the refresh')
+                    ->description('A unique one-time token needed to invoke the refresh (not required if a service admin)')
             );
     }
 }
