@@ -2929,4 +2929,47 @@ class ServicesTest extends TestCase
         $response->assertStatus(Response::HTTP_OK);
         $response->assertHeader('Content-Type', 'image/png');
     }
+
+    /*
+     * Disable stale.
+     */
+
+    public function test_guest_cannot_disable_stale()
+    {
+        $response = $this->putJson('/core/v1/services/disabled-stale', [
+            'last_modified_at' => Date::today()->toDateString(),
+        ]);
+
+        $response->assertUnauthorized();
+    }
+
+    public function test_super_admin_can_disable_stale()
+    {
+        $staleService = factory(Service::class)->create([
+            'last_modified_at' => '2020-02-01',
+        ]);
+        $currentService = factory(Service::class)->create([
+            'last_modified_at' => '2020-05-01',
+        ]);
+
+        Passport::actingAs(
+            $this->makeSuperAdmin(
+                factory(User::class)->create()
+            )
+        );
+
+        $response = $this->putJson('/core/v1/services/disabled-stale', [
+            'last_modified_at' => '2020-03-01',
+        ]);
+
+        $response->assertOk();
+        $this->assertDatabaseHas($staleService->getTable(), [
+            'id' => $staleService->id,
+            'status' => Service::STATUS_INACTIVE,
+        ]);
+        $this->assertDatabaseHas($currentService->getTable(), [
+            'id' => $currentService->id,
+            'status' => Service::STATUS_ACTIVE,
+        ]);
+    }
 }
