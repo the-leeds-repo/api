@@ -104,6 +104,14 @@ EOT
                         )
                     )
                     ->style(FilterParameter::STYLE_SIMPLE),
+                FilterParameter::create(null, 'postcode')
+                    ->description('Location postcode to filter by')
+                    ->schema(
+                        Schema::array()->items(
+                            Schema::string()
+                        )
+                    )
+                    ->style(FilterParameter::STYLE_SIMPLE),
                 IncludeParameter::create(null, ['organisation']),
                 SortParameter::create(null, [
                     'name',

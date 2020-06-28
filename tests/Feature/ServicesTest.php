@@ -7,6 +7,7 @@ use App\Models\Audit;
 use App\Models\Collection as CollectionModel;
 use App\Models\File;
 use App\Models\HolidayOpeningHour;
+use App\Models\Location;
 use App\Models\Organisation;
 use App\Models\RegularOpeningHour;
 use App\Models\Service;
@@ -363,6 +364,39 @@ class ServicesTest extends TestCase
         );
 
         $response = $this->json('GET', "/core/v1/services?filter[snomed_code]={$snomedCode->name}");
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonFragment(['id' => $serviceOne->id]);
+        $response->assertJsonMissing(['id' => $serviceTwo->id]);
+    }
+
+    public function test_guest_can_filter_by_location_postcode()
+    {
+        /** @var \App\Models\Service $serviceOne */
+        $serviceOne = factory(Service::class)->create();
+
+        /** @var \App\Models\Location $locationOne */
+        $locationOne = factory(Location::class)->create([
+            'postcode' => 'LS1 2AB',
+        ]);
+
+        $serviceOne->serviceLocations()->create([
+            'location_id' => $locationOne->id,
+        ]);
+
+        /** @var \App\Models\Service $serviceTwo */
+        $serviceTwo = factory(Service::class)->create();
+
+        /** @var \App\Models\Location $locationTwo */
+        $locationTwo = factory(Location::class)->create([
+            'postcode' => 'LS17 3ER',
+        ]);
+
+        $serviceTwo->serviceLocations()->create([
+            'location_id' => $locationTwo->id,
+        ]);
+
+        $response = $this->json('GET', "/core/v1/services?filter[postcode]=ls12ab");
 
         $response->assertStatus(Response::HTTP_OK);
         $response->assertJsonFragment(['id' => $serviceOne->id]);
