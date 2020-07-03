@@ -22,17 +22,17 @@ class NotifyUserEmail extends Email
         return <<<'EOT'
 Hi ((NAME)),
 
-An account has been created for you using this email address. You can log in to the Connected Together admin portal at:
-http://admin.connectedtogether.org.uk
+An account has been created for you using this email address. You can log in to the LOOP admin portal at:
+http://admin.looprepository.org
 
 Permissions:
 ((PERMISSIONS))
 
-If you have any questions, you can email us at info@connectedtogether.org.uk
+If you have any questions, you can email us at info@looprepository.org.
 
 Many thanks,
 
-The Connected Together team
+The LOOP Team
 EOT;
     }
 
