@@ -27,7 +27,7 @@ We have received a request to reset your password. Please follow this link:
 
 If this is not you, please ignore this message.
 
-If you need any further help please contact info@connectedtogether.org.uk
+If you need any further help please contact info@looprepository.org
 EOT;
     }
 
