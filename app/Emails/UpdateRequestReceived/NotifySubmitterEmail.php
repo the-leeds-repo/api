@@ -24,11 +24,11 @@ Hi ((SUBMITTER_NAME)),
 
 Your update to ((RESOURCE_NAME)) (((RESOURCE_TYPE))) has been submitted and received. A member of the admin team will review it shortly.
 
-If you have any questions, please get in touch at info@connectedtogether.org.uk.
+If you have any questions, please get in touch at info@looprepository.org.
 
 Many thanks,
 
-The Connected Together team
+The LOOP Team
 EOT;
     }
 
