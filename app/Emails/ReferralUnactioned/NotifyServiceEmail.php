@@ -31,13 +31,13 @@ Please contact the client via ((REFERRAL_CONTACT_METHOD)) within the next ((REFE
 If you are unable to get in contact with the client, you can mark the referral is ‘Incomplete’.
 
 You can update the status of the referral in the admin portal:
-http://admin.connectedtogether.org.uk/referrals
+http://admin.looprepository.org/referrals
 
-If you have any questions, please contact us at info@connectedtogether.org.uk.
+If you have any questions, please contact us at info@looprepository.org.
 
 Many thanks,
 
-The Connected Together team
+The LOOP team
 EOT;
     }
 
