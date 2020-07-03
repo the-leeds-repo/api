@@ -29,7 +29,7 @@ Please review the request below before approving/rejecting:
 
 Regards,
 
-Connected Together.
+The LOOP Team
 EOT;
     }
 
