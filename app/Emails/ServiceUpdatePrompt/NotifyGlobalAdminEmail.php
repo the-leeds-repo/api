@@ -20,9 +20,9 @@ class NotifyGlobalAdminEmail extends Email
     public function getContent(): string
     {
         return <<<'EOT'
-((SERVICE_NAME)) on Connected Together has not been updated in over 12 months.
+((SERVICE_NAME)) on LOOP has not been updated in over 12 months.
 
-View the page on Connected Together:
+View the page on LOOP:
 ((SERVICE_URL))
 
 Reminders have been sent monthly to the following:
@@ -43,6 +43,6 @@ EOT;
      */
     public function getSubject(): string
     {
-        return '((SERVICE_NAME)) page on Connected Together – Inactive for 1 year';
+        return '((SERVICE_NAME)) page on LOOP – Inactive for 1 year';
     }
 }
