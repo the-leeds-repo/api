@@ -30,11 +30,11 @@ Old permissions:
 New permissions:
 ((PERMISSIONS))
 
-If you have any questions, please contact us at info@connectedtogether.org.uk.
+If you have any questions, please contact us at info@looprepository.org.
 
 Many thanks,
 
-The Connected Together team.
+The LOOP Team
 EOT;
     }
 
