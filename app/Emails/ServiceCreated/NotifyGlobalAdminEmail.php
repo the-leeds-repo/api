@@ -40,7 +40,7 @@ To review the service, follow this link: ((SERVICE_URL))
 
 Many thanks,
 
-Connected Together
+The LOOP Team
 EOT;
     }
 
