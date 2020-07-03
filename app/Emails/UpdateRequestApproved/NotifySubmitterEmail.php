@@ -24,11 +24,11 @@ Hi ((SUBMITTER_NAME)),
 
 Your update request for the ((RESOURCE_NAME)) (((RESOURCE_TYPE))) on ((REQUEST_DATE)) has been approved.
 
-If you have any questions, please contact us at info@connectedtogether.org.uk.
+If you have any questions, please contact us at info@looprepository.org.
 
 Many thanks,
 
-The Connected Together team
+The LOOP Team
 EOT;
     }
 
