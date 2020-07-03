@@ -34,13 +34,13 @@ This is a ((REFERRAL_TYPE))
 Please contact the client via ((REFERRAL_CONTACT_METHOD)) within the next 10 working days.
 
 You can see further details of the referral, and mark as completed:
-http://admin.connectedtogether.org.uk/referrals
+http://admin.looprepository.org/referrals
 
-If you have any questions, please contact us at info@connectedtogether.org.uk.
+If you have any questions, please contact us at info@looprepository.org.
 
 Many thanks,
 
-The Connected Together team
+The LOOP team
 EOT;
     }
 
