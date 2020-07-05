@@ -29,6 +29,6 @@ EOT;
      */
     public function getSubject(): string
     {
-        return 'Disabled ((SERVICE_NAME)) page on LOOP;
+        return 'Disabled ((SERVICE_NAME)) page on LOOP';
     }
 }
