@@ -14,5 +14,6 @@ $factory->define(Organisation::class, function (Faker $faker) {
         'url' => $faker->url,
         'email' => $faker->safeEmail,
         'phone' => random_uk_phone(),
+        'is_hidden' => false,
     ];
 });
