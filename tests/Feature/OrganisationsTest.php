@@ -74,6 +74,45 @@ class OrganisationsTest extends TestCase
         $this->assertEquals($organisationTwo->id, $data['data'][0]['id']);
     }
 
+    public function test_guest_cannot_list_hidden()
+    {
+        factory(Organisation::class)->create([
+            'is_hidden' => false,
+        ]);
+
+        factory(Organisation::class)->create([
+            'is_hidden' => true,
+        ]);
+
+        $response = $this->json('GET', '/core/v1/organisations');
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonCount(1, 'data');
+    }
+
+    public function test_service_worker_can_list_hidden()
+    {
+        factory(Organisation::class)->create([
+            'is_hidden' => false,
+        ]);
+
+        $organisation = factory(Organisation::class)->create([
+            'is_hidden' => true,
+        ]);
+
+        $service = factory(Service::class)->create([
+            'organisation_id' => $organisation->id,
+        ]);
+
+        $user = $this->makeServiceWorker(factory(User::class)->create(), $service);
+        Passport::actingAs($user);
+
+        $response = $this->json('GET', '/core/v1/organisations');
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonCount(2, 'data');
+    }
+
     /*
      * Create an organisation.
      */
