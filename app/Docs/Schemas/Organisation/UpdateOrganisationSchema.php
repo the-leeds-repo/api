@@ -22,7 +22,8 @@ class UpdateOrganisationSchema extends Schema
                 'description',
                 'url',
                 'email',
-                'phone'
+                'phone',
+                'is_hidden'
             )
             ->properties(
                 Schema::string('name'),
@@ -31,6 +32,7 @@ class UpdateOrganisationSchema extends Schema
                 Schema::string('url'),
                 Schema::string('email'),
                 Schema::string('phone'),
+                Schema::boolean('is_hidden'),
                 Schema::string('logo_file_id')
                     ->format(Schema::FORMAT_UUID)
                     ->description('The ID of the file uploaded')
