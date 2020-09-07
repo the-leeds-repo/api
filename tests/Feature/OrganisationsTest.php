@@ -295,6 +295,35 @@ class OrganisationsTest extends TestCase
         });
     }
 
+    public function test_guest_cannot_view_hidden()
+    {
+        $organisation = factory(Organisation::class)->create([
+            'is_hidden' => true,
+        ]);
+
+        $response = $this->json('GET', "/core/v1/organisations/{$organisation->id}");
+
+        $response->assertStatus(Response::HTTP_FORBIDDEN);
+    }
+
+    public function test_service_worker_can_view_hidden()
+    {
+        $organisation = factory(Organisation::class)->create([
+            'is_hidden' => true,
+        ]);
+
+        $service = factory(Service::class)->create([
+            'organisation_id' => $organisation->id,
+        ]);
+
+        $user = $this->makeServiceWorker(factory(User::class)->create(), $service);
+        Passport::actingAs($user);
+
+        $response = $this->json('GET', "/core/v1/organisations/{$organisation->id}");
+
+        $response->assertStatus(Response::HTTP_OK);
+    }
+
     /*
      * Update a specific organisation.
      */
