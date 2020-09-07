@@ -39,6 +39,7 @@ class StoreRequest extends FormRequest
             'url' => ['required', 'url', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'phone' => ['required', 'string', 'min:1', 'max:255'],
+            'is_hidden' => ['required', 'boolean'],
             'logo_file_id' => [
                 'nullable',
                 'exists:files,id',

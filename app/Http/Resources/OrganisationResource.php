@@ -24,6 +24,7 @@ class OrganisationResource extends JsonResource
             'url' => $this->url,
             'email' => $this->email,
             'phone' => $this->phone,
+            'is_hidden' => $this->is_hidden,
             'created_at' => $this->created_at->format(CarbonImmutable::ISO8601),
             'updated_at' => $this->updated_at->format(CarbonImmutable::ISO8601),
         ];

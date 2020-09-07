@@ -73,6 +73,7 @@ class OrganisationController extends Controller
                 'url' => $request->url,
                 'email' => $request->email,
                 'phone' => $request->phone,
+                'is_hidden' => $request->is_hidden,
                 'logo_file_id' => $request->logo_file_id,
             ]);
 
@@ -136,6 +137,7 @@ class OrganisationController extends Controller
                     'url' => $request->missing('url'),
                     'email' => $request->missing('email'),
                     'phone' => $request->missing('phone'),
+                    'is_hidden' => $request->missing('is_hidden'),
                     'logo_file_id' => $request->missing('logo_file_id'),
                 ]),
             ]);

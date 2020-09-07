@@ -50,6 +50,7 @@ class UpdateRequest extends FormRequest
             'url' => ['url', 'max:255'],
             'email' => ['email', 'max:255'],
             'phone' => ['string', 'min:1', 'max:255'],
+            'is_hidden' => ['boolean'],
             'logo_file_id' => [
                 'nullable',
                 'exists:files,id',

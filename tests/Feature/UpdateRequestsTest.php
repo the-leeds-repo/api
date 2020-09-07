@@ -569,6 +569,7 @@ class UpdateRequestsTest extends TestCase
                 'url' => $this->faker->url,
                 'email' => $this->faker->safeEmail,
                 'phone' => random_uk_phone(),
+                'is_hidden' => true,
             ],
         ]);
 
@@ -585,6 +586,7 @@ class UpdateRequestsTest extends TestCase
             'url' => $updateRequest->data['url'],
             'email' => $updateRequest->data['email'],
             'phone' => $updateRequest->data['phone'],
+            'is_hidden' => $updateRequest->data['is_hidden'],
         ]);
     }
 

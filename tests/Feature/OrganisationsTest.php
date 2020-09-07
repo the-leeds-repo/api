@@ -39,6 +39,7 @@ class OrganisationsTest extends TestCase
                 'url' => $organisation->url,
                 'email' => $organisation->email,
                 'phone' => $organisation->phone,
+                'is_hidden' => $organisation->is_hidden,
                 'created_at' => $organisation->created_at->format(CarbonImmutable::ISO8601),
                 'updated_at' => $organisation->updated_at->format(CarbonImmutable::ISO8601),
             ],
@@ -149,6 +150,7 @@ class OrganisationsTest extends TestCase
             'url' => 'http://test-org.example.com',
             'email' => 'info@test-org.example.com',
             'phone' => '07700000000',
+            'is_hidden' => false,
         ];
 
         Passport::actingAs($user);
@@ -178,6 +180,7 @@ class OrganisationsTest extends TestCase
             'url' => 'http://test-org.example.com',
             'email' => 'info@test-org.example.com',
             'phone' => '07700000000',
+            'is_hidden' => false,
         ]);
 
         Event::assertDispatched(EndpointHit::class, function (EndpointHit $event) use ($user, $response) {
@@ -208,6 +211,7 @@ class OrganisationsTest extends TestCase
                 'url' => $organisation->url,
                 'email' => $organisation->email,
                 'phone' => $organisation->phone,
+                'is_hidden' => $organisation->is_hidden,
                 'created_at' => $organisation->created_at->format(CarbonImmutable::ISO8601),
                 'updated_at' => $organisation->updated_at->format(CarbonImmutable::ISO8601),
             ],
@@ -231,6 +235,7 @@ class OrganisationsTest extends TestCase
                 'url' => $organisation->url,
                 'email' => $organisation->email,
                 'phone' => $organisation->phone,
+                'is_hidden' => $organisation->is_hidden,
                 'created_at' => $organisation->created_at->format(CarbonImmutable::ISO8601),
                 'updated_at' => $organisation->updated_at->format(CarbonImmutable::ISO8601),
             ],
@@ -304,6 +309,7 @@ class OrganisationsTest extends TestCase
             'url' => 'http://test-org.example.com',
             'email' => 'info@test-org.example.com',
             'phone' => '07700000000',
+            'is_hidden' => false,
         ];
 
         Passport::actingAs($user);
@@ -368,6 +374,7 @@ class OrganisationsTest extends TestCase
             'url' => 'http://test-org.example.com',
             'email' => 'info@test-org.example.com',
             'phone' => '07700000000',
+            'is_hidden' => false,
         ]);
 
         Event::assertDispatched(EndpointHit::class, function (EndpointHit $event) use ($user, $organisation) {
@@ -562,6 +569,7 @@ class OrganisationsTest extends TestCase
             'url' => 'http://test-org.example.com',
             'email' => 'info@test-org.example.com',
             'phone' => '07700000000',
+            'is_hidden' => false,
             'logo_file_id' => $this->getResponseContent($imageResponse, 'data.id'),
         ]);
         $organisationId = $this->getResponseContent($response, 'data.id');
