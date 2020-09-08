@@ -561,7 +561,7 @@ class UpdateRequestsTest extends TestCase
 
         $organisation = factory(Organisation::class)->create();
         $updateRequest = $organisation->updateRequests()->create([
-            'user_id' => factory(User::class)->create()->id,
+            'user_id' => $user->id,
             'data' => [
                 'slug' => 'ayup-digital',
                 'name' => 'Ayup Digital',
