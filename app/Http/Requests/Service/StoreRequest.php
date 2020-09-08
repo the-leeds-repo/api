@@ -32,7 +32,7 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
-        if ($this->user()->isOrganisationAdmin()) {
+        if ($this->user('api')->isOrganisationAdmin()) {
             return true;
         }
 
@@ -47,7 +47,7 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'organisation_id' => ['required', 'exists:organisations,id', new IsOrganisationAdmin($this->user())],
+            'organisation_id' => ['required', 'exists:organisations,id', new IsOrganisationAdmin($this->user('api'))],
             'slug' => ['required', 'string', 'min:1', 'max:255', 'unique:' . table(Service::class) . ',slug', new Slug()],
             'name' => ['required', 'string', 'min:1', 'max:255'],
             'type' => [
@@ -228,7 +228,7 @@ class StoreRequest extends FormRequest
         $organisation = Organisation::find($this->organisation_id);
 
         // If organisation admin and above.
-        if ($this->user()->isOrganisationAdmin($organisation)) {
+        if ($this->user('api')->isOrganisationAdmin($organisation)) {
             return ['required', 'array'];
         }
 

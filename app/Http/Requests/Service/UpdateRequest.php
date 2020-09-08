@@ -35,7 +35,7 @@ class UpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        if ($this->user()->isServiceAdmin($this->service)) {
+        if ($this->user('api')->isServiceAdmin($this->service)) {
             return true;
         }
 
@@ -304,21 +304,21 @@ class UpdateRequest extends FormRequest
     protected function categoryTaxonomiesRules(): array
     {
         // If service admin and above.
-        if ($this->user()->isServiceAdmin($this->service)) {
+        if ($this->user('api')->isServiceAdmin($this->service)) {
             return [
                 Rule::requiredIf(function () {
                     // Only required if the service currently has no taxonomies.
                     return $this->service->serviceTaxonomies()->doesntExist();
                 }),
                 'array',
-                new CanUpdateServiceCategoryTaxonomies($this->user(), $this->service),
+                new CanUpdateServiceCategoryTaxonomies($this->user('api'), $this->service),
             ];
         }
 
         // If not a global admin.
         return [
             'array',
-            new CanUpdateServiceCategoryTaxonomies($this->user(), $this->service),
+            new CanUpdateServiceCategoryTaxonomies($this->user('api'), $this->service),
         ];
     }
 

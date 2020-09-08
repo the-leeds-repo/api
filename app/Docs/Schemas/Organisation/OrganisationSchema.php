@@ -25,6 +25,7 @@ class OrganisationSchema extends Schema
                 Schema::string('url'),
                 Schema::string('email'),
                 Schema::string('phone'),
+                Schema::boolean('is_hidden'),
                 Schema::string('created_at')
                     ->format(Schema::FORMAT_DATE_TIME)
                     ->nullable(),

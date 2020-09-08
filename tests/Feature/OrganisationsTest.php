@@ -39,6 +39,7 @@ class OrganisationsTest extends TestCase
                 'url' => $organisation->url,
                 'email' => $organisation->email,
                 'phone' => $organisation->phone,
+                'is_hidden' => $organisation->is_hidden,
                 'created_at' => $organisation->created_at->format(CarbonImmutable::ISO8601),
                 'updated_at' => $organisation->updated_at->format(CarbonImmutable::ISO8601),
             ],
@@ -71,6 +72,45 @@ class OrganisationsTest extends TestCase
         $response->assertStatus(Response::HTTP_OK);
         $this->assertEquals($organisationOne->id, $data['data'][1]['id']);
         $this->assertEquals($organisationTwo->id, $data['data'][0]['id']);
+    }
+
+    public function test_guest_cannot_list_hidden()
+    {
+        factory(Organisation::class)->create([
+            'is_hidden' => false,
+        ]);
+
+        factory(Organisation::class)->create([
+            'is_hidden' => true,
+        ]);
+
+        $response = $this->json('GET', '/core/v1/organisations');
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonCount(1, 'data');
+    }
+
+    public function test_service_worker_can_list_hidden()
+    {
+        factory(Organisation::class)->create([
+            'is_hidden' => false,
+        ]);
+
+        $organisation = factory(Organisation::class)->create([
+            'is_hidden' => true,
+        ]);
+
+        $service = factory(Service::class)->create([
+            'organisation_id' => $organisation->id,
+        ]);
+
+        $user = $this->makeServiceWorker(factory(User::class)->create(), $service);
+        Passport::actingAs($user);
+
+        $response = $this->json('GET', '/core/v1/organisations');
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonCount(2, 'data');
     }
 
     /*
@@ -149,6 +189,7 @@ class OrganisationsTest extends TestCase
             'url' => 'http://test-org.example.com',
             'email' => 'info@test-org.example.com',
             'phone' => '07700000000',
+            'is_hidden' => false,
         ];
 
         Passport::actingAs($user);
@@ -178,6 +219,7 @@ class OrganisationsTest extends TestCase
             'url' => 'http://test-org.example.com',
             'email' => 'info@test-org.example.com',
             'phone' => '07700000000',
+            'is_hidden' => false,
         ]);
 
         Event::assertDispatched(EndpointHit::class, function (EndpointHit $event) use ($user, $response) {
@@ -208,6 +250,7 @@ class OrganisationsTest extends TestCase
                 'url' => $organisation->url,
                 'email' => $organisation->email,
                 'phone' => $organisation->phone,
+                'is_hidden' => $organisation->is_hidden,
                 'created_at' => $organisation->created_at->format(CarbonImmutable::ISO8601),
                 'updated_at' => $organisation->updated_at->format(CarbonImmutable::ISO8601),
             ],
@@ -231,6 +274,7 @@ class OrganisationsTest extends TestCase
                 'url' => $organisation->url,
                 'email' => $organisation->email,
                 'phone' => $organisation->phone,
+                'is_hidden' => $organisation->is_hidden,
                 'created_at' => $organisation->created_at->format(CarbonImmutable::ISO8601),
                 'updated_at' => $organisation->updated_at->format(CarbonImmutable::ISO8601),
             ],
@@ -249,6 +293,35 @@ class OrganisationsTest extends TestCase
             return ($event->getAction() === Audit::ACTION_READ) &&
                 ($event->getModel()->id === $organisation->id);
         });
+    }
+
+    public function test_guest_cannot_view_hidden()
+    {
+        $organisation = factory(Organisation::class)->create([
+            'is_hidden' => true,
+        ]);
+
+        $response = $this->json('GET', "/core/v1/organisations/{$organisation->id}");
+
+        $response->assertStatus(Response::HTTP_FORBIDDEN);
+    }
+
+    public function test_service_worker_can_view_hidden()
+    {
+        $organisation = factory(Organisation::class)->create([
+            'is_hidden' => true,
+        ]);
+
+        $service = factory(Service::class)->create([
+            'organisation_id' => $organisation->id,
+        ]);
+
+        $user = $this->makeServiceWorker(factory(User::class)->create(), $service);
+        Passport::actingAs($user);
+
+        $response = $this->json('GET', "/core/v1/organisations/{$organisation->id}");
+
+        $response->assertStatus(Response::HTTP_OK);
     }
 
     /*
@@ -304,6 +377,7 @@ class OrganisationsTest extends TestCase
             'url' => 'http://test-org.example.com',
             'email' => 'info@test-org.example.com',
             'phone' => '07700000000',
+            'is_hidden' => false,
         ];
 
         Passport::actingAs($user);
@@ -351,6 +425,41 @@ class OrganisationsTest extends TestCase
         $this->assertEquals($data, $payload);
     }
 
+    public function test_is_hidden_cannot_be_updated_by_organisation_admin()
+    {
+        $organisation = factory(Organisation::class)->create([
+            'is_hidden' => false,
+        ]);
+
+        $user = $this->makeOrganisationAdmin(factory(User::class)->create(), $organisation);
+
+        Passport::actingAs($user);
+
+        $response = $this->json('PUT', "/core/v1/organisations/{$organisation->id}", [
+            'is_hidden' => true,
+        ]);
+
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $response->assertJsonValidationErrors(['is_hidden']);
+    }
+
+    public function test_is_hidden_can_be_updated_by_global_admin()
+    {
+        $organisation = factory(Organisation::class)->create([
+            'is_hidden' => false,
+        ]);
+
+        $user = $this->makeGlobalAdmin(factory(User::class)->create());
+
+        Passport::actingAs($user);
+
+        $response = $this->json('PUT', "/core/v1/organisations/{$organisation->id}", [
+            'is_hidden' => true,
+        ]);
+
+        $response->assertStatus(Response::HTTP_OK);
+    }
+
     public function test_audit_created_when_updated()
     {
         $this->fakeEvents();
@@ -368,6 +477,7 @@ class OrganisationsTest extends TestCase
             'url' => 'http://test-org.example.com',
             'email' => 'info@test-org.example.com',
             'phone' => '07700000000',
+            'is_hidden' => false,
         ]);
 
         Event::assertDispatched(EndpointHit::class, function (EndpointHit $event) use ($user, $organisation) {
@@ -562,6 +672,7 @@ class OrganisationsTest extends TestCase
             'url' => 'http://test-org.example.com',
             'email' => 'info@test-org.example.com',
             'phone' => '07700000000',
+            'is_hidden' => false,
             'logo_file_id' => $this->getResponseContent($imageResponse, 'data.id'),
         ]);
         $organisationId = $this->getResponseContent($response, 'data.id');

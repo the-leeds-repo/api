@@ -13,7 +13,23 @@ class ShowRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        if ($this->route('organisation')->is_hidden === false) {
+            return true;
+        }
+
+        if ($this->user('api') === null) {
+            return false;
+        }
+
+        if ($this->user('api')->isGlobalAdmin()) {
+            return true;
+        }
+
+        if (in_array($this->route('organisation')->id, $this->user('api')->organisationIds())) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
