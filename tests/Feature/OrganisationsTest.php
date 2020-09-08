@@ -714,6 +714,13 @@ class OrganisationsTest extends TestCase
             'url' => 'http://test-org.example.com',
             'email' => 'info@test-org.example.com',
             'phone' => '07700000000',
+            'address_line_1' => null,
+            'address_line_2' => null,
+            'address_line_3' => null,
+            'city' => null,
+            'county' => null,
+            'postcode' => null,
+            'country' => null,
             'is_hidden' => false,
             'logo_file_id' => $this->getResponseContent($imageResponse, 'data.id'),
         ]);
