@@ -23,6 +23,13 @@ class UpdateOrganisationSchema extends Schema
                 'url',
                 'email',
                 'phone',
+                'address_line_1',
+                'address_line_2',
+                'address_line_3',
+                'city',
+                'county',
+                'postcode',
+                'country',
                 'is_hidden'
             )
             ->properties(
@@ -32,6 +39,20 @@ class UpdateOrganisationSchema extends Schema
                 Schema::string('url'),
                 Schema::string('email'),
                 Schema::string('phone'),
+                Schema::string('address_line_1')
+                    ->nullable(),
+                Schema::string('address_line_2')
+                    ->nullable(),
+                Schema::string('address_line_3')
+                    ->nullable(),
+                Schema::string('city')
+                    ->nullable(),
+                Schema::string('county')
+                    ->nullable(),
+                Schema::string('postcode')
+                    ->nullable(),
+                Schema::string('country')
+                    ->nullable(),
                 Schema::boolean('is_hidden'),
                 Schema::string('logo_file_id')
                     ->format(Schema::FORMAT_UUID)
