@@ -42,11 +42,11 @@ class OrganisationController extends Controller
         $user = auth('api')->user();
 
         $baseQuery = Organisation::query()
-            ->when(auth('api')->guest(), function (Builder $query) use ($request) {
+            ->when(auth('api')->guest(), function (Builder $query) {
                 // Limit to visible organisation if requesting user is not authenticated.
                 $query->where('is_hidden', '=', false);
             })
-            ->when($user, function (Builder $query) use ($request, $user) {
+            ->when($user, function (Builder $query) use ($user) {
                 // Limit to visible organisation if requesting user does not have permissions.
                 $query->where(function (Builder $query) use ($user) {
                     $query
