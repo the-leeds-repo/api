@@ -569,6 +569,12 @@ class UpdateRequestsTest extends TestCase
                 'url' => $this->faker->url,
                 'email' => $this->faker->safeEmail,
                 'phone' => random_uk_phone(),
+                'address_line_1' => '1 Fake Street',
+                'address_line_2' => 'Floor 2',
+                'address_line_3' => 'Unit 7',
+                'city' => 'Leeds',
+                'county' => 'West Yorkshire',
+                'postcode' => 'LS1 2AB',
                 'is_hidden' => true,
             ],
         ]);
@@ -586,6 +592,12 @@ class UpdateRequestsTest extends TestCase
             'url' => $updateRequest->data['url'],
             'email' => $updateRequest->data['email'],
             'phone' => $updateRequest->data['phone'],
+            'address_line_1' => $updateRequest->data['address_line_1'],
+            'address_line_2' => $updateRequest->data['address_line_2'],
+            'address_line_3' => $updateRequest->data['address_line_3'],
+            'city' => $updateRequest->data['city'],
+            'county' => $updateRequest->data['county'],
+            'postcode' => $updateRequest->data['postcode'],
             'is_hidden' => $updateRequest->data['is_hidden'],
         ]);
     }
