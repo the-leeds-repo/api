@@ -9,6 +9,7 @@ use App\Models\Role;
 use App\Models\UserRole;
 use App\Rules\FileIsMimeType;
 use App\Rules\FileIsPendingAssignment;
+use App\Rules\Postcode;
 use App\Rules\Slug;
 use App\Rules\UserHasRole;
 use Illuminate\Foundation\Http\FormRequest;
@@ -53,6 +54,13 @@ class UpdateRequest extends FormRequest
             'url' => ['url', 'max:255'],
             'email' => ['email', 'max:255'],
             'phone' => ['string', 'min:1', 'max:255'],
+            'address_line_1' => ['nullable', 'string', 'min:1', 'max:255'],
+            'address_line_2' => ['nullable', 'string', 'min:1', 'max:255'],
+            'address_line_3' => ['nullable', 'string', 'min:1', 'max:255'],
+            'city' => ['nullable', 'string', 'min:1', 'max:255'],
+            'county' => ['nullable', 'string', 'min:1', 'max:255'],
+            'postcode' => ['nullable', 'string', 'min:1', 'max:255', new Postcode()],
+            'country' => ['nullable', 'string', 'min:1', 'max:255'],
             'is_hidden' => [
                 'boolean',
                 new UserHasRole(
