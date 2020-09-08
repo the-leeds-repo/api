@@ -74,6 +74,13 @@ class Organisation extends Model implements AppliesUpdateRequests
             'url' => $data['url'] ?? $this->url,
             'email' => $data['email'] ?? $this->email,
             'phone' => $data['phone'] ?? $this->phone,
+            'address_line_1' => $data['address_line_1'] ?? $this->address_line_1,
+            'address_line_2' => $data['address_line_2'] ?? $this->address_line_2,
+            'address_line_3' => $data['address_line_3'] ?? $this->address_line_3,
+            'city' => $data['city'] ?? $this->city,
+            'county' => $data['county'] ?? $this->county,
+            'postcode' => $data['postcode'] ?? $this->postcode,
+            'country' => $data['country'] ?? $this->country,
             'is_hidden' => $data['is_hidden'] ?? $this->is_hidden,
             'logo_file_id' => array_key_exists('logo_file_id', $data)
                 ? $data['logo_file_id']
