@@ -30,7 +30,7 @@ class UpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        if ($this->user()->canUpdate($this->user)) {
+        if ($this->user('api')->canUpdate($this->user)) {
             return true;
         }
 

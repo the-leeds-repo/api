@@ -15,7 +15,7 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
-        if ($this->user()->isServiceAdmin()) {
+        if ($this->user('api')->isServiceAdmin()) {
             return true;
         }
 

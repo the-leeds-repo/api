@@ -17,15 +17,15 @@ class ShowRequest extends FormRequest
             return true;
         }
 
-        if ($this->user() === null) {
+        if ($this->user('api') === null) {
             return false;
         }
 
-        if ($this->user()->isGlobalAdmin()) {
+        if ($this->user('api')->isGlobalAdmin()) {
             return true;
         }
 
-        if (in_array($this->route('organisation')->id, $this->user()->organisationIds())) {
+        if (in_array($this->route('organisation')->id, $this->user('api')->organisationIds())) {
             return true;
         }
 
