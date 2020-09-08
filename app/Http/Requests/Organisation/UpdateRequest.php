@@ -5,9 +5,12 @@ namespace App\Http\Requests\Organisation;
 use App\Http\Requests\HasMissingValues;
 use App\Models\File;
 use App\Models\Organisation;
+use App\Models\Role;
+use App\Models\UserRole;
 use App\Rules\FileIsMimeType;
 use App\Rules\FileIsPendingAssignment;
 use App\Rules\Slug;
+use App\Rules\UserHasRole;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -50,7 +53,17 @@ class UpdateRequest extends FormRequest
             'url' => ['url', 'max:255'],
             'email' => ['email', 'max:255'],
             'phone' => ['string', 'min:1', 'max:255'],
-            'is_hidden' => ['boolean'],
+            'is_hidden' => [
+                'boolean',
+                new UserHasRole(
+                    $this->user('api'),
+                    new UserRole([
+                        'user_id' => $this->user('api')->id,
+                        'role_id' => Role::globalAdmin()->id,
+                    ]),
+                    $this->organisation->is_hidden
+                ),
+            ],
             'logo_file_id' => [
                 'nullable',
                 'exists:files,id',

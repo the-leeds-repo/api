@@ -425,6 +425,41 @@ class OrganisationsTest extends TestCase
         $this->assertEquals($data, $payload);
     }
 
+    public function test_is_hidden_cannot_be_updated_by_organisation_admin()
+    {
+        $organisation = factory(Organisation::class)->create([
+            'is_hidden' => false,
+        ]);
+
+        $user = $this->makeOrganisationAdmin(factory(User::class)->create(), $organisation);
+
+        Passport::actingAs($user);
+
+        $response = $this->json('PUT', "/core/v1/organisations/{$organisation->id}", [
+            'is_hidden' => true,
+        ]);
+
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $response->assertJsonValidationErrors(['is_hidden']);
+    }
+
+    public function test_is_hidden_can_be_updated_by_global_admin()
+    {
+        $organisation = factory(Organisation::class)->create([
+            'is_hidden' => false,
+        ]);
+
+        $user = $this->makeGlobalAdmin(factory(User::class)->create());
+
+        Passport::actingAs($user);
+
+        $response = $this->json('PUT', "/core/v1/organisations/{$organisation->id}", [
+            'is_hidden' => true,
+        ]);
+
+        $response->assertStatus(Response::HTTP_OK);
+    }
+
     public function test_audit_created_when_updated()
     {
         $this->fakeEvents();
