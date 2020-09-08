@@ -575,6 +575,7 @@ class UpdateRequestsTest extends TestCase
                 'city' => 'Leeds',
                 'county' => 'West Yorkshire',
                 'postcode' => 'LS1 2AB',
+                'country' => 'United Kingdom',
                 'is_hidden' => true,
             ],
         ]);
@@ -598,6 +599,7 @@ class UpdateRequestsTest extends TestCase
             'city' => $updateRequest->data['city'],
             'county' => $updateRequest->data['county'],
             'postcode' => $updateRequest->data['postcode'],
+            'country' => $updateRequest->data['country'],
             'is_hidden' => $updateRequest->data['is_hidden'],
         ]);
     }

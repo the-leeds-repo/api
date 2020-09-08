@@ -45,6 +45,7 @@ class OrganisationsTest extends TestCase
                 'city' => $organisation->city,
                 'county' => $organisation->county,
                 'postcode' => $organisation->postcode,
+                'country' => $organisation->country,
                 'is_hidden' => $organisation->is_hidden,
                 'created_at' => $organisation->created_at->format(CarbonImmutable::ISO8601),
                 'updated_at' => $organisation->updated_at->format(CarbonImmutable::ISO8601),
@@ -201,6 +202,7 @@ class OrganisationsTest extends TestCase
             'city' => null,
             'county' => null,
             'postcode' => null,
+            'country' => null,
             'is_hidden' => false,
         ];
 
@@ -237,6 +239,7 @@ class OrganisationsTest extends TestCase
             'city' => null,
             'county' => null,
             'postcode' => null,
+            'country' => null,
             'is_hidden' => false,
         ]);
 
@@ -274,6 +277,7 @@ class OrganisationsTest extends TestCase
                 'city' => $organisation->city,
                 'county' => $organisation->county,
                 'postcode' => $organisation->postcode,
+                'country' => $organisation->country,
                 'is_hidden' => $organisation->is_hidden,
                 'created_at' => $organisation->created_at->format(CarbonImmutable::ISO8601),
                 'updated_at' => $organisation->updated_at->format(CarbonImmutable::ISO8601),
@@ -304,6 +308,7 @@ class OrganisationsTest extends TestCase
                 'city' => $organisation->city,
                 'county' => $organisation->county,
                 'postcode' => $organisation->postcode,
+                'country' => $organisation->country,
                 'is_hidden' => $organisation->is_hidden,
                 'created_at' => $organisation->created_at->format(CarbonImmutable::ISO8601),
                 'updated_at' => $organisation->updated_at->format(CarbonImmutable::ISO8601),
@@ -413,6 +418,7 @@ class OrganisationsTest extends TestCase
             'city' => 'Leeds',
             'county' => 'West Yorkshire',
             'postcode' => 'LS1 2AB',
+            'country' => 'United Kingdom',
             'is_hidden' => false,
         ];
 
