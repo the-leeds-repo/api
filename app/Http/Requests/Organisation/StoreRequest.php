@@ -6,6 +6,7 @@ use App\Models\File;
 use App\Models\Organisation;
 use App\Rules\FileIsMimeType;
 use App\Rules\FileIsPendingAssignment;
+use App\Rules\Postcode;
 use App\Rules\Slug;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -39,6 +40,13 @@ class StoreRequest extends FormRequest
             'url' => ['required', 'url', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'phone' => ['required', 'string', 'min:1', 'max:255'],
+            'address_line_1' => ['present', 'nullable', 'string', 'min:1', 'max:255'],
+            'address_line_2' => ['present', 'nullable', 'string', 'min:1', 'max:255'],
+            'address_line_3' => ['present', 'nullable', 'string', 'min:1', 'max:255'],
+            'city' => ['present', 'nullable', 'string', 'min:1', 'max:255'],
+            'county' => ['present', 'nullable', 'string', 'min:1', 'max:255'],
+            'postcode' => ['present', 'nullable', 'string', 'min:1', 'max:255', new Postcode()],
+            'country' => ['present', 'nullable', 'string', 'min:1', 'max:255'],
             'is_hidden' => ['required', 'boolean'],
             'logo_file_id' => [
                 'nullable',

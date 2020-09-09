@@ -11,6 +11,7 @@ use App\UpdateRequest\AppliesUpdateRequests;
 use App\UpdateRequest\UpdateRequests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator as ValidatorFacade;
 use ScoutElastic\Searchable;
 
@@ -152,15 +153,17 @@ class Resource extends Model implements AppliesUpdateRequests
 
         // Update the service record.
         $this->update([
-            'organisation_id' => $data['organisation_id'] ?? $this->organisation_id,
-            'name' => $data['name'] ?? $this->name,
-            'slug' => $data['slug'] ?? $this->slug,
-            'description' => sanitize_markdown($data['description'] ?? $this->description),
-            'url' => $data['url'] ?? $this->url,
-            'license' => $data['license'] ?? $this->license,
-            'author' => $data['author'] ?? $this->author,
-            'published_at' => $data['published_at'] ?? $this->published_at,
-            'last_modified_at' => $data['last_modified_at'] ?? $this->last_modified_at,
+            'organisation_id' => Arr::get($data, 'organisation_id', $this->organisation_id),
+            'name' => Arr::get($data, 'name', $this->name),
+            'slug' => Arr::get($data, 'slug', $this->slug),
+            'description' => sanitize_markdown(
+                Arr::get($data, 'description', $this->description)
+            ),
+            'url' => Arr::get($data, 'url', $this->url),
+            'license' => Arr::get($data, 'license', $this->license),
+            'author' => Arr::get($data, 'author', $this->author),
+            'published_at' => Arr::get($data, 'published_at', $this->published_at),
+            'last_modified_at' => Arr::get($data, 'last_modified_at', $this->last_modified_at),
         ]);
 
         // Update the category taxonomy records.

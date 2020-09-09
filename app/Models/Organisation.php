@@ -11,6 +11,7 @@ use App\UpdateRequest\AppliesUpdateRequests;
 use App\UpdateRequest\UpdateRequests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Response;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator as ValidatorFacade;
 
@@ -68,16 +69,23 @@ class Organisation extends Model implements AppliesUpdateRequests
         $data = $updateRequest->data;
 
         $this->update([
-            'slug' => $data['slug'] ?? $this->slug,
-            'name' => $data['name'] ?? $this->name,
-            'description' => sanitize_markdown($data['description'] ?? $this->description),
-            'url' => $data['url'] ?? $this->url,
-            'email' => $data['email'] ?? $this->email,
-            'phone' => $data['phone'] ?? $this->phone,
-            'is_hidden' => $data['is_hidden'] ?? $this->is_hidden,
-            'logo_file_id' => array_key_exists('logo_file_id', $data)
-                ? $data['logo_file_id']
-                : $this->logo_file_id,
+            'slug' => Arr::get($data, 'slug', $this->slug),
+            'name' => Arr::get($data, 'name', $this->name),
+            'description' => sanitize_markdown(
+                Arr::get($data, 'description', $this->description)
+            ),
+            'url' => Arr::get($data, 'url', $this->url),
+            'email' => Arr::get($data, 'email', $this->email),
+            'phone' => Arr::get($data, 'phone', $this->phone),
+            'address_line_1' => Arr::get($data, 'address_line_1', $this->address_line_1),
+            'address_line_2' => Arr::get($data, 'address_line_2', $this->address_line_2),
+            'address_line_3' => Arr::get($data, 'address_line_3', $this->address_line_3),
+            'city' => Arr::get($data, 'city', $this->city),
+            'county' => Arr::get($data, 'county', $this->county),
+            'postcode' => Arr::get($data, 'postcode', $this->postcode),
+            'country' => Arr::get($data, 'country', $this->country),
+            'is_hidden' => Arr::get($data, 'is_hidden', $this->is_hidden),
+            'logo_file_id' => Arr::get($data, 'logo_file_id', $this->logo_file_id),
         ]);
 
         return $updateRequest;

@@ -25,6 +25,20 @@ class OrganisationSchema extends Schema
                 Schema::string('url'),
                 Schema::string('email'),
                 Schema::string('phone'),
+                Schema::string('address_line_1')
+                    ->nullable(),
+                Schema::string('address_line_2')
+                    ->nullable(),
+                Schema::string('address_line_3')
+                    ->nullable(),
+                Schema::string('city')
+                    ->nullable(),
+                Schema::string('county')
+                    ->nullable(),
+                Schema::string('postcode')
+                    ->nullable(),
+                Schema::string('country')
+                    ->nullable(),
                 Schema::boolean('is_hidden'),
                 Schema::string('created_at')
                     ->format(Schema::FORMAT_DATE_TIME)
