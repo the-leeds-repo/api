@@ -71,7 +71,9 @@ class Organisation extends Model implements AppliesUpdateRequests
         $this->update([
             'slug' => Arr::get($data, 'slug', $this->slug),
             'name' => Arr::get($data, 'name', $this->name),
-            'description' => sanitize_markdown(Arr::get($data, 'description', $this->description)),
+            'description' => sanitize_markdown(
+                Arr::get($data, 'description', $this->description)
+            ),
             'url' => Arr::get($data, 'url', $this->url),
             'email' => Arr::get($data, 'email', $this->email),
             'phone' => Arr::get($data, 'phone', $this->phone),

@@ -236,31 +236,31 @@ class Service extends Model implements AppliesUpdateRequests, Notifiable
 
         // Update the service record.
         $this->update([
-            'organisation_id' => $data['organisation_id'] ?? $this->organisation_id,
-            'slug' => $data['slug'] ?? $this->slug,
-            'name' => $data['name'] ?? $this->name,
-            'type' => $data['type'] ?? $this->type,
-            'status' => $data['status'] ?? $this->status,
-            'intro' => $data['intro'] ?? $this->intro,
-            'description' => sanitize_markdown($data['description'] ?? $this->description),
-            'wait_time' => $data['wait_time'] ?? $this->wait_time,
-            'is_free' => $data['is_free'] ?? $this->is_free,
-            'fees_text' => $data['fees_text'] ?? $this->fees_text,
-            'fees_url' => $data['fees_url'] ?? $this->fees_url,
-            'testimonial' => $data['testimonial'] ?? $this->testimonial,
-            'video_embed' => $data['video_embed'] ?? $this->video_embed,
-            'url' => $data['url'] ?? $this->url,
-            'contact_name' => $data['contact_name'] ?? $this->contact_name,
-            'contact_phone' => $data['contact_phone'] ?? $this->contact_phone,
-            'contact_email' => $data['contact_email'] ?? $this->contact_email,
-            'show_referral_disclaimer' => $data['show_referral_disclaimer'] ?? $this->show_referral_disclaimer,
-            'referral_method' => $data['referral_method'] ?? $this->referral_method,
-            'referral_button_text' => $data['referral_button_text'] ?? $this->referral_button_text,
-            'referral_email' => $data['referral_email'] ?? $this->referral_email,
-            'referral_url' => $data['referral_url'] ?? $this->referral_url,
-            'logo_file_id' => array_key_exists('logo_file_id', $data)
-                ? $data['logo_file_id']
-                : $this->logo_file_id,
+            'organisation_id' => Arr::get($data, 'organisation_id', $this->organisation_id),
+            'slug' => Arr::get($data, 'slug', $this->slug),
+            'name' => Arr::get($data, 'name', $this->name),
+            'type' => Arr::get($data, 'type', $this->type),
+            'status' => Arr::get($data, 'status', $this->status),
+            'intro' => Arr::get($data, 'intro', $this->intro),
+            'description' => sanitize_markdown(
+                Arr::get($data, 'description', $this->description)
+            ),
+            'wait_time' => Arr::get($data, 'wait_time', $this->wait_time),
+            'is_free' => Arr::get($data, 'is_free', $this->is_free),
+            'fees_text' => Arr::get($data, 'fees_text', $this->fees_text),
+            'fees_url' => Arr::get($data, 'fees_url', $this->fees_url),
+            'testimonial' => Arr::get($data, 'testimonial', $this->testimonial),
+            'video_embed' => Arr::get($data, 'video_embed', $this->video_embed),
+            'url' => Arr::get($data, 'url', $this->url),
+            'contact_name' => Arr::get($data, 'contact_name', $this->contact_name),
+            'contact_phone' => Arr::get($data, 'contact_phone', $this->contact_phone),
+            'contact_email' => Arr::get($data, 'contact_email', $this->contact_email),
+            'show_referral_disclaimer' => Arr::get($data, 'show_referral_disclaimer', $this->show_referral_disclaimer),
+            'referral_method' => Arr::get($data, 'referral_method', $this->referral_method),
+            'referral_button_text' => Arr::get($data, 'referral_button_text', $this->referral_button_text),
+            'referral_email' => Arr::get($data, 'referral_email', $this->referral_email),
+            'referral_url' => Arr::get($data, 'referral_url', $this->referral_url),
+            'logo_file_id' => Arr::get($data, 'logo_file_id', $this->logo_file_id),
             'ends_at' => array_key_exists('ends_at', $data)
                 ? (
                     $data['ends_at'] === null
@@ -273,34 +273,34 @@ class Service extends Model implements AppliesUpdateRequests, Notifiable
         ]);
 
         // Update the service criterion record.
-        if (array_key_exists('criteria.age_group', Arr::dot($data))) {
+        if (Arr::has($data, 'criteria.age_group')) {
             $this->serviceCriterion->age_group = Arr::get($data, 'criteria.age_group');
         }
-        if (array_key_exists('criteria.disability', Arr::dot($data))) {
+        if (Arr::has($data, 'criteria.disability')) {
             $this->serviceCriterion->disability = Arr::get($data, 'criteria.disability');
         }
-        if (array_key_exists('criteria.employment', Arr::dot($data))) {
+        if (Arr::has($data, 'criteria.employment')) {
             $this->serviceCriterion->employment = Arr::get($data, 'criteria.employment');
         }
-        if (array_key_exists('criteria.gender', Arr::dot($data))) {
+        if (Arr::has($data, 'criteria.gender')) {
             $this->serviceCriterion->gender = Arr::get($data, 'criteria.gender');
         }
-        if (array_key_exists('criteria.housing', Arr::dot($data))) {
+        if (Arr::has($data, 'criteria.housing')) {
             $this->serviceCriterion->housing = Arr::get($data, 'criteria.housing');
         }
-        if (array_key_exists('criteria.income', Arr::dot($data))) {
+        if (Arr::has($data, 'criteria.income')) {
             $this->serviceCriterion->income = Arr::get($data, 'criteria.income');
         }
-        if (array_key_exists('criteria.language', Arr::dot($data))) {
+        if (Arr::has($data, 'criteria.language')) {
             $this->serviceCriterion->language = Arr::get($data, 'criteria.language');
         }
-        if (array_key_exists('criteria.other', Arr::dot($data))) {
+        if (Arr::has($data, 'criteria.other')) {
             $this->serviceCriterion->other = Arr::get($data, 'criteria.other');
         }
         $this->serviceCriterion->save();
 
         // Update the useful info records.
-        if (array_key_exists('useful_infos', $data)) {
+        if (Arr::has($data, 'useful_infos')) {
             $this->usefulInfos()->delete();
             foreach ($data['useful_infos'] as $usefulInfo) {
                 $this->usefulInfos()->create([
@@ -312,7 +312,7 @@ class Service extends Model implements AppliesUpdateRequests, Notifiable
         }
 
         // Update the offering records.
-        if (array_key_exists('offerings', $data)) {
+        if (Arr::has($data, 'offerings')) {
             $this->offerings()->delete();
             foreach ($data['offerings'] as $offering) {
                 $this->offerings()->create([
@@ -323,7 +323,7 @@ class Service extends Model implements AppliesUpdateRequests, Notifiable
         }
 
         // Update the social media records.
-        if (array_key_exists('social_medias', $updateRequest->data)) {
+        if (Arr::has($data, 'social_medias')) {
             $this->socialMedias()->delete();
             foreach ($data['social_medias'] as $socialMedia) {
                 $this->socialMedias()->create([
@@ -334,7 +334,7 @@ class Service extends Model implements AppliesUpdateRequests, Notifiable
         }
 
         // Update the gallery item records.
-        if (array_key_exists('gallery_items', $updateRequest->data)) {
+        if (Arr::has($data, 'gallery_items')) {
             $this->serviceGalleryItems()->delete();
             foreach ($data['gallery_items'] as $galleryItem) {
                 $this->serviceGalleryItems()->create([
@@ -344,7 +344,7 @@ class Service extends Model implements AppliesUpdateRequests, Notifiable
         }
 
         // Update the category taxonomy records.
-        if (array_key_exists('category_taxonomies', $data)) {
+        if (Arr::has($data, 'category_taxonomies')) {
             $taxonomies = Taxonomy::whereIn('id', $data['category_taxonomies'])->get();
             $this->syncServiceTaxonomies($taxonomies);
         }

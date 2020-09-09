@@ -13,6 +13,7 @@ use App\UpdateRequest\UpdateRequests;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Response;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator as ValidatorFacade;
@@ -155,14 +156,12 @@ class ServiceLocation extends Model implements AppliesUpdateRequests
 
         // Update the service location.
         $this->update([
-            'name' => $data['name'] ?? $this->name,
-            'image_file_id' => array_key_exists('image_file_id', $data)
-                ? $data['image_file_id']
-                : $this->image_file_id,
+            'name' => Arr::get($data, 'name', $this->name),
+            'image_file_id' => Arr::get($data, 'image_file_id', $this->image_file_id),
         ]);
 
         // Attach the regular opening hours.
-        if (array_key_exists('regular_opening_hours', $data)) {
+        if (Arr::has($data, 'regular_opening_hours')) {
             $this->regularOpeningHours()->delete();
             foreach ($data['regular_opening_hours'] as $regularOpeningHour) {
                 $this->regularOpeningHours()->create([
@@ -189,7 +188,7 @@ class ServiceLocation extends Model implements AppliesUpdateRequests
         }
 
         // Attach the holiday opening hours.
-        if (array_key_exists('holiday_opening_hours', $data)) {
+        if (Arr::has($data, 'holiday_opening_hours')) {
             $this->holidayOpeningHours()->delete();
             foreach ($data['holiday_opening_hours'] as $holidayOpeningHour) {
                 $this->holidayOpeningHours()->create([
