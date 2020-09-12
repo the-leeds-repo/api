@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\CiviCrm\ClientInterface;
+use App\CiviCrm\LogClient;
 use App\Contracts\VariableSubstituter;
 use App\RoleManagement\RoleAuthorizer;
 use App\RoleManagement\RoleAuthorizerInterface;
@@ -87,6 +89,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(RoleAuthorizerInterface::class, RoleAuthorizer::class);
         $this->app->bind(RoleCheckerInterface::class, RoleChecker::class);
         $this->app->bind(RoleManagerInterface::class, RoleManager::class);
+
+        $this->app->bind(ClientInterface::class, LogClient::class);
     }
 
     /**
