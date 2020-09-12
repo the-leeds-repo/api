@@ -38,7 +38,7 @@ class OrganisationObserver
             }
         }
     }
-    
+
     /**
      * Handle the organisation "updated" event.
      *
