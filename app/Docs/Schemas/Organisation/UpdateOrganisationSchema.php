@@ -30,7 +30,9 @@ class UpdateOrganisationSchema extends Schema
                 'county',
                 'postcode',
                 'country',
-                'is_hidden'
+                'is_hidden',
+                'civi_sync_enabled',
+                'civi_id'
             )
             ->properties(
                 Schema::string('name'),
@@ -54,6 +56,10 @@ class UpdateOrganisationSchema extends Schema
                 Schema::string('country')
                     ->nullable(),
                 Schema::boolean('is_hidden'),
+                Schema::boolean('civi_sync_enabled')
+                    ->nullable(),
+                Schema::string('civi_id')
+                    ->nullable(),
                 Schema::string('logo_file_id')
                     ->format(Schema::FORMAT_UUID)
                     ->description('The ID of the file uploaded')

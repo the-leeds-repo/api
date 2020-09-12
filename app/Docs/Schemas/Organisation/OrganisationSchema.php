@@ -40,6 +40,9 @@ class OrganisationSchema extends Schema
                 Schema::string('country')
                     ->nullable(),
                 Schema::boolean('is_hidden'),
+                Schema::boolean('civi_sync_enabled'),
+                Schema::string('civi_id')
+                    ->nullable(),
                 Schema::string('created_at')
                     ->format(Schema::FORMAT_DATE_TIME)
                     ->nullable(),
