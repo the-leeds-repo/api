@@ -29,6 +29,7 @@ class Organisation extends Model implements AppliesUpdateRequests
      */
     protected $casts = [
         'is_hidden' => 'boolean',
+        'civi_sync_enabled' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
