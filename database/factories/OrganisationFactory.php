@@ -15,5 +15,6 @@ $factory->define(Organisation::class, function (Faker $faker) {
         'email' => $faker->safeEmail,
         'phone' => random_uk_phone(),
         'is_hidden' => false,
+        'civi_sync_enabled' => false,
     ];
 });

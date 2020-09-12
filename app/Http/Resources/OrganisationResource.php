@@ -31,7 +31,18 @@ class OrganisationResource extends JsonResource
             'county' => $this->county,
             'postcode' => $this->postcode,
             'country' => $this->country,
-            'is_hidden' => $this->is_hidden,
+            'is_hidden' => $this->when(
+                $request->user('api'),
+                $this->is_hidden
+            ),
+            'civi_sync_enabled' => $this->when(
+                $request->user('api'),
+                $this->civi_sync_enabled
+            ),
+            'civi_id' => $this->when(
+                $request->user('api'),
+                $this->civi_id
+            ),
             'created_at' => $this->created_at->format(CarbonImmutable::ISO8601),
             'updated_at' => $this->updated_at->format(CarbonImmutable::ISO8601),
         ];

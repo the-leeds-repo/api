@@ -577,6 +577,8 @@ class UpdateRequestsTest extends TestCase
                 'postcode' => 'LS1 2AB',
                 'country' => 'United Kingdom',
                 'is_hidden' => true,
+                'civi_sync_enabled' => true,
+                'civi_id' => 'test-civi-id',
             ],
         ]);
 
@@ -601,6 +603,8 @@ class UpdateRequestsTest extends TestCase
             'postcode' => $updateRequest->data['postcode'],
             'country' => $updateRequest->data['country'],
             'is_hidden' => $updateRequest->data['is_hidden'],
+            'civi_sync_enabled' => $updateRequest->data['civi_sync_enabled'],
+            'civi_id' => $updateRequest->data['civi_id'],
         ]);
     }
 

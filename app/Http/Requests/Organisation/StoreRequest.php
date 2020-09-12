@@ -48,6 +48,8 @@ class StoreRequest extends FormRequest
             'postcode' => ['present', 'nullable', 'string', 'min:1', 'max:255', new Postcode()],
             'country' => ['present', 'nullable', 'string', 'min:1', 'max:255'],
             'is_hidden' => ['required', 'boolean'],
+            'civi_sync_enabled' => ['required', 'boolean'],
+            'civi_id' => ['required_if:civi_sync_enabled,true', 'present', 'nullable', 'string', 'max:255'],
             'logo_file_id' => [
                 'nullable',
                 'exists:files,id',
