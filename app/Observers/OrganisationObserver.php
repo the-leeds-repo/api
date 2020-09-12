@@ -67,5 +67,13 @@ class OrganisationObserver
         $organisation->userRoles->each->delete();
         $organisation->updateRequests->each->delete();
         $organisation->services->each->delete();
+
+        if ($organisation->civi_sync_enabled) {
+            try {
+                $this->civiClient->delete($organisation);
+            } catch (CiviException $exception) {
+                logger()->error($exception);
+            }
+        }
     }
 }
