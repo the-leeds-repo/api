@@ -80,7 +80,7 @@ class UpdateRequest extends FormRequest
                         'user_id' => $this->user('api')->id,
                         'role_id' => Role::globalAdmin()->id,
                     ]),
-                    $this->service->civi_sync_enabled
+                    $this->organisation->civi_sync_enabled
                 ),
             ],
             'civi_id' => [
@@ -93,7 +93,7 @@ class UpdateRequest extends FormRequest
                         'user_id' => $this->user('api')->id,
                         'role_id' => Role::globalAdmin()->id,
                     ]),
-                    $this->service->civi_id
+                    $this->organisation->civi_id
                 ),
             ],
             'logo_file_id' => [
