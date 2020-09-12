@@ -47,6 +47,8 @@ class OrganisationsTest extends TestCase
                 'postcode' => $organisation->postcode,
                 'country' => $organisation->country,
                 'is_hidden' => $organisation->is_hidden,
+                'civi_sync_enabled' => $organisation->civi_sync_enabled,
+                'civi_id' => $organisation->civi_id,
                 'created_at' => $organisation->created_at->format(CarbonImmutable::ISO8601),
                 'updated_at' => $organisation->updated_at->format(CarbonImmutable::ISO8601),
             ],
@@ -204,6 +206,8 @@ class OrganisationsTest extends TestCase
             'postcode' => null,
             'country' => null,
             'is_hidden' => false,
+            'civi_sync_enabled' => false,
+            'civi_id' => null,
         ];
 
         Passport::actingAs($user);
@@ -241,6 +245,8 @@ class OrganisationsTest extends TestCase
             'postcode' => null,
             'country' => null,
             'is_hidden' => false,
+            'civi_sync_enabled' => false,
+            'civi_id' => null,
         ]);
 
         Event::assertDispatched(EndpointHit::class, function (EndpointHit $event) use ($user, $response) {
@@ -279,6 +285,8 @@ class OrganisationsTest extends TestCase
                 'postcode' => $organisation->postcode,
                 'country' => $organisation->country,
                 'is_hidden' => $organisation->is_hidden,
+                'civi_sync_enabled' => $organisation->civi_sync_enabled,
+                'civi_id' => $organisation->civi_id,
                 'created_at' => $organisation->created_at->format(CarbonImmutable::ISO8601),
                 'updated_at' => $organisation->updated_at->format(CarbonImmutable::ISO8601),
             ],
@@ -420,6 +428,8 @@ class OrganisationsTest extends TestCase
             'postcode' => 'LS1 2AB',
             'country' => 'United Kingdom',
             'is_hidden' => false,
+            'civi_sync_enabled' => false,
+            'civi_id' => null,
         ];
 
         Passport::actingAs($user);
@@ -722,6 +732,8 @@ class OrganisationsTest extends TestCase
             'postcode' => null,
             'country' => null,
             'is_hidden' => false,
+            'civi_sync_enabled' => false,
+            'civi_id' => null,
             'logo_file_id' => $this->getResponseContent($imageResponse, 'data.id'),
         ]);
         $organisationId = $this->getResponseContent($response, 'data.id');
