@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Civi;
+namespace App\CiviCrm;
 
 use App\Models\Organisation;
 use App\Transformers\CiviCrm\OrganisationTransformer;

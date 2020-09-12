@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\Observers;
 
-use App\Civi\CiviException;
-use App\Civi\ClientInterface;
+use App\CiviCrm\CiviException;
+use App\CiviCrm\ClientInterface;
 use App\Models\Organisation;
 use App\Observers\OrganisationObserver;
 use Tests\TestCase;

@@ -2,21 +2,21 @@
 
 namespace App\Observers;
 
-use App\Civi\CiviException;
-use App\Civi\ClientInterface;
+use App\CiviCrm\CiviException;
+use App\CiviCrm\ClientInterface;
 use App\Models\Organisation;
 
 class OrganisationObserver
 {
     /**
-     * @var \App\Civi\ClientInterface
+     * @var \App\CiviCrm\ClientInterface
      */
     protected $civiClient;
 
     /**
      * OrganisationObserver constructor.
      *
-     * @param \App\Civi\ClientInterface $civiClient
+     * @param \App\CiviCrm\ClientInterface $civiClient
      */
     public function __construct(ClientInterface $civiClient)
     {

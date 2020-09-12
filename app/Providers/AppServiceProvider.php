@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Civi\ClientInterface;
-use App\Civi\LogClient;
+use App\CiviCrm\ClientInterface;
+use App\CiviCrm\LogClient;
 use App\Contracts\VariableSubstituter;
 use App\RoleManagement\RoleAuthorizer;
 use App\RoleManagement\RoleAuthorizerInterface;

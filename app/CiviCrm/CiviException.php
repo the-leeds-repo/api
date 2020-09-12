@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Civi;
+namespace App\CiviCrm;
 
 use Exception;
 
