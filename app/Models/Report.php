@@ -226,6 +226,9 @@ class Report extends Model
             'Organisation Phone',
             'Organisation URL',
             'Number of Accounts Attributed',
+            'Hide Organisation from Public View',
+            'CiviCRM ID',
+            'Sync with CiviCRM Enabled',
         ];
 
         $data = [$headings];
@@ -244,6 +247,9 @@ class Report extends Model
                         $organisation->phone,
                         $organisation->url,
                         $organisation->non_admin_users_count,
+                        (int)$organisation->is_hidden,
+                        $organisation->civi_id,
+                        (int)$organisation->civi_sync_enabled,
                     ];
                 });
             });

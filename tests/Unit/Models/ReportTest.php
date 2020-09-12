@@ -217,7 +217,11 @@ class ReportTest extends TestCase
     public function test_organisations_export_works()
     {
         // Create a single organisation.
-        $organisation = factory(Organisation::class)->create();
+        $organisation = factory(Organisation::class)->create([
+            'is_hidden' => true,
+            'civi_sync_enabled' => true,
+            'civi_id' => 'test-id',
+        ]);
 
         // Create an admin and non-admin user.
         $this->makeSuperAdmin(factory(User::class)->create());
@@ -241,6 +245,9 @@ class ReportTest extends TestCase
             'Organisation Phone',
             'Organisation URL',
             'Number of Accounts Attributed',
+            'Hide Organisation from Public View',
+            'CiviCRM ID',
+            'Sync with CiviCRM Enabled',
         ], $csv[0]);
 
         // Assert created organisation exported.
@@ -252,6 +259,9 @@ class ReportTest extends TestCase
             $organisation->phone,
             $organisation->url,
             1,
+            (int)$organisation->is_hidden,
+            $organisation->civi_id,
+            (int)$organisation->civi_sync_enabled,
         ], $csv[1]);
     }
 
