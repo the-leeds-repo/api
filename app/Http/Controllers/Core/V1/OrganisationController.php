@@ -98,6 +98,8 @@ class OrganisationController extends Controller
                 'country' => $request->country,
                 'is_hidden' => $request->is_hidden,
                 'logo_file_id' => $request->logo_file_id,
+                'civi_sync_enabled' => $request->civi_sync_enabled,
+                'civi_id' => $request->civi_id,
             ]);
 
             if ($request->filled('logo_file_id')) {
@@ -169,6 +171,8 @@ class OrganisationController extends Controller
                     'country' => $request->missing('country'),
                     'is_hidden' => $request->missing('is_hidden'),
                     'logo_file_id' => $request->missing('logo_file_id'),
+                    'civi_sync_enabled' => $request->missing('civi_sync_enabled'),
+                    'civi_id' => $request->missing('civi_id'),
                 ]),
             ]);
 

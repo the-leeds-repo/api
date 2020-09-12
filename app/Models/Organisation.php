@@ -86,8 +86,14 @@ class Organisation extends Model implements AppliesUpdateRequests
             'postcode' => Arr::get($data, 'postcode', $this->postcode),
             'country' => Arr::get($data, 'country', $this->country),
             'is_hidden' => Arr::get($data, 'is_hidden', $this->is_hidden),
+            'civi_sync_enabled' => Arr::get($data, 'civi_sync_enabled', $this->civi_sync_enabled),
+            'civi_id' => Arr::get($data, 'civi_id', $this->civi_id),
             'logo_file_id' => Arr::get($data, 'logo_file_id', $this->logo_file_id),
         ]);
+
+        if ($this->civi_sync_enabled === false) {
+            $this->update(['civi_id' => null]);
+        }
 
         return $updateRequest;
     }

@@ -318,6 +318,8 @@ class OrganisationsTest extends TestCase
                 'postcode' => $organisation->postcode,
                 'country' => $organisation->country,
                 'is_hidden' => $organisation->is_hidden,
+                'civi_sync_enabled' => $organisation->civi_sync_enabled,
+                'civi_id' => $organisation->civi_id,
                 'created_at' => $organisation->created_at->format(CarbonImmutable::ISO8601),
                 'updated_at' => $organisation->updated_at->format(CarbonImmutable::ISO8601),
             ],
