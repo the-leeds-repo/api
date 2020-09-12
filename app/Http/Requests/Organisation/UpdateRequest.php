@@ -72,6 +72,30 @@ class UpdateRequest extends FormRequest
                     $this->organisation->is_hidden
                 ),
             ],
+            'civi_sync_enabled' => [
+                'boolean',
+                new UserHasRole(
+                    $this->user('api'),
+                    new UserRole([
+                        'user_id' => $this->user('api')->id,
+                        'role_id' => Role::globalAdmin()->id,
+                    ]),
+                    $this->service->civi_sync_enabled
+                ),
+            ],
+            'civi_id' => [
+                'nullable',
+                'string',
+                'max:255',
+                new UserHasRole(
+                    $this->user('api'),
+                    new UserRole([
+                        'user_id' => $this->user('api')->id,
+                        'role_id' => Role::globalAdmin()->id,
+                    ]),
+                    $this->service->civi_id
+                ),
+            ],
             'logo_file_id' => [
                 'nullable',
                 'exists:files,id',
