@@ -45,4 +45,15 @@ class LogClient implements ClientInterface
             $this->transformer->transform($organisation)
         );
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function delete(Organisation $organisation): void
+    {
+        logger()->info(
+            "Marked contact as deleted for organisation [{$organisation->id}].",
+            $this->transformer->transform($organisation)
+        );
+    }
 }
