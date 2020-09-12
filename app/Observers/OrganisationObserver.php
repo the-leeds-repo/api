@@ -47,6 +47,14 @@ class OrganisationObserver
     public function updated(Organisation $organisation)
     {
         $organisation->touchServices();
+
+        if ($organisation->civi_sync_enabled) {
+            try {
+                $this->civiClient->update($organisation);
+            } catch (CiviException $exception) {
+                logger()->error($exception);
+            }
+        }
     }
 
     /**
