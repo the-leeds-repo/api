@@ -91,8 +91,8 @@ class Organisation extends Model implements AppliesUpdateRequests
             'logo_file_id' => Arr::get($data, 'logo_file_id', $this->logo_file_id),
         ]);
 
-        if ($this->civi_sync_enabled === false) {
-            $this->update(['civi_id' => null]);
+        if ($this->civi_id === null) {
+            $this->update(['civi_sync_enabled' => false]);
         }
 
         return $updateRequest;
