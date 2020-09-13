@@ -4,6 +4,7 @@ namespace Tests\Unit\Observers;
 
 use App\CiviCrm\CiviException;
 use App\CiviCrm\ClientInterface;
+use App\Models\FailedCiviSync;
 use App\Models\Organisation;
 use App\Observers\OrganisationObserver;
 use Tests\TestCase;
@@ -152,5 +153,26 @@ class OrganisationObserverTest extends TestCase
         $observer = new OrganisationObserver($civiClientMock);
 
         $observer->deleting($organisation);
+    }
+
+    public function test_deleting_deletes_failed_civi_syncs()
+    {
+        $organisation = factory(Organisation::class)->create([
+            'civi_sync_enabled' => true,
+        ]);
+
+        $failedCiviSync = factory(FailedCiviSync::class)->create([
+            'organisation_id' => $organisation->id,
+        ]);
+
+        $civiClientMock = $this->createMock(ClientInterface::class);
+
+        $observer = new OrganisationObserver($civiClientMock);
+
+        $observer->deleting($organisation);
+
+        $this->assertDatabaseMissing('failed_civi_syncs', [
+            'id' => $failedCiviSync->id,
+        ]);
     }
 }

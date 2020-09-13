@@ -67,6 +67,7 @@ class OrganisationObserver
         $organisation->userRoles->each->delete();
         $organisation->updateRequests->each->delete();
         $organisation->services->each->delete();
+        $organisation->failedCiviSyncs()->delete();
 
         if ($organisation->civi_sync_enabled) {
             try {
