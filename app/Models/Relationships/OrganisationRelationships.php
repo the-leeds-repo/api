@@ -2,6 +2,7 @@
 
 namespace App\Models\Relationships;
 
+use App\Models\FailedCiviSync;
 use App\Models\File;
 use App\Models\Role;
 use App\Models\Service;
@@ -53,5 +54,13 @@ trait OrganisationRelationships
             ->whereDoesntHave('userRoles', function (Builder $query) {
                 $query->whereIn('user_roles.role_id', [Role::superAdmin()->id, Role::globalAdmin()->id]);
             });
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function failedCiviSyncs()
+    {
+        return $this->hasMany(FailedCiviSync::class);
     }
 }
