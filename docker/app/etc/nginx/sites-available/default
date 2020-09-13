@@ -1,3 +1,9 @@
+upstream php {
+    server unix:/run/php/php7.2-fpm.sock max_conns=5;
+
+    keepalive 5;
+}
+
 server {
     listen 80 default_server;
 
@@ -9,8 +15,15 @@ server {
 
     charset utf-8;
 
-    location = /favicon.ico { log_not_found off; access_log off; }
-    location = /robots.txt  { log_not_found off; access_log off; }
+    keepalive_requests 200;
+    keepalive_timeout 1m;
+
+    location = /favicon.ico {
+      log_not_found off; access_log off;
+    }
+    location = /robots.txt  {
+      log_not_found off; access_log off;
+    }
 
     location / {
         try_files $uri $uri/ /index.php$is_args$args;
@@ -18,7 +31,7 @@ server {
 
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+        fastcgi_pass php;
     }
 
     error_page 404 /index.php;
