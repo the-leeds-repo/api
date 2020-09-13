@@ -37,6 +37,8 @@ class OpenApi extends BaseOpenApi implements Responsable
                 Paths\Collections\Snomed\CollectionSnomedNestedPath::create(),
                 Paths\FailedCiviSyncs\FailedCiviSyncsRootPath::create(),
                 Paths\FailedCiviSyncs\FailedCiviSyncsIndexPath::create(),
+                Paths\FailedCiviSyncs\FailedCiviSyncsNestedPath::create(),
+                Paths\FailedCiviSyncs\FailedCiviSyncsRetryPath::create(),
                 Paths\Files\FilesRootPath::create(),
                 Paths\Locations\LocationsRootPath::create(),
                 Paths\Locations\LocationsIndexPath::create(),
