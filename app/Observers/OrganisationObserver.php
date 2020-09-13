@@ -4,7 +4,6 @@ namespace App\Observers;
 
 use App\CiviCrm\CiviException;
 use App\CiviCrm\ClientInterface;
-use App\Models\FailedCiviSync;
 use App\Models\Organisation;
 
 class OrganisationObserver
