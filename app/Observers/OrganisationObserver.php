@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\CiviCrm\CiviException;
 use App\CiviCrm\ClientInterface;
+use App\Models\FailedCiviSync;
 use App\Models\Organisation;
 
 class OrganisationObserver
@@ -34,6 +35,9 @@ class OrganisationObserver
             try {
                 $this->civiClient->create($organisation);
             } catch (CiviException $exception) {
+                $organisation->failedCiviSyncs()->create([
+                    'status_code' => $exception->getCode(),
+                ]);
                 logger()->error($exception);
             }
         }
@@ -52,6 +56,9 @@ class OrganisationObserver
             try {
                 $this->civiClient->update($organisation);
             } catch (CiviException $exception) {
+                $organisation->failedCiviSyncs()->create([
+                    'status_code' => $exception->getCode(),
+                ]);
                 logger()->error($exception);
             }
         }

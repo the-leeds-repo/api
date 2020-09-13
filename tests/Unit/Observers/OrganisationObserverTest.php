@@ -13,7 +13,7 @@ class OrganisationObserverTest extends TestCase
 {
     public function test_created_creates_contact_on_civi()
     {
-        $organisation = new Organisation([
+        $organisation = factory(Organisation::class)->create([
             'civi_sync_enabled' => true,
         ]);
 
@@ -29,7 +29,7 @@ class OrganisationObserverTest extends TestCase
 
     public function test_created_does_not_create_contact_on_civi()
     {
-        $organisation = new Organisation([
+        $organisation = factory(Organisation::class)->create([
             'civi_sync_enabled' => false,
         ]);
 
@@ -44,7 +44,7 @@ class OrganisationObserverTest extends TestCase
 
     public function test_created_handles_civi_exception()
     {
-        $organisation = new Organisation([
+        $organisation = factory(Organisation::class)->create([
             'civi_sync_enabled' => true,
         ]);
 
@@ -61,7 +61,7 @@ class OrganisationObserverTest extends TestCase
 
     public function test_updated_updates_contact_on_civi()
     {
-        $organisation = new Organisation([
+        $organisation = factory(Organisation::class)->create([
             'civi_sync_enabled' => true,
         ]);
 
@@ -77,7 +77,7 @@ class OrganisationObserverTest extends TestCase
 
     public function test_updated_does_not_create_contact_on_civi()
     {
-        $organisation = new Organisation([
+        $organisation = factory(Organisation::class)->create([
             'civi_sync_enabled' => false,
         ]);
 
@@ -92,7 +92,7 @@ class OrganisationObserverTest extends TestCase
 
     public function test_updated_handles_civi_exception()
     {
-        $organisation = new Organisation([
+        $organisation = factory(Organisation::class)->create([
             'civi_sync_enabled' => true,
         ]);
 
@@ -109,7 +109,7 @@ class OrganisationObserverTest extends TestCase
 
     public function test_deleting_updates_contact_on_civi()
     {
-        $organisation = new Organisation([
+        $organisation = factory(Organisation::class)->create([
             'civi_sync_enabled' => true,
         ]);
 
@@ -125,7 +125,7 @@ class OrganisationObserverTest extends TestCase
 
     public function test_deleting_does_not_create_contact_on_civi()
     {
-        $organisation = new Organisation([
+        $organisation = factory(Organisation::class)->create([
             'civi_sync_enabled' => false,
         ]);
 
@@ -140,7 +140,7 @@ class OrganisationObserverTest extends TestCase
 
     public function test_deleting_handles_civi_exception()
     {
-        $organisation = new Organisation([
+        $organisation = factory(Organisation::class)->create([
             'civi_sync_enabled' => true,
         ]);
 
