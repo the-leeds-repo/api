@@ -242,7 +242,7 @@ class FailedCiviSyncsTest extends TestCase
 
         $response->assertStatus(Response::HTTP_OK);
         $response->assertJsonFragment([
-            'id' => $failedCiviSync->id,
+            'id' => $failedCiviSync->organisation_id,
         ]);
     }
 
