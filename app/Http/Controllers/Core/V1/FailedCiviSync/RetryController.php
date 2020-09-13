@@ -40,10 +40,7 @@ class RetryController extends Controller
 
             try {
                 $civiClient->update($organisation);
-
-                FailedCiviSync::query()
-                    ->where('organisation_id', '=', $organisation->id)
-                    ->delete();
+                $failedCiviSync->delete();
             } catch (CiviException $exception) {
                 logger()->error($exception);
 
