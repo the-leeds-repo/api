@@ -16,7 +16,6 @@ use App\Http\Responses\ResourceDeleted;
 use App\Http\Sorts\Referral\OrganisationNameSort;
 use App\Http\Sorts\Referral\ServiceNameSort;
 use App\Models\Referral;
-use App\Models\Service;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;

@@ -11,13 +11,13 @@ class SortParameter extends Parameter
     /**
      * @param string|null $objectId
      * @param string[] $fields
-     * @param string|null $default
+     * @param string ...$default
      * @return static
      */
     public static function create(
         string $objectId = null,
         array $fields = ['N/A'],
-        string $default = null
+        string ...$default
     ): BaseObject {
         $fieldsMarkdown = sprintf('`%s`', implode('`, `', $fields));
 
@@ -35,8 +35,8 @@ EOT
             )
             ->schema(
                 Schema::array()->items(
-                    Schema::string()->default($default)
-                )
+                    Schema::string()
+                )->default($default)
             )
             ->style(FilterParameter::STYLE_SIMPLE);
     }

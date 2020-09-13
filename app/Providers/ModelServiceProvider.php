@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Collection;
 use App\Models\CollectionTaxonomy;
+use App\Models\FailedCiviSync;
 use App\Models\File;
 use App\Models\Location;
 use App\Models\Organisation;
@@ -18,6 +19,7 @@ use App\Models\UpdateRequest;
 use App\Models\User;
 use App\Observers\CollectionObserver;
 use App\Observers\CollectionTaxonomyObserver;
+use App\Observers\FailedCiviSyncObserver;
 use App\Observers\FileObserver;
 use App\Observers\LocationObserver;
 use App\Observers\OrganisationObserver;
@@ -41,6 +43,7 @@ class ModelServiceProvider extends ServiceProvider
     {
         Collection::observe(CollectionObserver::class);
         CollectionTaxonomy::observe(CollectionTaxonomyObserver::class);
+        FailedCiviSync::observe(FailedCiviSyncObserver::class);
         File::observe(FileObserver::class);
         Location::observe(LocationObserver::class);
         Organisation::observe(OrganisationObserver::class);

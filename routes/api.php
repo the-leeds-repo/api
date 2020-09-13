@@ -57,6 +57,11 @@ Route::prefix('core/v1')->namespace('Core\\V1')->name('core.v1.')->group(functio
             'destroy' => 'collection-snomed.destroy',
         ]);
 
+    // Failed CiviCRM Syncs.
+    Route::match(['GET', 'POST'], '/failed-civi-syncs/index', 'FailedCiviSyncController@index');
+    Route::apiResource('/failed-civi-syncs', 'FailedCiviSyncController')->only('index', 'show');
+    Route::post('/failed-civi-syncs/{failed_civi_sync}/retry', 'FailedCiviSync\\RetryController@store')->name('failed-civi-syncs.retry');
+
     // Files.
     Route::apiResource('/files', 'FileController')->only('store');
 
