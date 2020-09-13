@@ -3,6 +3,7 @@
 namespace App\Docs\Operations\FailedCiviSyncs;
 
 use App\Docs\Parameters\FilterIdParameter;
+use App\Docs\Parameters\IncludeParameter;
 use App\Docs\Parameters\PageParameter;
 use App\Docs\Parameters\PerPageParameter;
 use App\Docs\Parameters\SortParameter;
@@ -32,6 +33,7 @@ class IndexFailedCiviSyncOperation extends Operation
                 PageParameter::create(),
                 PerPageParameter::create(),
                 FilterIdParameter::create(),
+                IncludeParameter::create(null, ['organisation']),
                 SortParameter::create(null, ['created_at'], '-created_at')
             )
             ->responses(
