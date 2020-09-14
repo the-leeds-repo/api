@@ -25,12 +25,14 @@ class LogClient implements ClientInterface
     /**
      * @inheritDoc
      */
-    public function create(Organisation $organisation): void
+    public function create(Organisation $organisation): string
     {
         logger()->info(
             "Created contact for organisation [{$organisation->id}].",
             $this->transformer->transformCreate($organisation)
         );
+
+        return 'log-id';
     }
 
     /**
