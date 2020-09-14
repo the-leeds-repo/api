@@ -59,6 +59,7 @@ class CiviClient implements ClientInterface
 
     /**
      * @inheritDoc
+     * @throws \App\CiviCrm\CiviException
      */
     public function create(Organisation $organisation): string
     {
@@ -73,6 +74,7 @@ class CiviClient implements ClientInterface
 
     /**
      * @inheritDoc
+     * @throws \App\CiviCrm\CiviException
      */
     public function update(Organisation $organisation): void
     {
@@ -83,6 +85,7 @@ class CiviClient implements ClientInterface
 
     /**
      * @inheritDoc
+     * @throws \App\CiviCrm\CiviException
      */
     public function delete(Organisation $organisation): void
     {
@@ -101,13 +104,22 @@ class CiviClient implements ClientInterface
 
     /**
      * @param array $params
+     * @throws \App\CiviCrm\CiviException
      * @return \Psr\Http\Message\ResponseInterface
      */
     protected function postRequest(array $params): ResponseInterface
     {
-        return $this->httpClient->post($this->getEndpoint(), [
+        $response = $this->httpClient->post($this->getEndpoint(), [
             'query' => $this->transformParams($params),
         ]);
+
+        $data = $this->decodeResponse($response);
+
+        if ($data['is_error'] ?? 0 === 1) {
+            throw new CiviException($data['error_message'], $data['error_code']);
+        }
+
+        return $response;
     }
 
     /**
