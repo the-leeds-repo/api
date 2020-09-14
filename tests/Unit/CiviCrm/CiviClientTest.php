@@ -66,7 +66,7 @@ class CiviClientTest extends TestCase
         $responseMock = $this->createResponseMock(json_encode([
             'error_code' => 0,
             'is_error' => 1,
-            'error_message' => 'Contact id test-id not found.',
+            'error_message' => 'test error message',
         ]));
 
         $httpClientMock = $this->createMock(Client::class);
@@ -104,9 +104,197 @@ class CiviClientTest extends TestCase
 
         $this->expectException(CiviException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('Contact id test-id not found.');
+        $this->expectExceptionMessage('test error message');
 
         $client->create($organisation);
+    }
+
+    public function test_update_works()
+    {
+        $organisation = new Organisation();
+
+        $responseMock = $this->createResponseMock(json_encode([
+            'id' => 'test-id',
+        ]));
+
+        $httpClientMock = $this->createMock(Client::class);
+        $httpClientMock->expects($this->once())
+            ->method('__call')
+            ->with('post', [
+                'http://example.com/sites/all/modules/civicrm/extern/rest.php',
+                [
+                    'query' => [
+                        'key' => 'test-site-key',
+                        'api_key' => 'test-api-key',
+                        'entity' => 'Contact',
+                        'action' => 'create',
+                        'json' => json_encode([
+                            'test_key' => 'test-value',
+                        ]),
+                    ],
+                ],
+            ])
+            ->willReturn($responseMock);
+
+        $transformerMock = $this->createMock(OrganisationTransformer::class);
+        $transformerMock->expects($this->once())
+            ->method('transformUpdate')
+            ->with($organisation)
+            ->willReturn(['test_key' => 'test-value']);
+
+        $client = new CiviClient(
+            $httpClientMock,
+            'http://example.com',
+            'test-site-key',
+            'test-api-key',
+            $transformerMock
+        );
+
+        $client->update($organisation);
+    }
+
+    public function test_update_throws_exception()
+    {
+        $organisation = new Organisation();
+
+        $responseMock = $this->createResponseMock(json_encode([
+            'error_code' => 0,
+            'is_error' => 1,
+            'error_message' => 'test error message',
+        ]));
+
+        $httpClientMock = $this->createMock(Client::class);
+        $httpClientMock->expects($this->once())
+            ->method('__call')
+            ->with('post', [
+                'http://example.com/sites/all/modules/civicrm/extern/rest.php',
+                [
+                    'query' => [
+                        'key' => 'test-site-key',
+                        'api_key' => 'test-api-key',
+                        'entity' => 'Contact',
+                        'action' => 'create',
+                        'json' => json_encode([
+                            'test_key' => 'test-value',
+                        ]),
+                    ],
+                ],
+            ])
+            ->willReturn($responseMock);
+
+        $transformerMock = $this->createMock(OrganisationTransformer::class);
+        $transformerMock->expects($this->once())
+            ->method('transformUpdate')
+            ->with($organisation)
+            ->willReturn(['test_key' => 'test-value']);
+
+        $client = new CiviClient(
+            $httpClientMock,
+            'http://example.com',
+            'test-site-key',
+            'test-api-key',
+            $transformerMock
+        );
+
+        $this->expectException(CiviException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('test error message');
+
+        $client->update($organisation);
+    }
+
+    public function test_delete_works()
+    {
+        $organisation = new Organisation();
+
+        $responseMock = $this->createResponseMock(json_encode([
+            'id' => 'test-id',
+        ]));
+
+        $httpClientMock = $this->createMock(Client::class);
+        $httpClientMock->expects($this->once())
+            ->method('__call')
+            ->with('post', [
+                'http://example.com/sites/all/modules/civicrm/extern/rest.php',
+                [
+                    'query' => [
+                        'key' => 'test-site-key',
+                        'api_key' => 'test-api-key',
+                        'entity' => 'Contact',
+                        'action' => 'create',
+                        'json' => json_encode([
+                            'test_key' => 'test-value',
+                        ]),
+                    ],
+                ],
+            ])
+            ->willReturn($responseMock);
+
+        $transformerMock = $this->createMock(OrganisationTransformer::class);
+        $transformerMock->expects($this->once())
+            ->method('transformDelete')
+            ->with($organisation)
+            ->willReturn(['test_key' => 'test-value']);
+
+        $client = new CiviClient(
+            $httpClientMock,
+            'http://example.com',
+            'test-site-key',
+            'test-api-key',
+            $transformerMock
+        );
+
+        $client->delete($organisation);
+    }
+
+    public function test_delete_throws_exception()
+    {
+        $organisation = new Organisation();
+
+        $responseMock = $this->createResponseMock(json_encode([
+            'error_code' => 0,
+            'is_error' => 1,
+            'error_message' => 'test error message',
+        ]));
+
+        $httpClientMock = $this->createMock(Client::class);
+        $httpClientMock->expects($this->once())
+            ->method('__call')
+            ->with('post', [
+                'http://example.com/sites/all/modules/civicrm/extern/rest.php',
+                [
+                    'query' => [
+                        'key' => 'test-site-key',
+                        'api_key' => 'test-api-key',
+                        'entity' => 'Contact',
+                        'action' => 'create',
+                        'json' => json_encode([
+                            'test_key' => 'test-value',
+                        ]),
+                    ],
+                ],
+            ])
+            ->willReturn($responseMock);
+
+        $transformerMock = $this->createMock(OrganisationTransformer::class);
+        $transformerMock->expects($this->once())
+            ->method('transformDelete')
+            ->with($organisation)
+            ->willReturn(['test_key' => 'test-value']);
+
+        $client = new CiviClient(
+            $httpClientMock,
+            'http://example.com',
+            'test-site-key',
+            'test-api-key',
+            $transformerMock
+        );
+
+        $this->expectException(CiviException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('test error message');
+
+        $client->delete($organisation);
     }
 
     /**
