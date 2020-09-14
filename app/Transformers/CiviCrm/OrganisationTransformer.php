@@ -10,36 +10,51 @@ class OrganisationTransformer
      * @param \App\Models\Organisation $organisation
      * @return array
      */
-    public function transform(Organisation $organisation): array
+    public function transformCreate(Organisation $organisation): array
     {
         return [
-            'name' => $organisation->name,
-            'description' => $organisation->description,
+            'contact_type' => 'Organization',
+            'organization_name' => $organisation->name,
+            // Description. TODO: Place this ID in a parameter.
+            'custom_67' => $organisation->description,
             'email' => $organisation->email,
-            'url' => $organisation->url,
+            'website' => [
+                [
+                    'url' => $organisation->url,
+                ],
+            ],
             'phone' => $organisation->phone,
-            'address' => $this->transformAddress($organisation),
+            'street_address' => $organisation->address_line_1,
+            'supplemental_address_1' => $organisation->address_line_2,
+            'supplemental_address_2' => $organisation->address_line_3,
+            'city' => $organisation->city,
+            'postal_code' => $organisation->postcode,
+            'country' => $organisation->country === 'United Kingdom' ? 'United Kingdom' : null,
         ];
     }
 
     /**
      * @param \App\Models\Organisation $organisation
-     * @return string|null
+     * @return array
      */
-    protected function transformAddress(Organisation $organisation): ?string
+    public function transformUpdate(Organisation $organisation): array
     {
-        $addressParts = [
-            $organisation->address_line_1,
-            $organisation->address_line_2,
-            $organisation->address_line_3,
-            $organisation->city,
-            $organisation->county,
-            $organisation->postcode,
-            $organisation->country,
-        ];
+        $data = $this->transformCreate($organisation);
+        $data['id'] = $organisation->civi_id;
 
-        $addressParts = array_filter($addressParts);
+        return $data;
+    }
 
-        return implode(', ', $addressParts) ?: null;
+    /**
+     * @param \App\Models\Organisation $organisation
+     * @return array
+     */
+    public function transformDelete(Organisation $organisation): array
+    {
+        $data = $this->transformUpdate($organisation);
+        // TODO: Place this ID in a parameter.
+        $data['custom_306'] = today()->toDateString();
+
+        return $data;
     }
 }

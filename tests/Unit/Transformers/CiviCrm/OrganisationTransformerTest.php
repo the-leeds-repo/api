@@ -8,6 +8,8 @@ use Tests\TestCase;
 
 class OrganisationTransformerTest extends TestCase
 {
+    // TODO: Update existing tests.
+
     public function test_transform_works()
     {
         $organisation = new Organisation([
@@ -22,7 +24,7 @@ class OrganisationTransformerTest extends TestCase
         ]);
 
         $transformer = new OrganisationTransformer();
-        $results = $transformer->transform($organisation);
+        $results = $transformer->transformCreate($organisation);
 
         $this->assertEqualsCanonicalizing([
             'name' => 'Acme Org',
@@ -45,7 +47,7 @@ class OrganisationTransformerTest extends TestCase
         ]);
 
         $transformer = new OrganisationTransformer();
-        $results = $transformer->transform($organisation);
+        $results = $transformer->transformCreate($organisation);
 
         $this->assertEqualsCanonicalizing([
             'name' => 'Acme Org',
@@ -56,4 +58,6 @@ class OrganisationTransformerTest extends TestCase
             'address' => null,
         ], $results);
     }
+
+    // TODO: Add tests for other methods.
 }

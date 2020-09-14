@@ -29,7 +29,7 @@ class LogClient implements ClientInterface
     {
         logger()->info(
             "Created contact for organisation [{$organisation->id}].",
-            $this->transformer->transform($organisation)
+            $this->transformer->transformCreate($organisation)
         );
     }
 
@@ -40,7 +40,7 @@ class LogClient implements ClientInterface
     {
         logger()->info(
             "Updated contact for organisation [{$organisation->id}].",
-            $this->transformer->transform($organisation)
+            $this->transformer->transformCreate($organisation)
         );
     }
 
@@ -51,7 +51,7 @@ class LogClient implements ClientInterface
     {
         logger()->info(
             "Marked contact as deleted for organisation [{$organisation->id}].",
-            $this->transformer->transform($organisation)
+            $this->transformer->transformCreate($organisation)
         );
     }
 }
