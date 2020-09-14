@@ -82,6 +82,11 @@ return [
     ],
 
     /*
+     * Available drivers: 'log', 'civi'
+     */
+    'civi_driver' => env('CIVI_DRIVER', 'log'),
+
+    /*
      * CiviCRM config.
      */
     'civi' => [

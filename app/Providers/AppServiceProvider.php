@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\CiviCrm\CiviClient;
 use App\CiviCrm\ClientInterface;
 use App\CiviCrm\LogClient;
 use App\Contracts\VariableSubstituter;
@@ -11,8 +12,10 @@ use App\RoleManagement\RoleChecker;
 use App\RoleManagement\RoleCheckerInterface;
 use App\RoleManagement\RoleManager;
 use App\RoleManagement\RoleManagerInterface;
+use App\Transformers\CiviCrm\OrganisationTransformer;
 use App\VariableSubstitution\DoubleParenthesisVariableSubstituter;
 use Carbon\CarbonImmutable;
+use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\ServiceProvider;
 
@@ -90,7 +93,24 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(RoleCheckerInterface::class, RoleChecker::class);
         $this->app->bind(RoleManagerInterface::class, RoleManager::class);
 
-        $this->app->bind(ClientInterface::class, LogClient::class);
+        // CiviCRM.
+        switch (config('tlr.civi_driver')) {
+            case 'civi':
+                $this->app->singleton(ClientInterface::class, function () {
+                    return new CiviClient(
+                        $this->app->make(Client::class),
+                        config('tlr.civi.domain'),
+                        config('tlr.civi.site_key'),
+                        config('tlr.civi.api_key'),
+                        $this->app->make(OrganisationTransformer::class)
+                    );
+                });
+                break;
+            case 'log':
+            default:
+                $this->app->singleton(ClientInterface::class, LogClient::class);
+                break;
+        }
     }
 
     /**
