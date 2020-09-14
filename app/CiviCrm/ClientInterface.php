@@ -8,7 +8,7 @@ interface ClientInterface
 {
     /**
      * @param \App\Models\Organisation $organisation
-     * @return string The ID of the created CiviCRM contact.
+     * @return string the ID of the created CiviCRM contact
      */
     public function create(Organisation $organisation): string;
 
