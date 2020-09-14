@@ -3,6 +3,7 @@
 namespace App\Transformers\CiviCrm;
 
 use App\Models\Organisation;
+use Illuminate\Support\Facades\Date;
 
 class OrganisationTransformer
 {
@@ -12,11 +13,12 @@ class OrganisationTransformer
      */
     public function transformCreate(Organisation $organisation): array
     {
+        $descriptionKey = 'custom_' . config('tlr.civi.description_field_id');
+
         return [
             'contact_type' => 'Organization',
             'organization_name' => $organisation->name,
-            // Description. TODO: Place this ID in a parameter.
-            'custom_67' => $organisation->description,
+            $descriptionKey => $organisation->description,
             'email' => $organisation->email,
             'website' => [
                 [
@@ -24,12 +26,12 @@ class OrganisationTransformer
                 ],
             ],
             'phone' => $organisation->phone,
-            'street_address' => $organisation->address_line_1,
-            'supplemental_address_1' => $organisation->address_line_2,
-            'supplemental_address_2' => $organisation->address_line_3,
-            'city' => $organisation->city,
-            'postal_code' => $organisation->postcode,
-            'country' => $organisation->country === 'United Kingdom' ? 'United Kingdom' : null,
+            'street_address' => (string)$organisation->address_line_1,
+            'supplemental_address_1' => (string)$organisation->address_line_2,
+            'supplemental_address_2' => (string)$organisation->address_line_3,
+            'city' => (string)$organisation->city,
+            'postal_code' => (string)$organisation->postcode,
+            'country' => $organisation->country === 'United Kingdom' ? 'United Kingdom' : '',
         ];
     }
 
@@ -51,9 +53,10 @@ class OrganisationTransformer
      */
     public function transformDelete(Organisation $organisation): array
     {
+        $deletedAtKey = 'custom_' . config('tlr.civi.deleted_at_field_id');
+
         $data = $this->transformUpdate($organisation);
-        // TODO: Place this ID in a parameter.
-        $data['custom_306'] = today()->toDateString();
+        $data[$deletedAtKey] = Date::today()->toDateString();
 
         return $data;
     }
