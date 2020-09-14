@@ -82,6 +82,20 @@ return [
     ],
 
     /*
+     * CiviCRM config.
+     */
+    'civi' => [
+        // HTTP client config.
+        'domain' => env('CIVI_DOMAIN'),
+        'site_key' => env('CIVI_SITE_KEY'),
+        'api_key' => env('CIVI_API_KEY'),
+
+        // Custom fields config.
+        'description_field_id' => env('CIVI_DESCRIPTION_FIELD_ID'),
+        'deleted_at_field_id' => env('CIVI_DELETED_AT_FIELD_ID'),
+    ],
+
+    /*
      * Used for GOV.UK Notify.
      */
     'notifications_template_ids' => [
