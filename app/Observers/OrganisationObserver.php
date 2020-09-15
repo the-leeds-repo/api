@@ -32,7 +32,12 @@ class OrganisationObserver
     {
         if ($organisation->civi_sync_enabled) {
             try {
-                $this->civiClient->create($organisation);
+                $civiId = $this->civiClient->create($organisation);
+
+                Organisation::withoutEvents(function () use ($organisation, $civiId) {
+                    $organisation->civi_id = $civiId;
+                    $organisation->save();
+                });
             } catch (CiviException $exception) {
                 $organisation->failedCiviSyncs()->create([
                     'status_code' => $exception->getCode(),
