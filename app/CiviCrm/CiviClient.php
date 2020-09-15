@@ -143,6 +143,9 @@ class CiviClient implements ClientInterface
      */
     protected function decodeResponse(ResponseInterface $response): array
     {
-        return json_decode($response->getBody()->getContents(), true);
+        $contents = $response->getBody()->getContents();
+        $response->getBody()->rewind();
+
+        return json_decode($contents, true);
     }
 }
