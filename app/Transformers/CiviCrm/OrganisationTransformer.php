@@ -3,6 +3,7 @@
 namespace App\Transformers\CiviCrm;
 
 use App\Models\Organisation;
+use Illuminate\Support\Facades\Date;
 
 class OrganisationTransformer
 {
@@ -10,36 +11,53 @@ class OrganisationTransformer
      * @param \App\Models\Organisation $organisation
      * @return array
      */
-    public function transform(Organisation $organisation): array
+    public function transformCreate(Organisation $organisation): array
     {
+        $descriptionKey = 'custom_' . config('tlr.civi.description_field_id');
+
         return [
-            'name' => $organisation->name,
-            'description' => $organisation->description,
+            'contact_type' => 'Organization',
+            'organization_name' => $organisation->name,
+            $descriptionKey => $organisation->description,
             'email' => $organisation->email,
-            'url' => $organisation->url,
+            'website' => [
+                [
+                    'url' => $organisation->url,
+                ],
+            ],
             'phone' => $organisation->phone,
-            'address' => $this->transformAddress($organisation),
+            'street_address' => (string)$organisation->address_line_1,
+            'supplemental_address_1' => (string)$organisation->address_line_2,
+            'supplemental_address_2' => (string)$organisation->address_line_3,
+            'city' => (string)$organisation->city,
+            'postal_code' => (string)$organisation->postcode,
+            'country' => $organisation->country === 'United Kingdom' ? 'United Kingdom' : '',
         ];
     }
 
     /**
      * @param \App\Models\Organisation $organisation
-     * @return string|null
+     * @return array
      */
-    protected function transformAddress(Organisation $organisation): ?string
+    public function transformUpdate(Organisation $organisation): array
     {
-        $addressParts = [
-            $organisation->address_line_1,
-            $organisation->address_line_2,
-            $organisation->address_line_3,
-            $organisation->city,
-            $organisation->county,
-            $organisation->postcode,
-            $organisation->country,
-        ];
+        $data = $this->transformCreate($organisation);
+        $data['id'] = $organisation->civi_id;
 
-        $addressParts = array_filter($addressParts);
+        return $data;
+    }
 
-        return implode(', ', $addressParts) ?: null;
+    /**
+     * @param \App\Models\Organisation $organisation
+     * @return array
+     */
+    public function transformDelete(Organisation $organisation): array
+    {
+        $deletedAtKey = 'custom_' . config('tlr.civi.deleted_at_field_id');
+
+        $data = $this->transformUpdate($organisation);
+        $data[$deletedAtKey] = Date::today()->toDateString();
+
+        return $data;
     }
 }

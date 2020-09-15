@@ -25,12 +25,14 @@ class LogClient implements ClientInterface
     /**
      * @inheritDoc
      */
-    public function create(Organisation $organisation): void
+    public function create(Organisation $organisation): string
     {
         logger()->info(
             "Created contact for organisation [{$organisation->id}].",
-            $this->transformer->transform($organisation)
+            $this->transformer->transformCreate($organisation)
         );
+
+        return 'log-id';
     }
 
     /**
@@ -40,7 +42,7 @@ class LogClient implements ClientInterface
     {
         logger()->info(
             "Updated contact for organisation [{$organisation->id}].",
-            $this->transformer->transform($organisation)
+            $this->transformer->transformCreate($organisation)
         );
     }
 
@@ -51,7 +53,7 @@ class LogClient implements ClientInterface
     {
         logger()->info(
             "Marked contact as deleted for organisation [{$organisation->id}].",
-            $this->transformer->transform($organisation)
+            $this->transformer->transformCreate($organisation)
         );
     }
 }
