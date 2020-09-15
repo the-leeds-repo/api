@@ -98,7 +98,7 @@ class AppServiceProvider extends ServiceProvider
             case 'civi':
                 $this->app->singleton(ClientInterface::class, function () {
                     return new CiviClient(
-                        $this->app->make(Client::class),
+                        new Client(['timeout' => 5]),
                         config('tlr.civi.domain'),
                         config('tlr.civi.site_key'),
                         config('tlr.civi.api_key'),
