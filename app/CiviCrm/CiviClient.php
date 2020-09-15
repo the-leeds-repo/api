@@ -5,6 +5,7 @@ namespace App\CiviCrm;
 use App\Models\Organisation;
 use App\Transformers\CiviCrm\OrganisationTransformer;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use Psr\Http\Message\ResponseInterface;
 
 class CiviClient implements ClientInterface
@@ -109,9 +110,13 @@ class CiviClient implements ClientInterface
      */
     protected function postRequest(array $params): ResponseInterface
     {
-        $response = $this->httpClient->post($this->getEndpoint(), [
-            'query' => $this->transformParams($params),
-        ]);
+        try {
+            $response = $this->httpClient->post($this->getEndpoint(), [
+                'query' => $this->transformParams($params),
+            ]);
+        } catch (ClientException $exception) {
+            throw new CiviException($exception->getMessage(), $exception->getCode(), $exception);
+        }
 
         $data = $this->decodeResponse($response);
 
