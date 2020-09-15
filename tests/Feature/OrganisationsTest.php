@@ -240,7 +240,6 @@ class OrganisationsTest extends TestCase
             'country' => null,
             'is_hidden' => false,
             'civi_sync_enabled' => false,
-            'civi_id' => null,
         ];
 
         Passport::actingAs($user);
@@ -279,7 +278,6 @@ class OrganisationsTest extends TestCase
             'country' => null,
             'is_hidden' => false,
             'civi_sync_enabled' => false,
-            'civi_id' => null,
         ]);
 
         Event::assertDispatched(EndpointHit::class, function (EndpointHit $event) use ($user, $response) {

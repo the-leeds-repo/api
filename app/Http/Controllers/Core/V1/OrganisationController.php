@@ -99,7 +99,6 @@ class OrganisationController extends Controller
                 'is_hidden' => $request->is_hidden,
                 'logo_file_id' => $request->logo_file_id,
                 'civi_sync_enabled' => $request->civi_sync_enabled,
-                'civi_id' => $request->civi_id,
             ]);
 
             if ($request->filled('logo_file_id')) {
