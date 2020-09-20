@@ -114,74 +114,105 @@ class CiviClient implements ClientInterface
             $this->transformer->transformUpdateContact($organisation)
         );
 
-        $websiteResponse = $this->postRequest(
+        $this->updateWebsite($organisation);
+        $this->updatePhone($organisation);
+        $this->updateAddress($organisation);
+    }
+
+    /**
+     * @param \App\Models\Organisation $organisation
+     * @throws \App\CiviCrm\CiviException
+     */
+    protected function updateWebsite(Organisation $organisation): void
+    {
+        $response = $this->postRequest(
             static::ENTITY_WEBSITE,
             static::ACTION_GET,
             $this->transformer->transformGetWebsite($organisation)
         );
 
-        if (count($websiteResponse['values']) > 0) {
+        if (count($response['values']) > 0) {
             $this->postRequest(
                 static::ENTITY_WEBSITE,
                 static::ACTION_CREATE,
                 $this->transformer->transformUpdateWebsite(
                     $organisation,
-                    $websiteResponse['values'][0]['id']
+                    $response['values'][0]['id']
                 )
             );
-        } else {
-            $this->postRequest(
-                static::ENTITY_WEBSITE,
-                static::ACTION_CREATE,
-                $this->transformer->transformCreateWebsite($organisation)
-            );
+
+            return;
         }
 
-        $phoneResponse = $this->postRequest(
+        $this->postRequest(
+            static::ENTITY_WEBSITE,
+            static::ACTION_CREATE,
+            $this->transformer->transformCreateWebsite($organisation)
+        );
+    }
+
+    /**
+     * @param \App\Models\Organisation $organisation
+     * @throws \App\CiviCrm\CiviException
+     */
+    protected function updatePhone(Organisation $organisation): void
+    {
+        $response = $this->postRequest(
             static::ENTITY_PHONE,
             static::ACTION_GET,
             $this->transformer->transformGetPhone($organisation)
         );
 
-        if (count($phoneResponse['values']) > 0) {
+        if (count($response['values']) > 0) {
             $this->postRequest(
                 static::ENTITY_PHONE,
                 static::ACTION_CREATE,
                 $this->transformer->transformUpdatePhone(
                     $organisation,
-                    $phoneResponse['values'][0]['id']
+                    $response['values'][0]['id']
                 )
             );
-        } else {
-            $this->postRequest(
-                static::ENTITY_PHONE,
-                static::ACTION_CREATE,
-                $this->transformer->transformCreatePhone($organisation)
-            );
+
+            return;
         }
 
-        $addressResponse = $this->postRequest(
+        $this->postRequest(
+            static::ENTITY_PHONE,
+            static::ACTION_CREATE,
+            $this->transformer->transformCreatePhone($organisation)
+        );
+    }
+
+    /**
+     * @param \App\Models\Organisation $organisation
+     * @throws \App\CiviCrm\CiviException
+     */
+    protected function updateAddress(Organisation $organisation): void
+    {
+        $response = $this->postRequest(
             static::ENTITY_ADDRESS,
             static::ACTION_GET,
             $this->transformer->transformGetAddress($organisation)
         );
 
-        if (count($addressResponse['values']) > 0) {
+        if (count($response['values']) > 0) {
             $this->postRequest(
                 static::ENTITY_ADDRESS,
                 static::ACTION_CREATE,
                 $this->transformer->transformUpdateAddress(
                     $organisation,
-                    $addressResponse['values'][0]['id']
+                    $response['values'][0]['id']
                 )
             );
-        } else {
-            $this->postRequest(
-                static::ENTITY_ADDRESS,
-                static::ACTION_CREATE,
-                $this->transformer->transformCreateAddress($organisation)
-            );
+
+            return;
         }
+
+        $this->postRequest(
+            static::ENTITY_ADDRESS,
+            static::ACTION_CREATE,
+            $this->transformer->transformCreateAddress($organisation)
+        );
     }
 
     /**
