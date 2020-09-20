@@ -46,7 +46,7 @@ services:
       MYSQL_USER: "${DB_USER:-the_leeds_repo}"
       MYSQL_PASSWORD: "${DB_PASS:-secret}"
     volumes:
-      - mysql-data:/var/lib/mysql
+      - tlp-mysql-data:/var/lib/mysql
     networks:
       - app-net
     ports:
@@ -67,7 +67,7 @@ services:
     environment:
       discovery-type: single-node
     volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
+      - tlp-elasticsearch-data:/usr/share/elasticsearch/data
     networks:
       - app-net
     ports:
@@ -85,7 +85,7 @@ networks:
     driver: bridge
 
 volumes:
-  mysql-data:
+  tlp-mysql-data:
     driver: local
-  elasticsearch-data:
+  tlp-elasticsearch-data:
     driver: local
