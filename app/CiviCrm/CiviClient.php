@@ -131,13 +131,16 @@ class CiviClient implements ClientInterface
             $this->transformer->transformGetWebsite($organisation)
         );
 
-        if (count($response['values']) > 0) {
+        $response = $this->decodeResponse($response);
+        $websites = $response['values'];
+
+        if (count($websites) > 0) {
             $this->postRequest(
                 static::ENTITY_WEBSITE,
                 static::ACTION_CREATE,
                 $this->transformer->transformUpdateWebsite(
                     $organisation,
-                    $response['values'][0]['id']
+                    $websites[0]['id']
                 )
             );
 
@@ -163,13 +166,16 @@ class CiviClient implements ClientInterface
             $this->transformer->transformGetPhone($organisation)
         );
 
-        if (count($response['values']) > 0) {
+        $response = $this->decodeResponse($response);
+        $phones = $response['values'];
+
+        if (count($phones) > 0) {
             $this->postRequest(
                 static::ENTITY_PHONE,
                 static::ACTION_CREATE,
                 $this->transformer->transformUpdatePhone(
                     $organisation,
-                    $response['values'][0]['id']
+                    $phones[0]['id']
                 )
             );
 
@@ -195,13 +201,16 @@ class CiviClient implements ClientInterface
             $this->transformer->transformGetAddress($organisation)
         );
 
-        if (count($response['values']) > 0) {
+        $response = $this->decodeResponse($response);
+        $addresses = $response['values'];
+
+        if (count($addresses) > 0) {
             $this->postRequest(
                 static::ENTITY_ADDRESS,
                 static::ACTION_CREATE,
                 $this->transformer->transformUpdateAddress(
                     $organisation,
-                    $response['values'][0]['id']
+                    $addresses[0]['id']
                 )
             );
 
