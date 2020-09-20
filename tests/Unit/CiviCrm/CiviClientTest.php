@@ -16,6 +16,9 @@ class CiviClientTest extends TestCase
     public function test_create_works()
     {
         $organisationMock = $this->createMock(Organisation::class);
+        $organisationMock->expects($this->once())
+            ->method('replicate')
+            ->willReturn($organisationMock);
 
         $responseMock = $this->createResponseMock(json_encode([
             'id' => 'test-id',
