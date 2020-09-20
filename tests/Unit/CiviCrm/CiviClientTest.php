@@ -15,14 +15,14 @@ class CiviClientTest extends TestCase
 {
     public function test_create_works()
     {
-        $organisation = new Organisation();
+        $organisationMock = $this->createMock(Organisation::class);
 
         $responseMock = $this->createResponseMock(json_encode([
             'id' => 'test-id',
         ]));
 
         $httpClientMock = $this->createMock(Client::class);
-        $httpClientMock->expects($this->once())
+        $httpClientMock->expects($this->at(0))
             ->method('__call')
             ->with('post', [
                 'http://example.com/sites/all/modules/civicrm/extern/rest.php',
@@ -33,7 +33,62 @@ class CiviClientTest extends TestCase
                         'entity' => 'Contact',
                         'action' => 'create',
                         'json' => json_encode([
-                            'test_key' => 'test-value',
+                            'sequential' => 1,
+                            'test_key' => 'contact-value',
+                        ]),
+                    ],
+                ],
+            ])
+            ->willReturn($responseMock);
+        $httpClientMock->expects($this->at(1))
+            ->method('__call')
+            ->with('post', [
+                'http://example.com/sites/all/modules/civicrm/extern/rest.php',
+                [
+                    'query' => [
+                        'key' => 'test-site-key',
+                        'api_key' => 'test-api-key',
+                        'entity' => 'Website',
+                        'action' => 'create',
+                        'json' => json_encode([
+                            'sequential' => 1,
+                            'test_key' => 'website-value',
+                        ]),
+                    ],
+                ],
+            ])
+            ->willReturn($responseMock);
+        $httpClientMock->expects($this->at(2))
+            ->method('__call')
+            ->with('post', [
+                'http://example.com/sites/all/modules/civicrm/extern/rest.php',
+                [
+                    'query' => [
+                        'key' => 'test-site-key',
+                        'api_key' => 'test-api-key',
+                        'entity' => 'Phone',
+                        'action' => 'create',
+                        'json' => json_encode([
+                            'sequential' => 1,
+                            'test_key' => 'phone-value',
+                        ]),
+                    ],
+                ],
+            ])
+            ->willReturn($responseMock);
+        $httpClientMock->expects($this->at(3))
+            ->method('__call')
+            ->with('post', [
+                'http://example.com/sites/all/modules/civicrm/extern/rest.php',
+                [
+                    'query' => [
+                        'key' => 'test-site-key',
+                        'api_key' => 'test-api-key',
+                        'entity' => 'Address',
+                        'action' => 'create',
+                        'json' => json_encode([
+                            'sequential' => 1,
+                            'test_key' => 'address-value',
                         ]),
                     ],
                 ],
@@ -43,8 +98,21 @@ class CiviClientTest extends TestCase
         $transformerMock = $this->createMock(OrganisationTransformer::class);
         $transformerMock->expects($this->once())
             ->method('transformCreateContact')
-            ->with($organisation)
-            ->willReturn(['test_key' => 'test-value']);
+            ->with($organisationMock)
+            ->willReturn(['test_key' => 'contact-value']);
+        $transformerMock->expects($this->once())
+            ->method('transformCreateWebsite')
+            ->with($organisationMock)
+            ->willReturn(['test_key' => 'website-value']);
+        $transformerMock->expects($this->once())
+            ->method('transformCreatePhone')
+            ->with($organisationMock)
+            ->willReturn(['test_key' => 'phone-value']);
+        $transformerMock->expects($this->once())
+            ->method('transformCreateAddress')
+            ->with($organisationMock)
+            ->willReturn(['test_key' => 'address-value']);
+
 
         $client = new CiviClient(
             $httpClientMock,
@@ -54,7 +122,7 @@ class CiviClientTest extends TestCase
             $transformerMock
         );
 
-        $id = $client->create($organisation);
+        $id = $client->create($organisationMock);
 
         $this->assertEquals('test-id', $id);
     }
@@ -81,6 +149,7 @@ class CiviClientTest extends TestCase
                         'entity' => 'Contact',
                         'action' => 'create',
                         'json' => json_encode([
+                            'sequential' => 1,
                             'test_key' => 'test-value',
                         ]),
                     ],
@@ -129,6 +198,7 @@ class CiviClientTest extends TestCase
                         'entity' => 'Contact',
                         'action' => 'create',
                         'json' => json_encode([
+                            'sequential' => 1,
                             'test_key' => 'test-value',
                         ]),
                     ],
@@ -175,6 +245,7 @@ class CiviClientTest extends TestCase
                         'entity' => 'Contact',
                         'action' => 'create',
                         'json' => json_encode([
+                            'sequential' => 1,
                             'test_key' => 'test-value',
                         ]),
                     ],
@@ -223,6 +294,7 @@ class CiviClientTest extends TestCase
                         'entity' => 'Contact',
                         'action' => 'create',
                         'json' => json_encode([
+                            'sequential' => 1,
                             'test_key' => 'test-value',
                         ]),
                     ],
@@ -269,6 +341,7 @@ class CiviClientTest extends TestCase
                         'entity' => 'Contact',
                         'action' => 'create',
                         'json' => json_encode([
+                            'sequential' => 1,
                             'test_key' => 'test-value',
                         ]),
                     ],
