@@ -11,7 +11,45 @@ class OrganisationTransformer
      * @param \App\Models\Organisation $organisation
      * @return array
      */
-    public function transformCreate(Organisation $organisation): array
+    protected function transformGetRelatedEntity(Organisation $organisation): array
+    {
+        return [
+            'contact_id' => $organisation->civi_id,
+        ];
+    }
+
+    /**
+     * @param \App\Models\Organisation $organisation
+     * @return array
+     */
+    public function transformGetPhone(Organisation $organisation): array
+    {
+        return $this->transformGetRelatedEntity($organisation);
+    }
+
+    /**
+     * @param \App\Models\Organisation $organisation
+     * @return array
+     */
+    public function transformGetWebsite(Organisation $organisation): array
+    {
+        return $this->transformGetRelatedEntity($organisation);
+    }
+
+    /**
+     * @param \App\Models\Organisation $organisation
+     * @return array
+     */
+    public function transformGetAddress(Organisation $organisation): array
+    {
+        return $this->transformGetRelatedEntity($organisation);
+    }
+
+    /**
+     * @param \App\Models\Organisation $organisation
+     * @return array
+     */
+    public function transformCreateContact(Organisation $organisation): array
     {
         $descriptionKey = 'custom_' . config('tlr.civi.description_field_id');
 
@@ -20,18 +58,6 @@ class OrganisationTransformer
             'organization_name' => $organisation->name,
             $descriptionKey => $organisation->description,
             'email' => $organisation->email,
-            'website' => [
-                [
-                    'url' => $organisation->url,
-                ],
-            ],
-            'phone' => $organisation->phone,
-            'street_address' => (string)$organisation->address_line_1,
-            'supplemental_address_1' => (string)$organisation->address_line_2,
-            'supplemental_address_2' => (string)$organisation->address_line_3,
-            'city' => (string)$organisation->city,
-            'postal_code' => (string)$organisation->postcode,
-            'country' => $organisation->country === 'United Kingdom' ? 'United Kingdom' : '',
         ];
     }
 
@@ -39,10 +65,89 @@ class OrganisationTransformer
      * @param \App\Models\Organisation $organisation
      * @return array
      */
-    public function transformUpdate(Organisation $organisation): array
+    public function transformCreatePhone(Organisation $organisation): array
     {
-        $data = $this->transformCreate($organisation);
+        return [
+            'contact_id' => $organisation->civi_id,
+            'phone' => $organisation->phone,
+        ];
+    }
+
+    /**
+     * @param \App\Models\Organisation $organisation
+     * @return array
+     */
+    public function transformCreateWebsite(Organisation $organisation): array
+    {
+        return [
+            'contact_id' => $organisation->civi_id,
+            'url' => $organisation->url,
+        ];
+    }
+
+    /**
+     * @param \App\Models\Organisation $organisation
+     * @return string[]
+     */
+    public function transformCreateAddress(Organisation $organisation): array
+    {
+        return [
+            'contact_id' => $organisation->civi_id,
+            'street_address' => $organisation->address_line_1 ?: '',
+            'supplemental_address_1' => $organisation->address_line_2 ?: '',
+            'supplemental_address_2' => $organisation->address_line_3 ?: '',
+            'city' => $organisation->city ?: '',
+            'postal_code' => $organisation->postcode ?: '',
+        ];
+    }
+
+    /**
+     * @param \App\Models\Organisation $organisation
+     * @return array
+     */
+    public function transformUpdateContact(Organisation $organisation): array
+    {
+        $data = $this->transformCreateContact($organisation);
         $data['id'] = $organisation->civi_id;
+
+        return $data;
+    }
+
+    /**
+     * @param \App\Models\Organisation $organisation
+     * @param string $phoneId
+     * @return array
+     */
+    public function transformUpdatePhone(Organisation $organisation, string $phoneId): array
+    {
+        $data = $this->transformCreatePhone($organisation);
+        $data['id'] = $phoneId;
+
+        return $data;
+    }
+
+    /**
+     * @param \App\Models\Organisation $organisation
+     * @param string $websiteId
+     * @return array
+     */
+    public function transformUpdateWebsite(Organisation $organisation, string $websiteId): array
+    {
+        $data = $this->transformCreateWebsite($organisation);
+        $data['id'] = $websiteId;
+
+        return $data;
+    }
+
+    /**
+     * @param \App\Models\Organisation $organisation
+     * @param string $addressId
+     * @return string[]
+     */
+    public function transformUpdateAddress(Organisation $organisation, string $addressId): array
+    {
+        $data = $this->transformCreateAddress($organisation);
+        $data['id'] = $addressId;
 
         return $data;
     }
@@ -51,13 +156,13 @@ class OrganisationTransformer
      * @param \App\Models\Organisation $organisation
      * @return array
      */
-    public function transformDelete(Organisation $organisation): array
+    public function transformDeleteContact(Organisation $organisation): array
     {
         $deletedAtKey = 'custom_' . config('tlr.civi.deleted_at_field_id');
 
-        $data = $this->transformUpdate($organisation);
-        $data[$deletedAtKey] = Date::today()->toDateString();
-
-        return $data;
+        return [
+            'id' => $organisation->civi_id,
+            $deletedAtKey => Date::today()->toDateString(),
+        ];
     }
 }

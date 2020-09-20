@@ -42,7 +42,7 @@ class CiviClientTest extends TestCase
 
         $transformerMock = $this->createMock(OrganisationTransformer::class);
         $transformerMock->expects($this->once())
-            ->method('transformCreate')
+            ->method('transformCreateContact')
             ->with($organisation)
             ->willReturn(['test_key' => 'test-value']);
 
@@ -90,7 +90,7 @@ class CiviClientTest extends TestCase
 
         $transformerMock = $this->createMock(OrganisationTransformer::class);
         $transformerMock->expects($this->once())
-            ->method('transformCreate')
+            ->method('transformCreateContact')
             ->with($organisation)
             ->willReturn(['test_key' => 'test-value']);
 
@@ -138,7 +138,7 @@ class CiviClientTest extends TestCase
 
         $transformerMock = $this->createMock(OrganisationTransformer::class);
         $transformerMock->expects($this->once())
-            ->method('transformUpdate')
+            ->method('transformUpdateContact')
             ->with($organisation)
             ->willReturn(['test_key' => 'test-value']);
 
@@ -184,7 +184,7 @@ class CiviClientTest extends TestCase
 
         $transformerMock = $this->createMock(OrganisationTransformer::class);
         $transformerMock->expects($this->once())
-            ->method('transformUpdate')
+            ->method('transformUpdateContact')
             ->with($organisation)
             ->willReturn(['test_key' => 'test-value']);
 
@@ -232,7 +232,7 @@ class CiviClientTest extends TestCase
 
         $transformerMock = $this->createMock(OrganisationTransformer::class);
         $transformerMock->expects($this->once())
-            ->method('transformDelete')
+            ->method('transformDeleteContact')
             ->with($organisation)
             ->willReturn(['test_key' => 'test-value']);
 
@@ -278,7 +278,7 @@ class CiviClientTest extends TestCase
 
         $transformerMock = $this->createMock(OrganisationTransformer::class);
         $transformerMock->expects($this->once())
-            ->method('transformDelete')
+            ->method('transformDeleteContact')
             ->with($organisation)
             ->willReturn(['test_key' => 'test-value']);
 

@@ -10,6 +10,14 @@ use Psr\Http\Message\ResponseInterface;
 
 class CiviClient implements ClientInterface
 {
+    protected const ENTITY_CONTACT = 'Contact';
+    protected const ENTITY_PHONE = 'Phone';
+    protected const ENTITY_WEBSITE = 'Website';
+    protected const ENTITY_ADDRESS = 'Address';
+
+    protected const ACTION_GET = 'get';
+    protected const ACTION_CREATE = 'create';
+
     /**
      * @var \GuzzleHttp\Client
      */
@@ -65,12 +73,33 @@ class CiviClient implements ClientInterface
     public function create(Organisation $organisation): string
     {
         $response = $this->postRequest(
-            $this->transformer->transformCreate($organisation)
+            static::ENTITY_CONTACT,
+            static::ACTION_CREATE,
+            $this->transformer->transformCreateContact($organisation)
         );
 
         $response = $this->decodeResponse($response);
+        $contactId = $response['id'];
 
-        return $response['id'];
+        $this->postRequest(
+            static::ENTITY_WEBSITE,
+            static::ACTION_CREATE,
+            $this->transformer->transformCreateWebsite($organisation)
+        );
+
+        $this->postRequest(
+            static::ENTITY_PHONE,
+            static::ACTION_CREATE,
+            $this->transformer->transformCreatePhone($organisation)
+        );
+
+        $this->postRequest(
+            static::ENTITY_ADDRESS,
+            static::ACTION_CREATE,
+            $this->transformer->transformCreateAddress($organisation)
+        );
+
+        return $contactId;
     }
 
     /**
@@ -80,8 +109,79 @@ class CiviClient implements ClientInterface
     public function update(Organisation $organisation): void
     {
         $this->postRequest(
-            $this->transformer->transformUpdate($organisation)
+            static::ENTITY_CONTACT,
+            static::ACTION_CREATE,
+            $this->transformer->transformUpdateContact($organisation)
         );
+
+        $websiteResponse = $this->postRequest(
+            static::ENTITY_WEBSITE,
+            static::ACTION_GET,
+            $this->transformer->transformGetWebsite($organisation)
+        );
+
+        if (count($websiteResponse['values']) > 0) {
+            $this->postRequest(
+                static::ENTITY_WEBSITE,
+                static::ACTION_CREATE,
+                $this->transformer->transformUpdateWebsite(
+                    $organisation,
+                    $websiteResponse['values'][0]['id']
+                )
+            );
+        } else {
+            $this->postRequest(
+                static::ENTITY_WEBSITE,
+                static::ACTION_CREATE,
+                $this->transformer->transformCreateWebsite($organisation)
+            );
+        }
+
+        $phoneResponse = $this->postRequest(
+            static::ENTITY_PHONE,
+            static::ACTION_GET,
+            $this->transformer->transformGetPhone($organisation)
+        );
+
+        if (count($phoneResponse['values']) > 0) {
+            $this->postRequest(
+                static::ENTITY_PHONE,
+                static::ACTION_CREATE,
+                $this->transformer->transformUpdatePhone(
+                    $organisation,
+                    $phoneResponse['values'][0]['id']
+                )
+            );
+        } else {
+            $this->postRequest(
+                static::ENTITY_PHONE,
+                static::ACTION_CREATE,
+                $this->transformer->transformCreatePhone($organisation)
+            );
+        }
+
+        $addressResponse = $this->postRequest(
+            static::ENTITY_ADDRESS,
+            static::ACTION_GET,
+            $this->transformer->transformGetAddress($organisation)
+        );
+
+        if (count($addressResponse['values']) > 0) {
+            $this->postRequest(
+                static::ENTITY_ADDRESS,
+                static::ACTION_CREATE,
+                $this->transformer->transformUpdateAddress(
+                    $organisation,
+                    $addressResponse['values'][0]['id']
+                )
+            );
+        } else {
+            $this->postRequest(
+                static::ENTITY_ADDRESS,
+                static::ACTION_CREATE,
+                $this->transformer->transformCreateAddress($organisation)
+            );
+        }
     }
 
     /**
@@ -91,7 +191,9 @@ class CiviClient implements ClientInterface
     public function delete(Organisation $organisation): void
     {
         $this->postRequest(
-            $this->transformer->transformDelete($organisation)
+            static::ENTITY_CONTACT,
+            static::ACTION_CREATE,
+            $this->transformer->transformDeleteContact($organisation)
         );
     }
 
@@ -104,15 +206,17 @@ class CiviClient implements ClientInterface
     }
 
     /**
+     * @param string $entity
+     * @param string $action
      * @param array $params
      * @throws \App\CiviCrm\CiviException
      * @return \Psr\Http\Message\ResponseInterface
      */
-    protected function postRequest(array $params): ResponseInterface
+    protected function postRequest(string $entity, string $action, array $params): ResponseInterface
     {
         try {
             $response = $this->httpClient->post($this->getEndpoint(), [
-                'query' => $this->transformParams($params),
+                'query' => $this->transformParams($entity, $action, $params),
             ]);
         } catch (ClientException $exception) {
             throw new CiviException($exception->getMessage(), $exception->getCode(), $exception);
@@ -121,24 +225,31 @@ class CiviClient implements ClientInterface
         $data = $this->decodeResponse($response);
 
         if ($data['is_error'] ?? 0 === 1) {
-            throw new CiviException($data['error_message'], $data['error_code']);
+            throw new CiviException(
+                $data['error_message'] ?? 'No error message provided.',
+                $data['error_code'] ?? 400
+            );
         }
 
         return $response;
     }
 
     /**
+     * @param string $entity
+     * @param string $action
      * @param array $params
      * @return array
      */
-    protected function transformParams(array $params): array
+    protected function transformParams(string $entity, string $action, array $params): array
     {
         return [
             'key' => $this->siteKey,
             'api_key' => $this->apiKey,
-            'entity' => 'Contact',
-            'action' => 'create',
-            'json' => json_encode($params),
+            'entity' => $entity,
+            'action' => $action,
+            'json' => json_encode(
+                array_merge(['sequential' => 1], $params)
+            ),
         ];
     }
 
