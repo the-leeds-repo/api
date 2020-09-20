@@ -5,7 +5,7 @@ namespace App\CiviCrm;
 use App\Models\Organisation;
 use App\Transformers\CiviCrm\OrganisationTransformer;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
 
 class CiviClient implements ClientInterface
@@ -80,6 +80,9 @@ class CiviClient implements ClientInterface
 
         $response = $this->decodeResponse($response);
         $contactId = $response['id'];
+
+        $organisation = $organisation->replicate();
+        $organisation->civi_id = $contactId;
 
         $this->postRequest(
             static::ENTITY_WEBSITE,
@@ -258,7 +261,7 @@ class CiviClient implements ClientInterface
             $response = $this->httpClient->post($this->getEndpoint(), [
                 'query' => $this->transformParams($entity, $action, $params),
             ]);
-        } catch (ClientException $exception) {
+        } catch (RequestException $exception) {
             throw new CiviException($exception->getMessage(), $exception->getCode(), $exception);
         }
 
@@ -266,8 +269,8 @@ class CiviClient implements ClientInterface
 
         if ($data['is_error'] ?? 0 === 1) {
             throw new CiviException(
-                $data['error_message'] ?? 'No error message provided.',
-                $data['error_code'] ?? 400
+                (string)$data['error_message'] ?? 'No error message provided.',
+                (int)$data['error_code'] ?? 400
             );
         }
 
