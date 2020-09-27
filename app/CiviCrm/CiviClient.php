@@ -14,6 +14,7 @@ class CiviClient implements ClientInterface
     protected const ENTITY_PHONE = 'Phone';
     protected const ENTITY_WEBSITE = 'Website';
     protected const ENTITY_ADDRESS = 'Address';
+    protected const ENTITY_EMAIL = 'Email';
 
     protected const ACTION_GET = 'get';
     protected const ACTION_CREATE = 'create';
@@ -102,6 +103,12 @@ class CiviClient implements ClientInterface
             $this->transformer->transformCreateAddress($organisation)
         );
 
+        $this->postRequest(
+            static::ENTITY_EMAIL,
+            static::ACTION_CREATE,
+            $this->transformer->transformCreateEmail($organisation)
+        );
+
         return $contactId;
     }
 
@@ -120,6 +127,7 @@ class CiviClient implements ClientInterface
         $this->updateWebsite($organisation);
         $this->updatePhone($organisation);
         $this->updateAddress($organisation);
+        $this->updateEmail($organisation);
     }
 
     /**
@@ -224,6 +232,41 @@ class CiviClient implements ClientInterface
             static::ENTITY_ADDRESS,
             static::ACTION_CREATE,
             $this->transformer->transformCreateAddress($organisation)
+        );
+    }
+
+    /**
+     * @param \App\Models\Organisation $organisation
+     * @throws \App\CiviCrm\CiviException
+     */
+    protected function updateEmail(Organisation $organisation): void
+    {
+        $response = $this->postRequest(
+            static::ENTITY_EMAIL,
+            static::ACTION_GET,
+            $this->transformer->transformGetEmail($organisation)
+        );
+
+        $response = $this->decodeResponse($response);
+        $emails = $response['values'];
+
+        if (count($emails) > 0) {
+            $this->postRequest(
+                static::ENTITY_EMAIL,
+                static::ACTION_CREATE,
+                $this->transformer->transformUpdateEmail(
+                    $organisation,
+                    $emails[0]['id']
+                )
+            );
+
+            return;
+        }
+
+        $this->postRequest(
+            static::ENTITY_EMAIL,
+            static::ACTION_CREATE,
+            $this->transformer->transformCreateEmail($organisation)
         );
     }
 

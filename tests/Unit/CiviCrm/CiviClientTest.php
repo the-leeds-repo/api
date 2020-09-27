@@ -53,6 +53,13 @@ class CiviClientTest extends TestCase
                 $this->createPostArguments('Address', 'create', ['test_key' => 'address-value'])
             )
             ->willReturn($responseMock);
+        $httpClientMock->expects($this->at(4))
+            ->method('__call')
+            ->with(
+                'post',
+                $this->createPostArguments('Email', 'create', ['test_key' => 'email-value'])
+            )
+            ->willReturn($responseMock);
 
         $transformerMock = $this->createMock(OrganisationTransformer::class);
         $transformerMock->expects($this->once())
@@ -71,6 +78,10 @@ class CiviClientTest extends TestCase
             ->method('transformCreateAddress')
             ->with($organisationMock)
             ->willReturn(['test_key' => 'address-value']);
+        $transformerMock->expects($this->once())
+            ->method('transformCreateEmail')
+            ->with($organisationMock)
+            ->willReturn(['test_key' => 'email-value']);
 
 
         $client = new CiviClient(
@@ -187,6 +198,20 @@ class CiviClientTest extends TestCase
                 $this->createPostArguments('Address', 'create', ['test_key' => 'address-value'])
             )
             ->willReturn($responseMock);
+        $httpClientMock->expects($this->at(7))
+            ->method('__call')
+            ->with(
+                'post',
+                $this->createPostArguments('Email', 'get', ['test_key' => 'email-value'])
+            )
+            ->willReturn($responseMock);
+        $httpClientMock->expects($this->at(8))
+            ->method('__call')
+            ->with(
+                'post',
+                $this->createPostArguments('Email', 'create', ['test_key' => 'email-value'])
+            )
+            ->willReturn($responseMock);
 
         $transformerMock = $this->createMock(OrganisationTransformer::class);
         $transformerMock->expects($this->once())
@@ -217,6 +242,14 @@ class CiviClientTest extends TestCase
             ->method('transformUpdateAddress')
             ->with($organisationMock, 'related-id')
             ->willReturn(['test_key' => 'address-value']);
+        $transformerMock->expects($this->once())
+            ->method('transformGetEmail')
+            ->with($organisationMock)
+            ->willReturn(['test_key' => 'email-value']);
+        $transformerMock->expects($this->once())
+            ->method('transformUpdateEmail')
+            ->with($organisationMock, 'related-id')
+            ->willReturn(['test_key' => 'email-value']);
 
         $client = new CiviClient(
             $httpClientMock,

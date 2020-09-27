@@ -60,6 +60,23 @@ class OrganisationTransformerTest extends TestCase
         ], $results);
     }
 
+    public function test_transformGetEmail_works()
+    {
+        $organisationMock = $this->createMock(Organisation::class);
+        $organisationMock->expects($this->any())
+            ->method('__get')
+            ->will($this->returnValueMap([
+                ['civi_id', 'contact-id'],
+            ]));
+
+        $transformer = new OrganisationTransformer();
+        $results = $transformer->transformGetEmail($organisationMock);
+
+        $this->assertEquals([
+            'contact_id' => 'contact-id',
+        ], $results);
+    }
+
     public function test_transformCreateContact_works()
     {
         $organisationMock = $this->createMock(Organisation::class);
@@ -68,7 +85,6 @@ class OrganisationTransformerTest extends TestCase
             ->will($this->returnValueMap([
                 ['name', 'Acme Org'],
                 ['description', 'Lorem ipsum'],
-                ['email', 'acme.org@example.com'],
             ]));
 
         $transformer = new OrganisationTransformer();
@@ -80,7 +96,6 @@ class OrganisationTransformerTest extends TestCase
             'contact_type' => 'Organization',
             'organization_name' => 'Acme Org',
             $descriptionKey => 'Lorem ipsum',
-            'email' => 'acme.org@example.com',
         ], $results);
     }
 
@@ -147,6 +162,25 @@ class OrganisationTransformerTest extends TestCase
         ], $results);
     }
 
+    public function test_transformCreateEmail_works()
+    {
+        $organisationMock = $this->createMock(Organisation::class);
+        $organisationMock->expects($this->any())
+            ->method('__get')
+            ->will($this->returnValueMap([
+                ['civi_id', 'contact-id'],
+                ['email', 'acme.org@example.com'],
+            ]));
+
+        $transformer = new OrganisationTransformer();
+        $results = $transformer->transformCreateEmail($organisationMock);
+
+        $this->assertEquals([
+            'contact_id' => 'contact-id',
+            'email' => 'acme.org@example.com',
+        ], $results);
+    }
+
     public function test_transformUpdateContact_works()
     {
         $organisationMock = $this->createMock(Organisation::class);
@@ -156,7 +190,6 @@ class OrganisationTransformerTest extends TestCase
                 ['civi_id', 'contact-id'],
                 ['name', 'Acme Org'],
                 ['description', 'Lorem ipsum'],
-                ['email', 'acme.org@example.com'],
             ]));
 
         $transformer = new OrganisationTransformer();
@@ -168,7 +201,6 @@ class OrganisationTransformerTest extends TestCase
             'contact_type' => 'Organization',
             'organization_name' => 'Acme Org',
             $descriptionKey => 'Lorem ipsum',
-            'email' => 'acme.org@example.com',
             'id' => 'contact-id',
         ], $results);
     }
@@ -236,6 +268,26 @@ class OrganisationTransformerTest extends TestCase
             'city' => 'Leeds',
             'postal_code' => 'LS1 2AB',
             'id' => 'address-id',
+        ], $results);
+    }
+
+    public function test_transformUpdateEmail_works()
+    {
+        $organisationMock = $this->createMock(Organisation::class);
+        $organisationMock->expects($this->any())
+            ->method('__get')
+            ->will($this->returnValueMap([
+                ['civi_id', 'contact-id'],
+                ['email', 'acme.org@example.com'],
+            ]));
+
+        $transformer = new OrganisationTransformer();
+        $results = $transformer->transformUpdateEmail($organisationMock, 'email-id');
+
+        $this->assertEquals([
+            'contact_id' => 'contact-id',
+            'email' => 'acme.org@example.com',
+            'id' => 'email-id',
         ], $results);
     }
 

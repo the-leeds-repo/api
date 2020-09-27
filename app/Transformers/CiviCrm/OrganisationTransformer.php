@@ -49,6 +49,15 @@ class OrganisationTransformer
      * @param \App\Models\Organisation $organisation
      * @return array
      */
+    public function transformGetEmail(Organisation $organisation): array
+    {
+        return $this->transformGetRelatedEntity($organisation);
+    }
+
+    /**
+     * @param \App\Models\Organisation $organisation
+     * @return array
+     */
     public function transformCreateContact(Organisation $organisation): array
     {
         $descriptionKey = 'custom_' . config('tlr.civi.description_field_id');
@@ -57,7 +66,6 @@ class OrganisationTransformer
             'contact_type' => 'Organization',
             'organization_name' => $organisation->name,
             $descriptionKey => $organisation->description,
-            'email' => $organisation->email,
         ];
     }
 
@@ -98,6 +106,18 @@ class OrganisationTransformer
             'supplemental_address_2' => $organisation->address_line_3 ?: '',
             'city' => $organisation->city ?: '',
             'postal_code' => $organisation->postcode ?: '',
+        ];
+    }
+
+    /**
+     * @param \App\Models\Organisation $organisation
+     * @return string[]
+     */
+    public function transformCreateEmail(Organisation $organisation): array
+    {
+        return [
+            'contact_id' => $organisation->civi_id,
+            'email' => $organisation->email ?: '',
         ];
     }
 
@@ -148,6 +168,19 @@ class OrganisationTransformer
     {
         $data = $this->transformCreateAddress($organisation);
         $data['id'] = $addressId;
+
+        return $data;
+    }
+
+    /**
+     * @param \App\Models\Organisation $organisation
+     * @param string $emailId
+     * @return string[]
+     */
+    public function transformUpdateEmail(Organisation $organisation, string $emailId): array
+    {
+        $data = $this->transformCreateEmail($organisation);
+        $data['id'] = $emailId;
 
         return $data;
     }
