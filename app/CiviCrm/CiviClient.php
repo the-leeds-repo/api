@@ -312,8 +312,8 @@ class CiviClient implements ClientInterface
 
         if ($data['is_error'] ?? 0 === 1) {
             throw new CiviException(
-                (string)$data['error_message'] ?? 'No error message provided.',
-                (int)$data['error_code'] ?? 400
+                (string)($data['error_message'] ?? 'No error message provided.'),
+                (int)($data['error_code'] ?? 400)
             );
         }
 
