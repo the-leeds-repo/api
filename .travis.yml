@@ -26,7 +26,7 @@ before_install:
       printf '\ny\n\ny\ny\n' | ./google-cloud-sdk/install.sh &&
       cd $TRAVIS_BUILD_DIR;
     fi
-  - gcloud -q components update
+  - gcloud -q components update --version 330.0.0
 
 before_script:
   - sudo service mysql stop
